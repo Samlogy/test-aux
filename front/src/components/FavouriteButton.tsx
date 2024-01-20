@@ -39,7 +39,13 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
       _hover={{ transform: "scale(1.1)" }}
       sx={{ ":hover > svg": { transform: "scale(1.1)" } }}
       transition="all 0.15s ease"
-      icon={isFavourite(cat) ? <AiFillHeart /> : <AiOutlineHeart />}
+      icon={
+        isFavourite(cat) ? (
+          <AiFillHeart size="18" />
+        ) : (
+          <AiOutlineHeart size="18" />
+        )
+      }
       boxShadow="md"
       onClick={handleFavourite}
       pos="absolute"

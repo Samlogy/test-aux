@@ -5,5 +5,11 @@ export { default as ProtectedPage } from "./ProtectedPage";
 export { default as View } from "./View";
 export { default as Filter } from "./Filter";
 export { default as NavBar } from "./NavBar";
-export { default as CatModal } from "./CatModal";
 export { default as FavouriteButton } from "./FavouriteButton";
+export { default as CustomModal } from "./CustomModal";
+export { default as CustomDrawer } from "./CustomDrawer";
+
+export { default as CatDelete } from "./CatDelete";
+export { default as CatDetails } from "./CatDetails";
+
+export { default as Logo } from "./Logo";

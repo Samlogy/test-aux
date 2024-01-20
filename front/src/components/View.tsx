@@ -1,8 +1,8 @@
 import { Box } from "@chakra-ui/react";
-import React from "react";
+import React, { ReactNode } from "react";
 
 interface IView {
-  children: any;
+  children: ReactNode;
   cond: any;
   [restProps: string]: any;
 }

@@ -1,8 +1,13 @@
 import { IconButton } from "@chakra-ui/react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-import { ICat } from "../interfaces";
+import { ICat } from "../lib/interfaces";
+import { getStorage, setStorage } from "../lib/functions";
 
-export default function FavouriteButton({ cat }: { cat: ICat }) {
+interface IFavouriteButton {
+  cat: ICat;
+}
+
+export default function FavouriteButton({ cat }: IFavouriteButton) {
   const loadCats = () => getStorage("favourite-cats--chadopt");
 
   const setIsFavourite = (cat: ICat) => {
@@ -38,30 +43,8 @@ export default function FavouriteButton({ cat }: { cat: ICat }) {
       boxShadow="md"
       onClick={handleFavourite}
       pos="absolute"
-      top="4"
+      bottom="20"
       right="4"
     />
   );
 }
-
-const setStorage = (key: string, data: any) => {
-  try {
-    const jsonData = JSON.stringify(data);
-    localStorage.setItem(key, jsonData);
-  } catch (err) {
-    console.error("Error storing data in local storage:", err);
-  }
-};
-
-const getStorage = (key: any) => {
-  try {
-    const jsonData = localStorage.getItem(key);
-    if (!jsonData) {
-      return [];
-    }
-    return JSON.parse(jsonData);
-  } catch (err) {
-    console.error("Error loading data from local storage:", err);
-    return null;
-  }
-};

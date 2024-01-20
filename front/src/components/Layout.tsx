@@ -1,5 +1,5 @@
+import { Container, Flex } from "@chakra-ui/react";
 import React from "react";
-import { Container, Flex, useColorModeValue } from "@chakra-ui/react";
 import NavBar from "./NavBar";
 
 // import { NavBar, ProtectedPage } from "./";
@@ -15,10 +15,9 @@ export default function Layout({
   isHeaderVisible,
   ...restProps
 }: ILayout) {
-  const bgColor = useColorModeValue("white", "gray_3");
   return (
     <>
-      <Flex flexDir="column" {...restProps} bg={bgColor} minH="100vh">
+      <Flex flexDir="column" {...restProps} bg={"white"} minH="100vh">
         {isHeaderVisible && <NavBar />}
 
         <Container

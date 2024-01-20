@@ -2,7 +2,9 @@ back/node_modules
 back/.config.dev.env
 back/.config.prod.env
 back/.env
-back/
+
+
+# back/
 
 front/node_modules
 # Logs

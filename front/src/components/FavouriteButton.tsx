@@ -1,14 +1,14 @@
 import { IconButton } from "@chakra-ui/react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { ICat } from "../lib/interfaces";
-import { getStorage, setStorage } from "../lib/functions";
+import storage from "../lib/storage";
 
 interface IFavouriteButton {
   cat: ICat;
 }
 
 export default function FavouriteButton({ cat }: IFavouriteButton) {
-  const loadCats = () => getStorage("favourite-cats--chadopt");
+  const loadCats = () => storage.getStorage("favourite-cats--chadopt");
 
   const setIsFavourite = (cat: ICat) => {
     const cats = loadCats();
@@ -17,7 +17,7 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
       ? cats.filter((el: ICat) => el.id !== cat.id)
       : [...cats, cat];
 
-    setStorage("favourite-cats--chadopt", newCats);
+    storage.setStorage("favourite-cats--chadopt", newCats);
   };
 
   const isFavourite = (cat: ICat) => {
@@ -25,8 +25,9 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
     return cats.some((c) => c.id === cat.id);
   };
 
-  const handleFavourite = (e: any) => {
+  const handleFavourite = (e) => {
     setIsFavourite(cat);
+    e.stopPropagation();
   };
 
   return (

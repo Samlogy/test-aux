@@ -12,17 +12,15 @@ export default function Card({ cat }: { cat: ICat }) {
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
 
-  const onEdit = (e) => {
-    e.preventDefault();
+  const onEdit = () => {
     setIsEdit(true);
   };
   const onDelete = (e) => {
-    e.preventDefault();
     setIsDelete(true);
+    e.stopPropagation();
   };
 
-  const handleClick = (e) => {
-    e.preventDefault();
+  const handleClick = () => {
     setOpen(!isOpen);
   };
 
@@ -92,7 +90,13 @@ export default function Card({ cat }: { cat: ICat }) {
         </Box>
       </Flex>
 
-      <CatDetails cat={cat} isOpen={isOpen} setOpen={setOpen} isEdit={isEdit} />
+      <CatDetails
+        cat={cat}
+        isOpen={isOpen}
+        setOpen={setOpen}
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+      />
       <CatDelete catId={cat.id} isOpen={isDelete} setOpen={setIsDelete} />
     </>
   );

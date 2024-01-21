@@ -1,14 +1,77 @@
-const url = "localhost:3001/";
-// const options = {
-//   method: "POST",
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-//   body: JSON.stringify(data),
-// };
+const apiUrl = "localhost:3001/api/v1";
 
-export const getCastsList = fetch(url).then((res) => res.json());
-export const filterCatsList = fetch(url).then((res) => res.json());
-export const addCat = fetch(url).then((res) => res.json());
-export const editCat = fetch(url).then((res) => res.json());
-export const deleteCat = fetch(url).then((res) => res.json());
+// GET Request
+const getData = async (route: string) => {
+  try {
+    const response = await fetch(`${apiUrl}/${route}`);
+    if (!response.ok) {
+      throw new Error(`GET request failed with status ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("GET Data:", data);
+  } catch (error) {
+    console.error("Error during GET request:", error);
+  }
+};
+
+// POST Request
+const postData = async (route: string, payload: any) => {
+  try {
+    const response = await fetch(`${apiUrl}/${route}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new Error(`POST request failed with status ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error during POST request:", error);
+  }
+};
+
+// PUT Request
+const putData = async (route: string, payload: any) => {
+  try {
+    const response = await fetch(`${apiUrl}/${route}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new Error(`PUT request failed with status ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error during PUT request:", error);
+  }
+};
+
+// DELETE Request
+const deleteData = async (route: string) => {
+  try {
+    const response = await fetch(`${apiUrl}/${route}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      throw new Error(`DELETE request failed with status ${response.status}`);
+    }
+    console.log("DELETE request successful");
+  } catch (error) {
+    console.error("Error during DELETE request:", error);
+  }
+};
+
+export default {
+  getData,
+  postData,
+  putData,
+  deleteData,
+};

@@ -7,16 +7,15 @@ import {
   Stack,
   useBreakpointValue,
   useColorModeValue,
-  Image,
 } from "@chakra-ui/react";
 import { ReactNode, useState } from "react";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { Link as RouterLink } from "react-router-dom";
-import { View } from "../components";
+import { Logo, LogoutButton, View } from "../components";
 
 const Links = [
   {
-    link: "/cats",
+    link: "/",
     label: "Nos Chats",
   },
 ];
@@ -27,21 +26,19 @@ interface NavLinkProps {
 }
 
 const NavLink: React.FC<NavLinkProps> = ({ children, link }) => {
-  const linkColor = useColorModeValue("gray_2", "gray_7");
-  const accentColor = useColorModeValue("accent_3", "accent_5");
-
   const isActive = window.location.pathname === link;
 
   return (
     <Link
       as={RouterLink}
       href={link}
-      _hover={{ textDecor: "none", cursor: "pointer", color: accentColor }}
+      _hover={{ textDecor: "none", cursor: "pointer", color: "blue.500" }}
     >
       <Box
         p=".5em"
         rounded="md"
-        color={isActive ? accentColor : linkColor}
+        color={isActive ? "blue.500" : "gray.900"}
+        fontWeight={isActive ? "bold" : "semibold>"}
         w="auto"
         textTransform="capitalize"
       >
@@ -81,26 +78,23 @@ export default function NavBar() {
           _focus={{ outline: "none" }}
         />
 
-        <RouterLink to="/cats">
-          <Image src="/logo.jpg" alt="logo" boxSize={"3.5em"} />
-        </RouterLink>
+        <Logo />
 
         <HStack spacing={8} align={"center"}>
           <HStack as={"nav"} spacing={4} display={{ base: "none", md: "flex" }}>
-            {Links.map((el: any) => (
+            {Links.map((el) => (
               <NavLink key={el.label} link={el?.link}>
                 {el?.label}
               </NavLink>
             ))}
           </HStack>
         </HStack>
-
-        {isVisible && <Flex align={"center"}></Flex>}
+        <LogoutButton />
       </Flex>
 
       <View cond={isOpen} pb={4} display={{ md: "none" }}>
         <Stack as={"nav"} spacing={4} align="center">
-          {Links.map((el: any) => (
+          {Links.map((el) => (
             <NavLink key={el.label} link={el?.link}>
               {el?.label}
             </NavLink>

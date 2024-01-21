@@ -2,6 +2,28 @@ import { Button, Input, Select, SimpleGrid } from "@chakra-ui/react";
 import { useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { generateQuery } from "../lib/functions";
+import api from "../lib/api";
+
+const TOWNS = [
+  {
+    label: "Paris",
+    value: "paris",
+  },
+];
+const STATUS = [
+  {
+    label: "Adoptable",
+    value: "adoptable",
+  },
+  {
+    label: "Adopté",
+    value: "adopté",
+  },
+  {
+    label: "en_cours_adoption",
+    value: "En cours d'adoption",
+  },
+];
 
 type IFilters = {
   name: string;
@@ -12,9 +34,10 @@ type IFilters = {
 
 interface IFilter {
   setCatsList: any;
+  setFilterList: any;
 }
 
-export default function Filter({ setCatsList }: IFilter) {
+export default function Filter({ setCatsList, setFilterList }: IFilter) {
   const [filters, setFilters] = useState<IFilters>({
     name: "",
     status: "",
@@ -22,32 +45,12 @@ export default function Filter({ setCatsList }: IFilter) {
     isFavourite: false,
   });
 
-  // load all lists once (catergories - condition -) save them inside localstorage
-  const onFilter = () => {
-    console.log("filters: ", filters);
-    console.log("log: ", generateQuery(filters));
+  const onFilter = async () => {
+    const query = generateQuery(filters);
+    // const result = await api.getData(`/cat/filter?${query}`);
+    // setCatsList(result);
+    setFilterList(filters);
   };
-
-  const TOWNS = [
-    {
-      label: "Paris",
-      value: "paris",
-    },
-  ];
-  const STATUS = [
-    {
-      label: "Adoptable",
-      value: "adoptable",
-    },
-    {
-      label: "Adopté",
-      value: "adopté",
-    },
-    {
-      label: "en_cours_adoption",
-      value: "En cours d'adoption",
-    },
-  ];
 
   const onFavouriteToggle = () => {
     // si favourite => unfavourite + actualise le filtre

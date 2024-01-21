@@ -2,8 +2,6 @@ import { Container, Flex } from "@chakra-ui/react";
 import React from "react";
 import NavBar from "./NavBar";
 
-// import { NavBar, ProtectedPage } from "./";
-
 interface ILayout {
   children: React.ReactNode;
   isHeaderVisible?: boolean;

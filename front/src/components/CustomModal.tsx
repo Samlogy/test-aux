@@ -10,13 +10,13 @@ import {
 
 export default function CustomModal({
   isOpen,
-  setOpen,
+  onClose,
   header,
   body,
   footer,
 }: any) {
   return (
-    <Modal isOpen={isOpen} onClose={() => setOpen(false)} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{header && header}</ModalHeader>

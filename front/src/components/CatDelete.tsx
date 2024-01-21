@@ -9,13 +9,14 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { useRef } from "react";
+import api from "../lib/api";
 
 export default function CatDelete({ catId, isOpen, setOpen }: any) {
   const cancelRef = useRef();
 
-  const onDelete = () => {
+  const onDelete = async () => {
     setOpen(false);
-    // /catId
+    // api.deleteData("/cat/" + catId);
   };
 
   return (
@@ -23,6 +24,7 @@ export default function CatDelete({ catId, isOpen, setOpen }: any) {
       isOpen={isOpen}
       leastDestructiveRef={cancelRef}
       onClose={() => setOpen(false)}
+      isCentered
     >
       <AlertDialogOverlay>
         <AlertDialogContent>

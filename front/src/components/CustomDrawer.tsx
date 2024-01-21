@@ -13,7 +13,7 @@ interface ICustomDrawer {
   isOpen: boolean;
   onClose: any;
   title?: string;
-  placement?: any;
+  placement?: "left" | "right";
   size?: string;
   body?: React.ReactNode;
   footer?: React.ReactNode;

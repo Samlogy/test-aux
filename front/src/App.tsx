@@ -1,22 +1,39 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import { CatsList, Login, NotFound } from "./pages";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ChakraProvider } from "@chakra-ui/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { PrivateRoute } from "./components";
+import { lazy } from "react";
+
+const CatsList = lazy(() => import("./pages/CatsList"));
+const Login = lazy(() => import("./pages/Login"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const Routing = () => {
   const isLogged = false;
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/">
-          <Route path="cats" element={<CatsList />} />
-          <Route index element={<Login />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+        {/* <Route element={<PrivateRoute />}>
+          <Route path="/" element={<CatsList />} />
+        </Route> */}
+        <Route path="/" element={<CatsList />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 };
 
 export default function App() {
-  return <Routing />;
+  const queryClient = new QueryClient();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider>
+        <Routing />
+      </ChakraProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
 }

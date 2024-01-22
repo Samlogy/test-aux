@@ -1,10 +1,9 @@
-import { Box } from "@chakra-ui/react";
+import { Box, BoxProps } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
-interface IView {
+interface IView extends BoxProps {
   children: ReactNode;
-  cond: any;
-  [restProps: string]: any;
+  cond: boolean;
 }
 
 const View = ({ children, cond, ...restProps }: IView) => {

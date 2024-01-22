@@ -7,6 +7,15 @@ import {
   ModalHeader,
   ModalOverlay,
 } from "@chakra-ui/react";
+import { ReactNode } from "react";
+
+interface ICustomModal {
+  isOpen: boolean;
+  onClose: () => void;
+  header?: ReactNode;
+  body?: ReactNode;
+  footer?: ReactNode;
+}
 
 export default function CustomModal({
   isOpen,
@@ -14,7 +23,7 @@ export default function CustomModal({
   header,
   body,
   footer,
-}: any) {
+}: ICustomModal) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />

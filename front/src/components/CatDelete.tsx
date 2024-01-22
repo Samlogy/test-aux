@@ -1,5 +1,4 @@
 import {
-  // Alert
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
@@ -9,9 +8,14 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { useRef } from "react";
-import api from "../lib/api";
 
-export default function CatDelete({ catId, isOpen, setOpen }: any) {
+interface ICatDelete {
+  catId: number;
+  isOpen: boolean;
+  setOpen: (isOpen: boolean) => void;
+}
+
+export default function CatDelete({ catId, isOpen, setOpen }: ICatDelete) {
   const cancelRef = useRef();
 
   const onDelete = async () => {

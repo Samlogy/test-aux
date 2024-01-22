@@ -74,7 +74,7 @@ export default function NavBar() {
           icon={menuIcon}
           aria-label={"toggle-menu"}
           display={{ md: "none" }}
-          onClick={isOpen ? () => setOpen(false) : () => setOpen(true)}
+          onClick={() => setOpen(!isOpen)}
           _focus={{ outline: "none" }}
         />
 

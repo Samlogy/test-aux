@@ -11,11 +11,30 @@ import {
 import { useState } from "react";
 import api from "../lib/api";
 import { CustomModal, FavouriteButton } from "./";
+import { ICat } from "../lib/interfaces";
 
 const TOWNS = [];
 const RACES = [];
 const SEX = [];
 const STATUS = [];
+
+interface ICatDetailsProps {
+  cat: ICat;
+  isOpen: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isEdit: boolean;
+  setIsEdit: React.Dispatch<React.SetStateAction<boolean>>;
+}
+interface IDisplayInfoProps {
+  label: string;
+  value: string;
+}
+interface IEditCatProps {
+  cat: ICat;
+  setChat: React.Dispatch<React.SetStateAction<ICat>>;
+  onClose: () => void;
+  isEdit: boolean;
+}
 
 export default function CatDetails({
   cat,
@@ -23,7 +42,7 @@ export default function CatDetails({
   setOpen,
   isEdit,
   setIsEdit,
-}: any) {
+}: ICatDetailsProps) {
   const [chat, setChat] = useState(cat);
 
   const body = (
@@ -54,12 +73,11 @@ export default function CatDetails({
         setIsEdit(false);
       }}
       body={body}
-      // footer={footer}
     />
   );
 }
 
-const DisplayInfo = ({ label, value }: any) => {
+const DisplayInfo = ({ label, value }: IDisplayInfoProps) => {
   return (
     <Flex>
       <Box fontSize="1rem" fontWeight="semibold">
@@ -72,49 +90,11 @@ const DisplayInfo = ({ label, value }: any) => {
   );
 };
 
-const DisplayCat = ({ cat }: any) => {
-  return (
-    <Flex>
-      <Image
-        src={cat?.picture}
-        alt={`Picture of ${cat?.name}`}
-        boxSize={"18em"}
-        rounded="lg"
-        mr="1em"
-      />
-      <Flex flexDir="column">
-        <SimpleGrid columns={2} spacing={1}>
-          <DisplayInfo label="Nom: " value={cat?.name} />
-          <DisplayInfo label="Statut: " value={cat?.status} />
-          <DisplayInfo label="Ville: " value={cat?.town} />
-          <DisplayInfo label="Race: " value={cat?.race} />
-          <DisplayInfo label="Sexe: " value={cat?.sex} />
-          <DisplayInfo label="Age: " value={cat?.age} />
-          <DisplayInfo label="Nom: " value={cat?.name} />
-        </SimpleGrid>
-
-        <Flex flexDir="column" mt="1em">
-          <Box fontSize="1rem" fontWeight="semibold">
-            Description
-          </Box>
-          <Box textTransform="capitalize" color="gray_5">
-            {cat?.description}
-          </Box>
-        </Flex>
-      </Flex>
-    </Flex>
-  );
-};
-const EditCat = ({ cat, setChat, onClose, isEdit }: any) => {
+const DisplayCat = ({ cat }: { cat: ICat }) => {
   const onAdopt = (id: number) => {
     onClose();
     // await api.putData("/cat/" + cat.id, chat);
   };
-  const onEdit = async (id: number) => {
-    onClose();
-    // await api.putData("/cat/" + id, chat);
-  };
-
   return (
     <Flex flexDir="column">
       <Flex>
@@ -124,6 +104,60 @@ const EditCat = ({ cat, setChat, onClose, isEdit }: any) => {
           boxSize={"18em"}
           rounded="lg"
           mr="1em"
+        />
+        <Flex flexDir="column">
+          <SimpleGrid columns={2} spacing={1}>
+            <DisplayInfo label="Nom: " value={cat?.name} />
+            <DisplayInfo label="Statut: " value={cat?.status} />
+            <DisplayInfo label="Ville: " value={cat?.town} />
+            <DisplayInfo label="Race: " value={cat?.race} />
+            <DisplayInfo label="Sexe: " value={cat?.sex} />
+            <DisplayInfo label="Age: " value={cat?.age} />
+            <DisplayInfo label="Nom: " value={cat?.name} />
+          </SimpleGrid>
+
+          <Flex flexDir="column" mt="1em">
+            <Box fontSize="1rem" fontWeight="semibold">
+              Description
+            </Box>
+            <Box textTransform="capitalize" color="gray_5">
+              {cat?.description}
+            </Box>
+          </Flex>
+        </Flex>
+      </Flex>
+      <Button
+        colorScheme="blue"
+        onClick={() => onAdopt(cat?.id)}
+        m="1em  auto 0 auto"
+        display="flex"
+        w="50%"
+      >
+        Adopter
+      </Button>
+    </Flex>
+  );
+};
+const EditCat = ({ cat, setChat, onClose, isEdit }: IEditCatProps) => {
+  const onEdit = async (id: number) => {
+    onClose();
+    // await api.putData("/cat/" + id, chat);
+  };
+
+  const onAdd = async () => {
+    onClose();
+    // await api.postData("/cat", chat);
+  };
+
+  return (
+    <Flex flexDir="column">
+      <Flex flexDir={["column", "", "row", ""]}>
+        <Image
+          src={cat?.picture}
+          alt={`Picture of ${cat?.name}`}
+          w={["100vw", "", "18em", ""]}
+          rounded="lg"
+          m={["0 auto 1em auto", "", "0 1em 0 0", ""]}
         />
         <Flex flexDir="column">
           <SimpleGrid columns={2} spacing={1}>
@@ -232,12 +266,12 @@ const EditCat = ({ cat, setChat, onClose, isEdit }: any) => {
       </Flex>
       <Button
         colorScheme="blue"
-        onClick={isEdit ? () => onEdit(cat.id) : () => onAdopt(cat?.id)}
-        mx="1em  auto 0 auto"
+        onClick={() => onEdit(cat.id)}
+        m="1em  auto 0 auto"
         display="flex"
         w="50%"
       >
-        {isEdit ? "Modifier" : "Adopter"}
+        {isEdit ? "Modifier" : "Ajouter"}
       </Button>
     </Flex>
   );

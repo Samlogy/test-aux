@@ -11,7 +11,7 @@ import {
 
 interface ICustomDrawer {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   title?: string;
   placement?: "left" | "right";
   size?: string;

@@ -14,15 +14,15 @@ const getData = async (route: string) => {
   }
 };
 
-// POST Request
-const postData = async (route: string, payload: any) => {
+// POST Request ${apiUrl}/${route}
+const postData = async (route: string, payload: any, isFormData = false) => {
   try {
     const response = await fetch(`${apiUrl}/${route}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: isFormData ? payload : JSON.stringify(payload),
     });
     if (!response.ok) {
       throw new Error(`POST request failed with status ${response.status}`);
@@ -35,14 +35,14 @@ const postData = async (route: string, payload: any) => {
 };
 
 // PUT Request
-const putData = async (route: string, payload: any) => {
+const putData = async (route: string, payload: any, isFormData = false) => {
   try {
     const response = await fetch(`${apiUrl}/${route}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: isFormData ? payload : JSON.stringify(payload),
     });
     if (!response.ok) {
       throw new Error(`PUT request failed with status ${response.status}`);

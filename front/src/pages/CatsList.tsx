@@ -6,7 +6,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import { BsFilterLeft } from "react-icons/bs";
 import {
   Card,
@@ -19,7 +19,10 @@ import {
   Pagination,
   View,
 } from "../components";
+import api from "../lib/api";
+import useQueryCat from "../lib/hooks/useQueryCat";
 import { ICat } from "../lib/interfaces";
+import storage from "../lib/storage";
 
 const data = [
   {
@@ -102,63 +105,69 @@ const data = [
   },
 ];
 export default function CatsList() {
-  // const queryClient = useQueryClient();
+  // const {
+  //   isLoading,
+  //   isError,
+  //   data: catsList,
+  // } = useQueryCat(
+  //   "cats-list",
+  //   api.getData("https://jsonplaceholder.typicode.com/todos")
+  // );
 
-  // Queries
-  // const query = useQuery({ queryKey: ["cats-list"], queryFn: getCastsList });
-  // console.log("data: ", query);
-
-  const [filterList, setFilterList] = useState([]);
-
-  const isMobile = useBreakpointValue({ base: true, md: true, lg: false });
-
+  // const [filterList, setFilterList] = useState([]);
   const [isOpen, setOpen] = useState(false);
-
-  const btnRef = useRef();
-
-  const [catsList, setCatsList] = useState([]);
-
   const [isOpenAdd, setOpenAdd] = useState(false);
 
-  useEffect(() => {
-    setCatsList(data);
-  }, []);
+  const [catsList, setCatsList] = useState(data);
 
-  // pagination
+  const isMobile = useBreakpointValue({
+    base: true,
+    md: true,
+    lg: false,
+  }) as boolean;
+
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 1;
-  const NUMBER_ITEMS = catsList.length;
+  const PAGE_SIZE = 2;
+  const NUMBER_ITEMS = data.length;
 
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
-    const lastPageIndex = firstPageIndex + PAGE_SIZE;
-    return catsList.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage]);
+  const { filters, setFilters } = useFilter();
+
+  console.log("filters: ", filters);
+
+  // if (isLoading) return <h1>Loading....</h1>;
+  // if (isError) return <h1>Error loading data!!!</h1>;
 
   return (
     <>
       <Layout isHeaderVisible>
-        <Heading fontSize="1.5rem" mb="2rem" textTransform={"capitalize"}>
-          Nos Chats
-        </Heading>
-        <Button
-          colorScheme="blue"
-          ml="auto"
-          display="flex"
-          onClick={() => setOpenAdd(true)}
-        >
-          Ajouter un Chat
-        </Button>
+        <Flex>
+          <Heading fontSize="1.5rem" mb="2rem" textTransform={"capitalize"}>
+            Nos Chats
+          </Heading>
+
+          <Button
+            colorScheme="blue"
+            ml="auto"
+            display="flex"
+            onClick={() => setOpenAdd(true)}
+          >
+            Ajouter un Chat
+          </Button>
+        </Flex>
 
         <Flex flexDir={"row"} justifyContent="space-between">
-          <Flex flexDir={"column"}>
+          <Flex flexDir={"column"} flexGrow="1" flexBasis="15%">
             <View cond={!isMobile} w="90%">
-              <Filter setCatsList={setCatsList} setFilterList={setFilterList} />
+              <Filter
+                setCatsList={setCatsList}
+                setFilters={setFilters}
+                filters={filters}
+              />
             </View>
 
             <View cond={isMobile}>
               <IconButton
-                bg={"gray.300"}
+                bg={"gray.100"}
                 _focus={{ outline: "none" }}
                 aria-label="trigger-filter"
                 icon={<BsFilterLeft size={24} />}
@@ -172,16 +181,17 @@ export default function CatsList() {
                 body={
                   <Filter
                     setCatsList={setCatsList}
-                    setFilterList={setFilterList}
+                    setFilters={setFilters}
+                    filters={filters}
                   />
                 }
               />
             </View>
           </Flex>
 
-          <Flex flexDir={"column"}>
-            <View cond={data?.length > 0}>
-              <DisplayFilters filters={filterList} isMobile={isMobile} />
+          <Flex flexDir={"column"} flexGrow="2" flexBasis="80%">
+            <View cond={catsList?.length > 0}>
+              <DisplayFilters filters={filters} isMobile={isMobile} />
 
               <Flex
                 flexDir="row"
@@ -195,7 +205,7 @@ export default function CatsList() {
               </Flex>
             </View>
 
-            <View cond={data?.length === 0}>
+            <View cond={catsList?.length === 0}>
               <Text> Il n' y a aucun chat qui correspond à ses filtres </Text>
             </View>
           </Flex>
@@ -211,13 +221,35 @@ export default function CatsList() {
           />
         </View>
       </Layout>
+
       <CustomModal
         isOpen={isOpenAdd}
         onClose={() => setOpenAdd(false)}
         header="Ajouter un chat"
         body={<CatAddForm onClose={() => setOpenAdd(false)} />}
-        footer={<></>}
       />
     </>
   );
 }
+
+type IFilters = {
+  name: string;
+  status: string;
+  town: string;
+  isFavourite: boolean;
+};
+const useFilter = () => {
+  const [filters, setFilters] = useState<IFilters>({
+    name: "",
+    status: "",
+    town: "",
+    isFavourite: false,
+  });
+
+  useEffect(() => {
+    const storedFilters = storage.getStorage("filters--chadopt") || {};
+    setFilters(storedFilters);
+  }, []);
+
+  return { filters, setFilters };
+};

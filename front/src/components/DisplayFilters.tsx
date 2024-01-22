@@ -1,7 +1,13 @@
 import { Box, Flex } from "@chakra-ui/react";
 
+type IFilters = {
+  name: string;
+  status: string;
+  town: string;
+  isFavourite: boolean;
+};
 interface IDisplayFilters {
-  filters: string[];
+  filters: IFilters;
   isMobile: boolean;
 }
 export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
@@ -26,8 +32,9 @@ export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
             fontSize=".9rem"
             mb=".5em"
             mr=".25em"
+            textTransform="capitalize"
           >
-            {value ? value : ""}
+            {typeof value === "boolean" ? "favourite" : value}
           </Box>
         ))}
     </Flex>

@@ -1,8 +1,9 @@
 import { Button, Input, Select, SimpleGrid } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { generateQuery } from "../lib/functions";
-import api from "../lib/api";
+import { ICat } from "../lib/interfaces";
+import storage from "../lib/storage";
 
 const TOWNS = [
   {
@@ -10,6 +11,7 @@ const TOWNS = [
     value: "paris",
   },
 ];
+
 const STATUS = [
   {
     label: "Adoptable",
@@ -20,46 +22,56 @@ const STATUS = [
     value: "adopté",
   },
   {
-    label: "en_cours_adoption",
-    value: "En cours d'adoption",
+    value: "en_cours_adoption",
+    label: "En cours d'adoption",
   },
 ];
-
 type IFilters = {
   name: string;
   status: string;
   town: string;
   isFavourite: boolean;
 };
-
-interface IFilter {
-  setCatsList: any;
-  setFilterList: any;
+interface IFilterProps {
+  setCatsList: React.Dispatch<React.SetStateAction<ICat[]>>;
+  setFilters: React.Dispatch<React.SetStateAction<IFilters>>;
+  filters: IFilters;
 }
 
-export default function Filter({ setCatsList, setFilterList }: IFilter) {
-  const [filters, setFilters] = useState<IFilters>({
-    name: "",
-    status: "",
-    town: "",
-    isFavourite: false,
-  });
-
+export default function Filter({
+  setCatsList,
+  setFilters,
+  filters,
+}: IFilterProps) {
   const onFilter = async () => {
     const query = generateQuery(filters);
     // const result = await api.getData(`/cat/filter?${query}`);
     // setCatsList(result);
-    setFilterList(filters);
+    setFilters(filters);
+    storage.setStorage("filters--chadopt", filters);
   };
-
+  const onReset = async () => {
+    setFilters({
+      name: "",
+      status: "",
+      town: "",
+      isFavourite: false,
+    });
+    storage.deleteStorage("filters--chadopt");
+  };
   const onFavouriteToggle = () => {
     // si favourite => unfavourite + actualise le filtre
     // sinon l'inverse + actualise le filtre
     setFilters({ ...filters, isFavourite: !filters.isFavourite });
   };
 
+  useEffect(() => {
+    const storedFilters = storage.getStorage("filters--chadopt") || filters;
+    setFilters(storedFilters);
+  }, []);
+
   return (
-    <SimpleGrid columns={1} spacing={10}>
+    <SimpleGrid columns={1} spacing={4}>
       <Input
         type="search"
         name="name"
@@ -71,10 +83,11 @@ export default function Filter({ setCatsList, setFilterList }: IFilter) {
         placeholder="Ville"
         name="town"
         onChange={(e) => setFilters({ ...filters, town: e.target.value })}
+        value={filters.town}
       >
-        {TOWNS.map((town: any) => (
-          <option key={town.value} value={town.label}>
-            {town.value}
+        {TOWNS.map((town) => (
+          <option key={town.value} value={town.value}>
+            {town.label}
           </option>
         ))}
       </Select>
@@ -82,10 +95,11 @@ export default function Filter({ setCatsList, setFilterList }: IFilter) {
         placeholder="Statut"
         name="status"
         onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+        value={filters.status}
       >
-        {STATUS.map((status: any) => (
-          <option key={status.value} value={status.label}>
-            {status.value}
+        {STATUS.map((status) => (
+          <option key={status.value} value={status.value}>
+            {status.label}
           </option>
         ))}
       </Select>
@@ -98,10 +112,14 @@ export default function Filter({ setCatsList, setFilterList }: IFilter) {
       >
         Favoris
       </Button>
-
-      <Button colorScheme="blue" variant={"solid"} onClick={onFilter}>
-        Appliquer
-      </Button>
+      <SimpleGrid columns={1} spacing={2} mt="2em">
+        <Button colorScheme="blue" variant={"solid"} onClick={onFilter}>
+          Appliquer
+        </Button>
+        <Button colorScheme="blue" variant={"outline"} onClick={onReset}>
+          Reset
+        </Button>
+      </SimpleGrid>
     </SimpleGrid>
   );
 }

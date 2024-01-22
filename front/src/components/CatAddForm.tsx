@@ -7,7 +7,7 @@ import {
   SimpleGrid,
   Textarea,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../lib/api";
 
 const TOWNS = [];
@@ -15,7 +15,7 @@ const RACES = [];
 const GENDERS = [];
 const STATUS = [];
 
-export default function CatAddForm({ onClose }: any) {
+export default function CatAddForm({ onClose }: { onClose: () => void }) {
   const [cat, setCat] = useState({
     name: "",
     sex: "",
@@ -26,11 +26,38 @@ export default function CatAddForm({ onClose }: any) {
     age: "",
     picture: "",
   });
+  const [image, setImage] = useState<File | null>(null);
 
-  async function onAdd() {
-    onClose();
-    await api.postData("/cat", cat);
-  }
+  const [constants, setConstants] = useState({
+    towns: [],
+    races: [],
+    genders: [],
+    status: [],
+  });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) setImage(e.target.files[0]);
+  };
+
+  const onAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (image) {
+      const formData = new FormData();
+
+      formData.append("image", image);
+      Object.keys(cat).map((key) => formData.append(key, cat[key]));
+
+      // await api.postData("/cat", formData, true);
+      onClose();
+    }
+  };
+
+  // useEffect(() => {
+  //   const data = api.getData("/contants");
+  //   setConstants(data);
+  // }, []);
+
   return (
     <Flex flexDir="column">
       <Flex>
@@ -43,8 +70,8 @@ export default function CatAddForm({ onClose }: any) {
               <Input
                 type="file"
                 placeholder="Photo"
-                value={cat.picture}
-                onChange={(e) => console.log("file: ", e)}
+                accept="image/*"
+                onChange={handleImageChange}
               />
             </Flex>
             <Flex flexDir="column">
@@ -78,7 +105,7 @@ export default function CatAddForm({ onClose }: any) {
                 value={cat.status}
                 onChange={(e) => setCat({ ...cat, status: e.target.value })}
               >
-                {STATUS.map((status) => (
+                {constants.status.map((status) => (
                   <option key={status.value} value={status.label}>
                     {status.value}
                   </option>
@@ -95,7 +122,7 @@ export default function CatAddForm({ onClose }: any) {
                 name="race"
                 onChange={(e) => setCat({ ...cat, race: e.target.value })}
               >
-                {RACES.map((race) => (
+                {constants.races.map((race) => (
                   <option key={race.value} value={race.label}>
                     {race.value}
                   </option>
@@ -112,7 +139,7 @@ export default function CatAddForm({ onClose }: any) {
                 name="sex"
                 onChange={(e) => setCat({ ...cat, sex: e.target.value })}
               >
-                {GENDERS.map((gender) => (
+                {constants.genders.map((gender) => (
                   <option key={gender.value} value={gender.label}>
                     {gender.value}
                   </option>
@@ -129,7 +156,7 @@ export default function CatAddForm({ onClose }: any) {
                 name="town"
                 onChange={(e) => setCat({ ...cat, town: e.target.value })}
               >
-                {TOWNS.map((town) => (
+                {constants.towns.map((town) => (
                   <option key={town.value} value={town.label}>
                     {town.value}
                   </option>

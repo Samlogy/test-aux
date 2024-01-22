@@ -3,10 +3,18 @@ import { Request, Response } from 'express'
 
 const prisma = new PrismaClient()
 
+// localhost:3001/api/v1/cat?page=1&size=10'
 async function getCatsController(req: Request, res: Response) {
     try {
-        const chats = await prisma.cat.findMany()
-        res.status(200).json({ success: true, data: chats })
+        const { page = 1, size = 10 } = req.query
+        const offset = (Number(page) - 1) * Number(size)
+
+        const cats = await prisma.cat.findMany({
+            take: Number(size),
+            skip: offset,
+        })
+
+        res.status(200).json({ success: true, data: cats })
     } catch (err) {
         console.error('Erreur lors de la récupération des données :', err)
         res.status(500).json({ error: 'Erreur interne du serveur' })
@@ -15,10 +23,10 @@ async function getCatsController(req: Request, res: Response) {
 async function getCatByIdCatController(req: Request, res: Response) {
     try {
         const { id }: { id?: string } = req.params
-        const chat = await prisma.cat.findUnique({
+        const cat = await prisma.cat.findUnique({
             where: { id: Number(id) },
         })
-        res.status(201).json({ success: true, data: chat })
+        res.status(201).json({ success: true, data: cat })
     } catch (error) {
         console.error('Erreur lors de la récupération des données :', error)
         res.status(500).json({ error: 'Erreur interne du serveur' })
@@ -27,10 +35,10 @@ async function getCatByIdCatController(req: Request, res: Response) {
 async function postCatController(req: Request, res: Response) {
     try {
         const body = req.body
-        const resultat = await prisma.cat.create({
+        const newCat = await prisma.cat.create({
             data: body,
         })
-        res.status(200).json({ success: true, data: resultat })
+        res.status(200).json({ success: true, data: newCat })
     } catch (error) {
         console.error('Erreur lors de la création des données :', error)
         res.status(500).json({ error: 'Erreur interne du serveur' })
@@ -39,23 +47,20 @@ async function postCatController(req: Request, res: Response) {
 async function putCatByIdController(req: Request, res: Response) {
     try {
         const catId = Number(req.params.catId)
-        const donneesMisesAJour = req.body
-        const chatExistante = await prisma.cat.findUnique({
+        const body = req.body
+        const catExist = await prisma.cat.findUnique({
             where: { id: catId },
         })
-        if (!chatExistante) {
+        if (!catExist) {
             return res.status(404).json({ error: "Ce chat n'existe pas" })
         }
-        const chatMisAJour = await prisma.cat.update({
+        const updatedCat = await prisma.cat.update({
             where: { id: catId },
-            data: donneesMisesAJour,
+            data: body,
         })
-        res.status(201).json({ success: true, data: chatMisAJour })
-    } catch (error) {
-        console.error(
-            'Erreur lors de la mise à jour des données par ID :',
-            error
-        )
+        res.status(201).json({ success: true, data: updatedCat })
+    } catch (err) {
+        console.error('Erreur lors de la mise à jour des données par ID :', err)
         res.status(500).json({ error: 'Erreur interne du serveur' })
     }
 }
@@ -80,13 +85,19 @@ async function deleteCatByIdController(req: Request, res: Response) {
         res.status(500).json({ error: 'Erreur interne du serveur' })
     }
 }
+// localhost:3001/api/v1/cat?page=1&size=10&name=sam&email=sam@gmail.com'
 async function filtersCatsController(req: Request, res: Response) {
     try {
-        const filtres = req.query
-        const chatsFiltres = await prisma.cat.findMany({
-            where: filtres,
+        let { page = 1, size = 10, ...filters } = req.query
+
+        const offset = (Number(page) - 1) * Number(size)
+
+        const filtredCats = await prisma.cat.findMany({
+            take: Number(size),
+            skip: offset,
+            where: filters,
         })
-        res.status(200).json({ success: true, data: chatsFiltres })
+        res.status(200).json({ success: true, data: filtredCats })
     } catch (err) {
         console.error(
             'Erreur lors de la récupération des données filtrées :',

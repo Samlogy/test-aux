@@ -1,17 +1,14 @@
-import React from "react";
-import { Heading, Text, Button } from "@chakra-ui/react";
+import { Button, Heading, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-
 import Layout from "../components/Layout";
 
-function Page404() {
+export default function Page404() {
   return (
     <Layout
       textAlign="center"
       py={10}
       px={6}
       h="100vh"
-      // w="full"
       display="flex"
       justifyContent="center"
     >
@@ -19,7 +16,7 @@ function Page404() {
         display="inline-block"
         as="h1"
         fontSize="90px"
-        bgGradient="linear(to-r, green.400, green.600)"
+        bgGradient="linear(to-r, blue.400, blue.600)"
         backgroundClip="text"
       >
         404
@@ -33,20 +30,16 @@ function Page404() {
         Cette page n'existe pas
       </Text>
 
-      {/* <Link to="/"> */}
       <Button
         as={Link}
-        to="/cats"
-        colorScheme="green"
-        bgGradient="linear(to-r, green.400, green.500, green.600)"
+        to="/"
+        colorScheme="blue"
+        bgGradient="linear(to-r, blue.400, blue.500, blue.600)"
         color="white"
         variant="solid"
       >
         Retourner vers l'acceuil
       </Button>
-      {/* </Link> */}
     </Layout>
   );
 }
-
-export default Page404;

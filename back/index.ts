@@ -6,6 +6,7 @@ import userRoutes from './routes/user.route'
 import { AppError } from './utils/appError'
 import corsOptions from './utils/corsOptions'
 import security from './utils/security'
+import initDb from './utils/initDb'
 require('dotenv').config({ path: '.env' })
 
 const PORT = Number(process.env.PORT)
@@ -34,6 +35,9 @@ if (process.env.NODE_ENV === 'prod') {
 
 app.listen(PORT, () => {
     console.log(`Server: `, PORT)
+
+    // init db
+    initDb()
 
     // Routes
     catRoutes('/api/v1/cat', app)

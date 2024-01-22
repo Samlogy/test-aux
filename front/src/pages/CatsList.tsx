@@ -6,7 +6,7 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BsFilterLeft } from "react-icons/bs";
 import {
   Card,
@@ -16,6 +16,7 @@ import {
   DisplayFilters,
   Filter,
   Layout,
+  Pagination,
   View,
 } from "../components";
 import { ICat } from "../lib/interfaces";
@@ -110,7 +111,6 @@ export default function CatsList() {
   const [filterList, setFilterList] = useState([]);
 
   const isMobile = useBreakpointValue({ base: true, md: true, lg: false });
-  const NUMBER_ITEM_PER_PAGE = 1;
 
   const [isOpen, setOpen] = useState(false);
 
@@ -123,6 +123,17 @@ export default function CatsList() {
   useEffect(() => {
     setCatsList(data);
   }, []);
+
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 1;
+  const NUMBER_ITEMS = catsList.length;
+
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
+    const lastPageIndex = firstPageIndex + PAGE_SIZE;
+    return catsList.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage]);
 
   return (
     <>
@@ -190,12 +201,15 @@ export default function CatsList() {
           </Flex>
         </Flex>
 
-        {/* <SweetPagination
-        currentPageData={setCatsList}
-        dataPerPage={NUMBER_ITEM_PER_PAGE}
-        getData={catsList}
-        navigation={true}
-      /> */}
+        <View cond={NUMBER_ITEMS > PAGE_SIZE}>
+          <Pagination
+            currentPage={currentPage}
+            totalCount={NUMBER_ITEMS}
+            pageSize={PAGE_SIZE}
+            onPageChange={(page: number) => setCurrentPage(page)}
+            isMobile={isMobile}
+          />
+        </View>
       </Layout>
       <CustomModal
         isOpen={isOpenAdd}

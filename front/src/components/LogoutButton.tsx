@@ -12,7 +12,13 @@ export default function LogoutButton() {
   };
 
   return (
-    <Button colorScheme="blue" variant="outline" onClick={handleLogout}>
+    <Button
+      color="accent.1"
+      bgColor="white"
+      border="1px solid"
+      borderColor="accent.1"
+      onClick={handleLogout}
+    >
       Logout
     </Button>
   );

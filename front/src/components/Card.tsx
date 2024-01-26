@@ -1,11 +1,9 @@
 import { Box, Flex, IconButton, Image } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { CatDelete, CatDetails } from "./";
-
+import { MouseEvent, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { ICat } from "../lib/interfaces";
-import { FavouriteButton } from "./";
+import { CatDelete, CatDetails, FavouriteButton } from "./";
 
 export default function Card({ cat }: { cat: ICat }) {
   const [isOpen, setOpen] = useState(false);
@@ -15,14 +13,12 @@ export default function Card({ cat }: { cat: ICat }) {
   const onEdit = () => {
     setIsEdit(true);
   };
-  const onDelete = (e) => {
+  const onDelete = (e: MouseEvent) => {
     setIsDelete(true);
     e.stopPropagation();
   };
 
-  const handleClick = () => {
-    setOpen(!isOpen);
-  };
+  const handleClick = () => setOpen(!isOpen);
 
   return (
     <>

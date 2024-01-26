@@ -41,10 +41,15 @@ export default function CatDelete({ catId, isOpen, setOpen }: ICatDelete) {
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={() => setOpen(false)}>
+            <Button
+              ref={cancelRef}
+              onClick={() => setOpen(false)}
+              variant="ghost"
+              color="accent.1"
+            >
               Annuler
             </Button>
-            <Button colorScheme="red" onClick={onDelete} ml={3}>
+            <Button bgColor="accent.1" color="white" onClick={onDelete} ml={3}>
               Supprimer
             </Button>
           </AlertDialogFooter>

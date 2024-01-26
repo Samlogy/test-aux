@@ -16,7 +16,7 @@ export default function Page404() {
         display="inline-block"
         as="h1"
         fontSize="90px"
-        bgGradient="linear(to-r, blue.400, blue.600)"
+        bgGradient="linear(to-r, accent.1, accent.2)"
         backgroundClip="text"
       >
         404
@@ -33,10 +33,11 @@ export default function Page404() {
       <Button
         as={Link}
         to="/"
-        colorScheme="blue"
-        bgGradient="linear(to-r, blue.400, blue.500, blue.600)"
+        bgGradient="linear(to-r, accent.1, accent.1, accent.2)"
         color="white"
-        variant="solid"
+        _hover={{
+          bg: "accent.2",
+        }}
       >
         Retourner vers l'acceuil
       </Button>

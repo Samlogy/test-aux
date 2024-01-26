@@ -2,7 +2,7 @@ import { IconButton } from "@chakra-ui/react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, MouseEvent } from "react";
 
 interface IFavouriteButton {
   cat: ICat;
@@ -30,7 +30,7 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
     storage.setStorage("favourite-cats--chadopt", newCats);
   };
 
-  const handleFavourite = (e) => {
+  const handleFavourite = (e: MouseEvent) => {
     setIsFav(!isFav);
     setIsFavourite(cat);
 
@@ -51,7 +51,7 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
       _hover={{ transform: "scale(1.1)" }}
       sx={{ ":hover > svg": { transform: "scale(1.1)" } }}
       transition="all 0.15s ease"
-      icon={isFav ? <AiFillHeart size="18" /> : <AiOutlineHeart size="18" />}
+      icon={isFav ? <AiFillHeart size="20" /> : <AiOutlineHeart size="20" />}
       boxShadow="md"
       onClick={handleFavourite}
       pos="absolute"

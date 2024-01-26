@@ -32,13 +32,13 @@ const NavLink: React.FC<NavLinkProps> = ({ children, link }) => {
     <Link
       as={RouterLink}
       href={link}
-      _hover={{ textDecor: "none", cursor: "pointer", color: "blue.500" }}
+      _hover={{ textDecor: "none", cursor: "pointer", color: "accent.1" }}
     >
       <Box
         p=".5em"
         rounded="md"
-        color={isActive ? "blue.500" : "gray.900"}
-        fontWeight={isActive ? "bold" : "semibold>"}
+        color={isActive ? "accent.1" : "gray.900"}
+        fontWeight={isActive ? "bold" : "semibold"}
         w="auto"
         textTransform="capitalize"
       >

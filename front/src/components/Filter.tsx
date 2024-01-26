@@ -105,18 +105,36 @@ export default function Filter({
       </Select>
 
       <Button
-        leftIcon={filters.isFavourite ? <AiFillHeart /> : <AiOutlineHeart />}
-        colorScheme="blue"
-        variant={filters.isFavourite ? "solid" : "outline"}
+        leftIcon={
+          filters.isFavourite ? (
+            <AiFillHeart size="20" />
+          ) : (
+            <AiOutlineHeart size="20" />
+          )
+        }
+        color="accent.1"
+        bgColor="white"
+        border="1px solid"
+        borderColor="accent.1"
         onClick={onFavouriteToggle}
       >
         Favoris
       </Button>
       <SimpleGrid columns={1} spacing={2} mt="2em">
-        <Button colorScheme="blue" variant={"solid"} onClick={onFilter}>
+        <Button
+          bgColor="accent.1"
+          color="white"
+          variant={"solid"}
+          onClick={onFilter}
+        >
           Appliquer
         </Button>
-        <Button colorScheme="blue" variant={"outline"} onClick={onReset}>
+        <Button
+          color="accent.1"
+          bgColor="white"
+          colorScheme="accent"
+          onClick={onReset}
+        >
           Reset
         </Button>
       </SimpleGrid>

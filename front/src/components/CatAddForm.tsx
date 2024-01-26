@@ -7,13 +7,13 @@ import {
   SimpleGrid,
   Textarea,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import api from "../lib/api";
+import { useState, useEffect } from "react";
+import storage from "../lib/storage";
 
-const TOWNS = [];
-const RACES = [];
-const GENDERS = [];
-const STATUS = [];
+// const TOWNS = [];
+// const RACES = [];
+// const GENDERS = [];
+// const STATUS = [];
 
 export default function CatAddForm({ onClose }: { onClose: () => void }) {
   const [cat, setCat] = useState({
@@ -53,10 +53,10 @@ export default function CatAddForm({ onClose }: { onClose: () => void }) {
     }
   };
 
-  // useEffect(() => {
-  //   const data = api.getData("/contants");
-  //   setConstants(data);
-  // }, []);
+  useEffect(() => {
+    const data = storage.getStorage("constants--chadopt");
+    setConstants(data);
+  }, []);
 
   return (
     <Flex flexDir="column">
@@ -178,7 +178,8 @@ export default function CatAddForm({ onClose }: { onClose: () => void }) {
         </Flex>
       </Flex>
       <Button
-        colorScheme="blue"
+        bgColor="accent.1"
+        color="white"
         onClick={onAdd}
         display="flex"
         w="50%"

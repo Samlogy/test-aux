@@ -127,7 +127,8 @@ const DisplayCat = ({ cat }: { cat: ICat }) => {
         </Flex>
       </Flex>
       <Button
-        colorScheme="blue"
+        bgColor="accent.1"
+        color="white"
         onClick={() => onAdopt(cat?.id)}
         m="1em  auto 0 auto"
         display="flex"
@@ -265,7 +266,8 @@ const EditCat = ({ cat, setChat, onClose, isEdit }: IEditCatProps) => {
         </Flex>
       </Flex>
       <Button
-        colorScheme="blue"
+        bgColor="accent.1"
+        color="white"
         onClick={() => onEdit(cat.id)}
         m="1em  auto 0 auto"
         display="flex"

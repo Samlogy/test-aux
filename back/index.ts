@@ -7,7 +7,7 @@ import constsRoutes from './routes/consts.route'
 import { AppError } from './utils/appError'
 import corsOptions from './utils/corsOptions'
 import security from './utils/security'
-import initDb from './utils/initDb'
+import initDb, { deleteData } from './utils/initDb'
 require('dotenv').config({ path: '.env' })
 
 const PORT = Number(process.env.PORT)
@@ -39,7 +39,8 @@ app.listen(PORT, () => {
     console.log(`Server: `, PORT)
 
     // init db
-    initDb()
+    // initDb()
+    // deleteData()
 
     // Routes
     catRoutes('/api/v1/cat', app)

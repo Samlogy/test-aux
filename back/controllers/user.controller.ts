@@ -1,37 +1,48 @@
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
+import { verifyPassword } from '../utils/hash'
+import { createToken } from '../utils/jwt'
 
 const prisma = new PrismaClient()
 
-export const login = async (req: Request, res: Response) => {
+const login = async (req: Request, res: Response) => {
     try {
-        const { email, password, isAdmin } = req.body
+        const { email, password } = req.body
 
         const user = await prisma.user.findUnique({
-            where: { email, password },
+            where: { email },
         })
 
-        if (!user || user.password !== password) {
+        if (!user) {
             return res.status(401).json({ error: 'Identifiants invalides' })
         }
 
-        const token = jwt.sign(
-            { userId: user.id, role: user.isAdmin },
-            process.env.JWT_SECRET || '',
-            {
-                expiresIn: '2h',
-            }
-        )
+        const isPasswordCorrect = await verifyPassword(password, user.password)
 
-        return res.json({ success: true, token })
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ error: 'Identifiants invalides' })
+        }
+
+        const token = createToken({ userId: user.id, role: user.isAdmin })
+
+        return res.json({
+            success: true,
+            data: {
+                user,
+                token,
+            },
+        })
     } catch (err) {
         console.error('Erreur lors de la connexion :', err)
         return res.status(500).json({ error: 'Erreur interne du serveur' })
     }
 }
 
-export const logout = (req: Request, res: Response) => {
-    // Ici, vous pouvez ajouter la logique de déconnexion, comme la destruction de sessions.
+const logout = (req: Request, res: Response) => {
     return res.json({ success: true, message: 'Déconnexion réussie' })
+}
+
+export default {
+    login,
+    logout,
 }

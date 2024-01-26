@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express'
-import jwt from 'jsonwebtoken'
+import { NextFunction, Request, Response } from 'express'
+import { decodeToken } from '../utils/jwt'
 
 interface AuthenticatedRequest extends Request {
     user?: any
@@ -10,20 +10,23 @@ export const authenticateToken = (
     res: Response,
     next: NextFunction
 ) => {
-    const token = req.header('Authorization')
+    const token = req.header('Authorization')?.split(' ')[1]
 
     if (!token) {
         return res.status(401).json({ error: 'Non autorisé' })
     }
 
-    jwt.verify(token, process.env.JWT_SECRET || '', (err: any, user: any) => {
-        if (err) {
-            return res.status(403).json({ error: 'Accès interdit' })
-        }
+    const { valid, expired, decoded } = decodeToken(token)
 
-        req.user = user
-        next()
-    })
+    if (!valid) {
+        return res.status(401).json({
+            message: `Accès interdit. Token ${
+                expired ? 'a expiré' : 'invalide'
+            }.`,
+        })
+    }
+    req.user = decoded
+    next()
 }
 
 export const isAdmin = (
@@ -31,8 +34,8 @@ export const isAdmin = (
     res: Response,
     next: NextFunction
 ) => {
-    if (req.user && req.user.role === 'admin') {
-        next() // L'utilisateur est un administrateur, continuer
+    if (req.user && req.user.role === true) {
+        next()
     } else {
         return res.status(403).json({
             error: 'Accès interdit - Vous devez être un administrateur',

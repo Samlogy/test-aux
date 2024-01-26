@@ -26,7 +26,7 @@ async function getCatByIdCatController(req: Request, res: Response) {
         const cat = await prisma.cat.findUnique({
             where: { id: Number(id) },
         })
-        res.status(201).json({ success: true, data: cat })
+        res.status(200).json({ success: true, data: cat })
     } catch (error) {
         console.error('Erreur lors de la récupération des données :', error)
         res.status(500).json({ error: 'Erreur interne du serveur' })
@@ -35,6 +35,7 @@ async function getCatByIdCatController(req: Request, res: Response) {
 async function postCatController(req: Request, res: Response) {
     try {
         const body = req.body
+        console.log(body)
         const newCat = await prisma.cat.create({
             data: body,
         })
@@ -46,17 +47,39 @@ async function postCatController(req: Request, res: Response) {
 }
 async function putCatByIdController(req: Request, res: Response) {
     try {
-        const catId = Number(req.params.catId)
+        const id = Number(req.params.id)
         const body = req.body
         const catExist = await prisma.cat.findUnique({
-            where: { id: catId },
+            where: { id },
         })
         if (!catExist) {
             return res.status(404).json({ error: "Ce chat n'existe pas" })
         }
         const updatedCat = await prisma.cat.update({
-            where: { id: catId },
+            where: { id },
             data: body,
+        })
+        res.status(201).json({ success: true, data: updatedCat })
+    } catch (err) {
+        console.error('Erreur lors de la mise à jour des données par ID :', err)
+        res.status(500).json({ error: 'Erreur interne du serveur' })
+    }
+}
+async function adoptCatController(req: Request, res: Response) {
+    try {
+        const id = Number(req.params.id)
+        const { status } = req.body
+        const catExist = await prisma.cat.findUnique({
+            where: { id },
+        })
+        if (!catExist) {
+            return res.status(404).json({ error: "Ce chat n'existe pas" })
+        }
+        const updatedCat = await prisma.cat.update({
+            where: { id },
+            data: {
+                status,
+            },
         })
         res.status(201).json({ success: true, data: updatedCat })
     } catch (err) {
@@ -66,17 +89,17 @@ async function putCatByIdController(req: Request, res: Response) {
 }
 async function deleteCatByIdController(req: Request, res: Response) {
     try {
-        const catId = Number(req.params.catId)
+        const id = Number(req.params.id)
         const chatExistante = await prisma.cat.findUnique({
-            where: { id: catId },
+            where: { id },
         })
         if (!chatExistante) {
             return res.status(404).json({ error: "Ce chat n'existe pas" })
         }
         await prisma.cat.delete({
-            where: { id: catId },
+            where: { id },
         })
-        res.status(204).json() // Pas de contenu
+        res.status(204).json()
     } catch (error) {
         console.error(
             'Erreur lors de la suppression des données par ID :',
@@ -114,4 +137,5 @@ export default {
     putCatByIdController,
     deleteCatByIdController,
     filtersCatsController,
+    adoptCatController,
 }

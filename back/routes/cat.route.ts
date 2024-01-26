@@ -8,8 +8,8 @@ const upload = multer({ storage })
 
 export default function (route: string, app: Application) {
     app.get(route, controllers.getCatsController)
-    app.get(route + '/:id', controllers.getCatByIdCatController)
     app.get(route + '/filter', controllers.filtersCatsController)
+    app.get(route + '/:id', controllers.getCatByIdCatController)
     app.post(
         route,
         authenticateToken,
@@ -29,5 +29,10 @@ export default function (route: string, app: Application) {
         authenticateToken,
         isAdmin,
         controllers.deleteCatByIdController
+    )
+    app.patch(
+        route + '/adopt/:id',
+        // authenticateToken,
+        controllers.adoptCatController
     )
 }

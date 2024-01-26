@@ -1,7 +1,7 @@
 import { Application, Request } from 'express'
 import cors from 'cors'
 
-const allowList = ['http://localhost:3000']
+const allowList = ['http://localhost:5173']
 
 const corsManip = (req: Request, callback: any) => {
     let corsOptions

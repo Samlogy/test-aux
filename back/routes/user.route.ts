@@ -1,13 +1,9 @@
 import { Application } from 'express'
 
-import controllers from '../controllers/cat.controller'
+import controllers from '../controllers/user.controller'
 import { authenticateToken } from '../middlewares/auth'
 
 export default function (route: string, app: Application) {
-    app.get(route + '/login', controllers.getCatsController)
-    app.post(
-        route + '/logout',
-        authenticateToken,
-        controllers.postCatController
-    )
+    app.post(route + '/login', controllers.login)
+    app.post(route + '/logout', authenticateToken, controllers.logout)
 }

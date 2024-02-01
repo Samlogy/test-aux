@@ -6,119 +6,52 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BsFilterLeft } from "react-icons/bs";
 import {
   Card,
-  CatAddForm,
+  CatAddEdit,
+  CatDelete,
+  CatDetails,
   CustomDrawer,
-  CustomModal,
   DisplayFilters,
   Filter,
   Layout,
   Pagination,
   View,
 } from "../components";
-import api from "../lib/api";
-import useQueryCat from "../lib/hooks/useQueryCat";
+import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
+import useAction from "../store/useActionStore";
+import useFavCatstore from "../store/useFavCatsStore";
+import useFilterStore from "../store/useFilterStore";
 
-const data = [
-  {
-    id: 1,
-    name: "Chat chat",
-    picture:
-      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=1430&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    age: 1,
-    description:
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore",
-    race: "minou",
-    town: "bordeaux",
-    status: "Adoptable",
-    sex: "femelle",
-  },
-  {
-    id: 2,
-    name: "Chat chat",
-    picture:
-      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=1430&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    age: 1,
-    description:
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore",
-    race: "minou",
-    town: "bordeaux",
-    status: "Adoptable",
-    sex: "Mâle",
-  },
-  {
-    id: 3,
-    name: "Chat chat",
-    picture:
-      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=1430&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    age: 1,
-    description:
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore",
-    race: "minou",
-    town: "bordeaux",
-    status: "Adoptable",
-    sex: "femelle",
-  },
-  {
-    id: 4,
-    name: "Chat chat",
-    picture:
-      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=1430&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    age: 1,
-    description:
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore",
-    race: "minou",
-    town: "bordeaux",
-    status: "Adoptable",
-    sex: "Mâle",
-  },
-  {
-    id: 5,
-    name: "Chat chat",
-    picture:
-      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=1430&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    age: 1,
-    description:
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore",
-    race: "minou",
-    town: "bordeaux",
-    status: "Adoptable",
-    sex: "femelle",
-  },
-  {
-    id: 6,
-    name: "Chat chat",
-    picture:
-      "https://images.unsplash.com/photo-1573865526739-10659fec78a5?q=80&w=1430&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    age: 1,
-    description:
-      "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore",
-    race: "minou",
-    town: "bordeaux",
-    status: "Adoptable",
-    sex: "Mâle",
-  },
-];
 export default function CatsList() {
-  // const {
-  //   isLoading,
-  //   isError,
-  //   data: catsList,
-  // } = useQueryCat(
-  //   "cats-list",
-  //   api.getData("https://jsonplaceholder.typicode.com/todos")
-  // );
+  const actions = useAction((state) => state.actions);
+  const state = useAction((state) => state.state);
 
-  // const [filterList, setFilterList] = useState([]);
+  const onCloseEdit = () =>
+    state.edit
+      ? actions.setEdit(false)
+      : state.add
+      ? actions.setAdd(false)
+      : null;
+
+  const isOpenEdit = (
+    state.edit ? state.edit : state.add ? state.add : null
+  ) as boolean;
+
+  const userData = useMemo(() => storage.getStorage("auth--chadopt")?.user, []);
+
+  const isFav = useFavCatstore((state) => state.isFav);
+  const catsFav = useFavCatstore((state) => state.cats);
+
+  const filters = useFilterStore((state) => state.filters);
+  const setFilters = useFilterStore((state) => state.setFilters);
+
+  const [catsList, setCatsList] = useState(isFav ? catsFav : []);
   const [isOpen, setOpen] = useState(false);
-  const [isOpenAdd, setOpenAdd] = useState(false);
-
-  const [catsList, setCatsList] = useState(data);
 
   const isMobile = useBreakpointValue({
     base: true,
@@ -126,16 +59,40 @@ export default function CatsList() {
     lg: false,
   }) as boolean;
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 2;
-  const NUMBER_ITEMS = data.length;
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 10,
+  });
 
-  const { filters, setFilters } = useFilter();
+  const onLoadCats = async () => {
+    // const userReqsAdopt = await getData(`cat/adopt/user/${userData.id}`);
+    // add to storage
+    // compare el.status = currentCat.status => exist status== pending
 
-  console.log("filters: ", filters);
+    // const { data, pagination: paginate } = await getData(
+    //   `cat?page=${pagination.page}`
+    // );
 
-  // if (isLoading) return <h1>Loading....</h1>;
-  // if (isError) return <h1>Error loading data!!!</h1>;
+    const { data, pagination: paginate } = await fetechRequest(
+      "GET",
+      `cat?page=${pagination.page}`
+    );
+
+    setCatsList(data);
+    setPagination({ pages: paginate.pages, page: paginate.page });
+
+    if (isFav) setCatsList(catsFav);
+    if (!isFav) {
+      setCatsList(data);
+      setPagination(pagination);
+    }
+  };
+
+  useEffect(() => {
+    onLoadCats();
+  }, [isFav, catsFav, pagination.page]);
+
+  // console.log("List: ", catsList);
 
   return (
     <>
@@ -145,14 +102,21 @@ export default function CatsList() {
             Nos Chats
           </Heading>
 
-          <Button
-            colorScheme="blue"
-            ml="auto"
-            display="flex"
-            onClick={() => setOpenAdd(true)}
-          >
-            Ajouter un Chat
-          </Button>
+          <View cond={userData.isAdmin} display="flex" ml="auto">
+            <Button
+              bgColor="accent.1"
+              color="white"
+              _hover={{
+                bg: "accent.2",
+              }}
+              onClick={() => {
+                console.log("1");
+                actions.setAdd(true);
+              }}
+            >
+              Ajouter un Chat
+            </Button>
+          </View>
         </Flex>
 
         <Flex flexDir={"row"} justifyContent="space-between">
@@ -162,6 +126,7 @@ export default function CatsList() {
                 setCatsList={setCatsList}
                 setFilters={setFilters}
                 filters={filters}
+                setPagination={setPagination}
               />
             </View>
 
@@ -183,6 +148,7 @@ export default function CatsList() {
                     setCatsList={setCatsList}
                     setFilters={setFilters}
                     filters={filters}
+                    setPagination={setPagination}
                   />
                 }
               />
@@ -205,51 +171,47 @@ export default function CatsList() {
               </Flex>
             </View>
 
-            <View cond={catsList?.length === 0}>
-              <Text> Il n' y a aucun chat qui correspond à ses filtres </Text>
+            <View
+              cond={catsList?.length === 0}
+              m="2em 0"
+              textAlign="center"
+              color="accent.1"
+            >
+              <Text>
+                {isFav
+                  ? "Il n' y a aucun chat en favoris !"
+                  : "Il n' y a aucun chat qui correspond à ses filtres"}
+              </Text>
             </View>
           </Flex>
         </Flex>
 
-        <View cond={NUMBER_ITEMS > PAGE_SIZE}>
+        <View cond={pagination.pages > 1}>
           <Pagination
-            currentPage={currentPage}
-            totalCount={NUMBER_ITEMS}
-            pageSize={PAGE_SIZE}
-            onPageChange={(page: number) => setCurrentPage(page)}
+            setPagination={setPagination}
+            pagination={pagination}
             isMobile={isMobile}
           />
         </View>
       </Layout>
 
-      <CustomModal
-        isOpen={isOpenAdd}
-        onClose={() => setOpenAdd(false)}
-        header="Ajouter un chat"
-        body={<CatAddForm onClose={() => setOpenAdd(false)} />}
-      />
+      <View cond={state.details}>
+        <CatDetails
+          isOpen={state.details}
+          onClose={() => actions.setDetails(false)}
+        />
+      </View>
+
+      <View cond={state.delete}>
+        <CatDelete
+          isOpen={state.delete}
+          onClose={() => actions.setDelete(false)}
+        />
+      </View>
+
+      <View cond={isOpenEdit}>
+        <CatAddEdit isOpen={isOpenEdit} onClose={onCloseEdit} />
+      </View>
     </>
   );
 }
-
-type IFilters = {
-  name: string;
-  status: string;
-  town: string;
-  isFavourite: boolean;
-};
-const useFilter = () => {
-  const [filters, setFilters] = useState<IFilters>({
-    name: "",
-    status: "",
-    town: "",
-    isFavourite: false,
-  });
-
-  useEffect(() => {
-    const storedFilters = storage.getStorage("filters--chadopt") || {};
-    setFilters(storedFilters);
-  }, []);
-
-  return { filters, setFilters };
-};

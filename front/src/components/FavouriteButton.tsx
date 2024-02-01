@@ -1,23 +1,29 @@
 import { IconButton } from "@chakra-ui/react";
+import { MouseEvent, useEffect, useMemo, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
-import { useEffect, useState, MouseEvent } from "react";
+import useFavCatsStore from "../store/useFavCatsStore";
+import fetechRequest from "../lib/api";
 
 interface IFavouriteButton {
   cat: ICat;
 }
 
 export default function FavouriteButton({ cat }: IFavouriteButton) {
-  const loadCats = () => storage.getStorage("favourite-cats--chadopt") || [];
+  const loadCats = () => storage.getStorage("favourite--chadopt") || [];
   const [isFav, setIsFav] = useState(false);
 
+  const isFavState = useFavCatsStore((state) => state.isFav);
+  const setFavCats = useFavCatsStore((state) => state.setFavCats);
+
+  const userData = useMemo(() => storage.getStorage("auth--chadopt"), []);
+
   const isFavourite = (cat: ICat) => {
-    const cats = loadCats();
-    return cats.some((c) => c.id === cat.id);
+    return loadCats().some((c) => c.id === cat.id);
   };
 
-  const setIsFavourite = (cat: ICat) => {
+  const setIsFavourite = async (cat: ICat) => {
     const cats = loadCats();
 
     let newCats: ICat[];
@@ -27,7 +33,14 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
     } else {
       newCats = [...cats, cat];
     }
-    storage.setStorage("favourite-cats--chadopt", newCats);
+    setFavCats({ isFav: isFavState, cats: newCats });
+
+    storage.setStorage("favourite--chadopt", newCats);
+
+    await fetechRequest(
+      "GET",
+      `cat/FAVOURITE/${cat.id}/user/${userData.user.id}`
+    );
   };
 
   const handleFavourite = (e: MouseEvent) => {
@@ -51,7 +64,13 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
       _hover={{ transform: "scale(1.1)" }}
       sx={{ ":hover > svg": { transform: "scale(1.1)" } }}
       transition="all 0.15s ease"
-      icon={isFav ? <AiFillHeart size="20" /> : <AiOutlineHeart size="20" />}
+      icon={
+        isFav ? (
+          <AiFillHeart size="20" color="#7B341E" />
+        ) : (
+          <AiOutlineHeart size="20" color="#7B341E" />
+        )
+      }
       boxShadow="md"
       onClick={handleFavourite}
       pos="absolute"

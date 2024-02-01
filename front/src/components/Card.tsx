@@ -1,62 +1,84 @@
-import { Box, Flex, IconButton, Image } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Image, Tag } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useMemo } from "react";
+import { GiFemale, GiMale } from "react-icons/gi";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { ICat } from "../lib/interfaces";
-import { CatDelete, CatDetails, FavouriteButton } from "./";
+import storage from "../lib/storage";
+import useAction from "../store/useActionStore";
+import { FavouriteButton, View } from "./";
 
 export default function Card({ cat }: { cat: ICat }) {
-  const [isOpen, setOpen] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [isDelete, setIsDelete] = useState(false);
+  const actions = useAction((state) => state.actions);
+  const state = useAction((state) => state.state);
+  const setCat = useAction((state) => state.setCat);
 
-  const onEdit = () => {
-    setIsEdit(true);
-  };
-  const onDelete = (e: MouseEvent) => {
-    setIsDelete(true);
+  // console.log("Item: ", cat);
+
+  const isAdmin = useMemo(
+    () => storage.getStorage("auth--chadopt")?.user.isAdmin,
+    []
+  );
+  console.log(cat.picture);
+
+  const onEdit = (e: MouseEvent) => {
+    actions.setEdit(true);
+    setCat(cat);
     e.stopPropagation();
   };
-
-  const handleClick = () => setOpen(!isOpen);
+  const onDelete = (e: MouseEvent) => {
+    actions.setDelete(true);
+    setCat(cat);
+    e.stopPropagation();
+  };
+  const onDetails = () => {
+    actions.setDetails(!state.details);
+    setCat(cat);
+  };
 
   return (
-    <>
-      <Flex
-        m={".5em 1em"}
-        w="15em"
-        align="center"
-        justify="center"
-        cursor={"pointer"}
-        // anim
-        as={motion.div}
-        layout
-        initial={{ scale: 1 }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={handleClick}
-      >
-        <Box bg={"gray_9"} w="full" rounded="lg" shadow="lg" pos="relative">
-          <FavouriteButton cat={cat} />
+    <Flex
+      m={".5em 1em"}
+      w="15em"
+      align="center"
+      justify="center"
+      cursor={"pointer"}
+      // anim
+      as={motion.div}
+      layout
+      initial={{ scale: 1 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onDetails}
+    >
+      <Box w="full" rounded="lg" shadow="lg" pos="relative">
+        <FavouriteButton cat={cat} />
 
-          <Image
-            src={cat?.picture}
-            alt={`Picture of ${cat?.name}`}
-            roundedTop="lg"
-          />
+        <Image
+          src={cat?.picture}
+          alt={`Picture of ${cat?.name}`}
+          roundedTop="lg"
+        />
 
-          <Box p="1rem">
-            <Flex justify="space-between" alignContent="center">
-              <Box
-                fontSize="1.2rem"
-                fontWeight="semibold"
-                as="h4"
-                lineHeight="tight"
-                isTruncated
-              >
-                {cat?.name}
-              </Box>
+        <Box p="1rem">
+          <Flex justify="space-between" alignContent="center">
+            <Box
+              fontSize="1.2rem"
+              fontWeight="semibold"
+              as="h4"
+              lineHeight="tight"
+              isTruncated
+            >
+              {cat?.name}
+            </Box>
 
+            {cat?.sex === "Female" ? (
+              <GiFemale size="22" />
+            ) : (
+              <GiMale size="22" />
+            )}
+
+            <View cond={isAdmin}>
               <IconButton
                 aria-label="modifier-chat"
                 icon={<MdEdit size="18" />}
@@ -75,25 +97,10 @@ export default function Card({ cat }: { cat: ICat }) {
                 right="16"
                 onClick={onDelete}
               />
-            </Flex>
-
-            <Flex
-              flexDir={"column"}
-              justify="space-between"
-              alignContent="center"
-            ></Flex>
-          </Box>
+            </View>
+          </Flex>
         </Box>
-      </Flex>
-
-      <CatDetails
-        cat={cat}
-        isOpen={isOpen}
-        setOpen={setOpen}
-        isEdit={isEdit}
-        setIsEdit={setIsEdit}
-      />
-      <CatDelete catId={cat.id} isOpen={isDelete} setOpen={setIsDelete} />
-    </>
+      </Box>
+    </Flex>
   );
 }

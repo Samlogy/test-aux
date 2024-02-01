@@ -8,10 +8,19 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { ReactNode, useState } from "react";
-import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
+import { ReactNode, useMemo, useState } from "react";
+import {
+  AiFillHeart,
+  AiOutlineClose,
+  AiOutlineHeart,
+  AiOutlineMenu,
+} from "react-icons/ai";
 import { Link as RouterLink } from "react-router-dom";
 import { Logo, LogoutButton, View } from "../components";
+import storage from "../lib/storage";
+import useFavCatsStore from "../store/useFavCatsStore";
+import { ICat } from "../lib/interfaces";
+import fetechRequest from "../lib/api";
 
 const Links = [
   {
@@ -89,6 +98,7 @@ export default function NavBar() {
             ))}
           </HStack>
         </HStack>
+        <FavBtn />
         <LogoutButton />
       </Flex>
 
@@ -113,3 +123,41 @@ export default function NavBar() {
     </Box>
   );
 }
+
+const FavBtn = () => {
+  const isFav = useFavCatsStore((state) => state.isFav);
+  const setFavCats = useFavCatsStore((state) => state.setFavCats);
+
+  const handleFavourite = (e: React.MouseEvent<HTMLButtonElement>) => {
+    let cats: ICat[] = [];
+
+    if (!isFav) {
+      cats = storage.getStorage("favourite--chadopt");
+    }
+
+    setFavCats({ cats, isFav: !isFav });
+
+    e.stopPropagation();
+  };
+
+  return (
+    <IconButton
+      isRound
+      bg="transparent"
+      color="gray.900"
+      size="sm"
+      aria-label="favourite-button"
+      _hover={{ transform: "scale(1.1)" }}
+      sx={{ ":hover > svg": { transform: "scale(1.1)" } }}
+      transition="all 0.15s ease"
+      icon={
+        isFav ? (
+          <AiFillHeart size="22" color="#7B341E" />
+        ) : (
+          <AiOutlineHeart size="22" color="#7B341E" />
+        )
+      }
+      onClick={handleFavourite}
+    />
+  );
+};

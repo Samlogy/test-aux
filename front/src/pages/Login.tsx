@@ -1,33 +1,37 @@
 import { Box, Button, Heading, Stack } from "@chakra-ui/react";
-import { Logo } from "../components";
-import api from "../lib/api";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Layout, Logo } from "../components";
+import fetechRequest from "../lib/api";
+import storage from "../lib/storage";
 
-const Login = () => {
+export default function Login() {
+  const navigate = useNavigate();
+
   const onAdmin = async () => {
-    const user = await api.postData("/user/login", {
+    const data = await fetechRequest("POST", `user/login`, {
       email: "admin@gmail.com",
       password: "1234",
     });
-    if (!user) return redirect("/login");
+    if (data) {
+      storage.setStorage("auth--chadopt", data);
+      return navigate("/");
+    }
   };
   const onVisitor = async () => {
-    const user = await api.postData("/user/login", {
-      email: "visitor@gmail.com",
+    const data = await fetechRequest("POST", `user/login`, {
+      email: "admin@gmail.com",
       password: "1234",
     });
-    if (!user) return redirect("/login");
+    if (data) {
+      storage.setStorage("auth--chadopt", data);
+      return navigate("/");
+    }
   };
 
   return (
-    <Box
-      h="100vh"
-      py={{ base: "12", md: "24" }}
-      px={{ base: "0", sm: "8" }}
-      bg="gray.100"
-    >
+    <Layout>
       <Stack
-        w={["80%", "70%", "450px"]}
+        w={["100%", "70%", "450px"]}
         m="0 auto"
         spacing="8"
         boxShadow={"xl"}
@@ -39,23 +43,35 @@ const Login = () => {
           <Logo size="lg" />
           <Stack spacing={"2"} textAlign="center">
             <Heading size={"lg"}>Se Connecter à son compte</Heading>
-            <Heading size={"md"}>Continuer en tant que</Heading>
+            <Heading size={"md"}>en tans que</Heading>
           </Stack>
         </Stack>
         <Box py={{ base: "0", sm: "8" }} px={"4"}>
           <Stack spacing="6">
             <Stack spacing="5">
-              <Button onClick={onVisitor} variant="solid" colorScheme="blue">
+              <Button
+                onClick={onVisitor}
+                bgColor="accent.1"
+                color="white"
+                _hover={{
+                  bg: "accent.2",
+                }}
+              >
                 Visiteur
               </Button>
-              <Button onClick={onAdmin} variant="outline" colorScheme="blue">
+              <Button
+                onClick={onAdmin}
+                color="accent.1"
+                bgColor="white"
+                border="1px solid"
+                borderColor="accent.1"
+              >
                 Admin
               </Button>
             </Stack>
           </Stack>
         </Box>
       </Stack>
-    </Box>
+    </Layout>
   );
-};
-export default Login;
+}

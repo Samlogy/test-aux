@@ -1,5 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { Suspense, lazy } from "react";
+import { PrivateRoute } from "./components";
 
 const CatsList = lazy(() => import("./pages/CatsList"));
 const Login = lazy(() => import("./pages/Login"));
@@ -10,11 +11,9 @@ export default function Routing() {
     <Suspense fallback={<div>Loading...</div>}>
       <Router>
         <Routes>
-          {/* <Route element={<PrivateRoute />}>
-          <Route path="/" element={<CatsList />} />
-        </Route> */}
-
-          <Route path="/" element={<CatsList />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/" element={<CatsList />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

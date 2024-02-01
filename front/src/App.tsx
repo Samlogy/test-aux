@@ -2,30 +2,47 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect } from "react";
-import api from "./lib/api";
-import storage from "./lib/storage";
 import Routing from "./Routing";
+import fetechRequest from "./lib/api";
+import storage from "./lib/storage";
 import theme from "./theme";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallback from "./components/FallBackPage";
 
 export default function App() {
   const queryClient = new QueryClient();
-  // useLoadConstants();
+  useInitApp();
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider theme={theme}>
-        <Routing />
-      </ChakraProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <ErrorBoundary
+      fallback={<ErrorFallback />}
+      onReset={() => window.location.reload()}
+    >
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider theme={theme}>
+          <Routing />
+        </ChakraProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
-function useLoadConstants() {
+const useInitApp = () => {
+  const INIT_FILTERS = {
+    name: "",
+    status: "",
+    town: "",
+    isFavourite: false,
+  };
+
   useEffect(() => {
     const init_data = async () => {
       try {
-        const data = await api.getData("/constants");
-        storage.setStorage("constants--chadopt", data);
+        storage.setStorage("filters--chadopt", INIT_FILTERS);
+
+        const data = await fetechRequest("GET", "consts");
+        storage.setStorage("consts--chadopt", data);
       } catch (err) {
         console.error("Error initializing constants:", err);
       }
@@ -33,4 +50,4 @@ function useLoadConstants() {
 
     init_data();
   }, []);
-}
+};

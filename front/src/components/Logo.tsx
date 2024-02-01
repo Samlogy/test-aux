@@ -9,7 +9,7 @@ export default function Logo({ size = "sm" }) {
   };
   return (
     <Link to="/">
-      <Image src="/logo.jpg" alt="logo" boxSize={imageSize[size]} />
+      <Image src="/images/logo.jpg" alt="logo" boxSize={imageSize[size]} />
     </Link>
   );
 }

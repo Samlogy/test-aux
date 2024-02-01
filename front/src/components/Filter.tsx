@@ -1,131 +1,103 @@
-import { Button, Input, Select, SimpleGrid } from "@chakra-ui/react";
-import { useEffect } from "react";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { Button, SimpleGrid } from "@chakra-ui/react";
+import { useMemo } from "react";
+import fetechRequest from "../lib/api";
 import { generateQuery } from "../lib/functions";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
+import { IFilters } from "../store/useFilterStore";
+import { InputField, SelectField } from "./";
 
-const TOWNS = [
-  {
-    label: "Paris",
-    value: "paris",
-  },
-];
-
-const STATUS = [
-  {
-    label: "Adoptable",
-    value: "adoptable",
-  },
-  {
-    label: "Adopté",
-    value: "adopté",
-  },
-  {
-    value: "en_cours_adoption",
-    label: "En cours d'adoption",
-  },
-];
-type IFilters = {
-  name: string;
-  status: string;
-  town: string;
-  isFavourite: boolean;
-};
 interface IFilterProps {
   setCatsList: React.Dispatch<React.SetStateAction<ICat[]>>;
-  setFilters: React.Dispatch<React.SetStateAction<IFilters>>;
-  filters: IFilters;
+  filters: IFilters["filters"];
+  setFilters: React.Dispatch<React.SetStateAction<IFilters["filters"]>>;
+  setPagination: React.Dispatch<
+    React.SetStateAction<{
+      page: number;
+      totalItems: number;
+      size: number;
+      pages: number;
+    }>
+  >;
 }
 
 export default function Filter({
   setCatsList,
-  setFilters,
   filters,
+  setFilters,
+  setPagination,
 }: IFilterProps) {
-  const onFilter = async () => {
-    const query = generateQuery(filters);
-    // const result = await api.getData(`/cat/filter?${query}`);
-    // setCatsList(result);
-    setFilters(filters);
-    storage.setStorage("filters--chadopt", filters);
-  };
-  const onReset = async () => {
+  const CONSTANTS = useMemo(() => storage.getStorage("consts--chadopt"), []);
+
+  const onFilter = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    if (e.target == null) return;
+
     setFilters({
-      name: "",
-      status: "",
-      town: "",
-      isFavourite: false,
+      ...filters,
+      [e.target.name]: e.target.value,
     });
-    storage.deleteStorage("filters--chadopt");
-  };
-  const onFavouriteToggle = () => {
-    // si favourite => unfavourite + actualise le filtre
-    // sinon l'inverse + actualise le filtre
-    setFilters({ ...filters, isFavourite: !filters.isFavourite });
   };
 
-  useEffect(() => {
-    const storedFilters = storage.getStorage("filters--chadopt") || filters;
-    setFilters(storedFilters);
-  }, []);
+  const onReset = async () => {
+    setFilters({ name: "", status: "", town: "" });
+    // const res = await getData("cat");
+    const res = await fetechRequest("GET", `cat`);
+    setCatsList(res.data);
+    setPagination(res.pagination);
+  };
+  const onSubmit = async () => {
+    const query = generateQuery(filters);
+    // const res = await getData(`cat/filter?${query}`);
+    const res = await fetechRequest("GET", `cat/filter/${query}`);
+    setCatsList(res.data);
+    setPagination(res.pagination);
+  };
 
   return (
     <SimpleGrid columns={1} spacing={4}>
-      <Input
+      <InputField
         type="search"
         name="name"
-        onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+        onChange={onFilter}
         value={filters.name}
         placeholder="Nom"
       />
-      <Select
+      <SelectField
         placeholder="Ville"
         name="town"
-        onChange={(e) => setFilters({ ...filters, town: e.target.value })}
+        onChange={onFilter}
         value={filters.town}
       >
-        {TOWNS.map((town) => (
-          <option key={town.value} value={town.value}>
+        {CONSTANTS?.towns.map((town, idx) => (
+          <option key={idx} value={town.value}>
             {town.label}
           </option>
         ))}
-      </Select>
-      <Select
+      </SelectField>
+      <SelectField
         placeholder="Statut"
         name="status"
-        onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+        onChange={onFilter}
         value={filters.status}
       >
-        {STATUS.map((status) => (
-          <option key={status.value} value={status.value}>
+        {CONSTANTS?.status.map((status, idx) => (
+          <option key={idx} value={status.value}>
             {status.label}
           </option>
         ))}
-      </Select>
+      </SelectField>
 
-      <Button
-        leftIcon={
-          filters.isFavourite ? (
-            <AiFillHeart size="20" />
-          ) : (
-            <AiOutlineHeart size="20" />
-          )
-        }
-        color="accent.1"
-        bgColor="white"
-        border="1px solid"
-        borderColor="accent.1"
-        onClick={onFavouriteToggle}
-      >
-        Favoris
-      </Button>
       <SimpleGrid columns={1} spacing={2} mt="2em">
         <Button
           bgColor="accent.1"
           color="white"
+          _hover={{
+            bg: "accent.2",
+          }}
           variant={"solid"}
-          onClick={onFilter}
+          onClick={onSubmit}
         >
           Appliquer
         </Button>

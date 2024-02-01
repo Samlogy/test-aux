@@ -1,13 +1,8 @@
 import { Box, Flex } from "@chakra-ui/react";
+import { IFilters } from "../store/useFilterStore";
 
-type IFilters = {
-  name: string;
-  status: string;
-  town: string;
-  isFavourite: boolean;
-};
 interface IDisplayFilters {
-  filters: IFilters;
+  filters: IFilters["filters"];
   isMobile: boolean;
 }
 export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
@@ -19,24 +14,27 @@ export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
       mb="1em"
       ml={isMobile ? "1em" : "0"}
     >
-      {Object.entries(filters)
-        .filter(([, value]) => value !== "")
-        .map(([key, value]) => (
-          <Box
-            key={key}
-            as="span"
-            bg="blue.500"
-            color="white"
-            borderRadius="10px"
-            p=".2em"
-            fontSize=".9rem"
-            mb=".5em"
-            mr=".25em"
-            textTransform="capitalize"
-          >
-            {typeof value === "boolean" ? "favourite" : value}
-          </Box>
-        ))}
+      {Object.entries(filters).reduce((acc: any, [key, value]) => {
+        if (value !== "") {
+          acc.push(
+            <Box
+              key={key}
+              as="span"
+              bg="accent.1"
+              color="white"
+              borderRadius="10px"
+              p=".2em"
+              fontSize=".9rem"
+              mb=".5em"
+              mr=".25em"
+              textTransform="capitalize"
+            >
+              {value}
+            </Box>
+          );
+        }
+        return acc;
+      }, [])}
     </Flex>
   );
 }

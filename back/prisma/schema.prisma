@@ -13,7 +13,8 @@ model User {
   password String
   isAdmin  Boolean
   cats     Cat[]
-  UserCat  UserCat[]
+  favCats  FavCat[]
+  reqAdopts ReqAdopt[]
 }
 
 model Cat {
@@ -21,20 +22,44 @@ model Cat {
   name        String
   description String
   race        String
-  sex         String
+  sex         GENDER    
   age         Int
   town        String
   picture     String
-  status      String
+  status      STATUS
+  popularity  Int       @default(0)
   users       User[]
-  UserCat     UserCat[]
+  favCats  FavCat[]
+  reqAdopts ReqAdopt[]
 }
-
-model UserCat {
-  user   User @relation(fields: [userId], references: [id])
+  
+model FavCat {
   userId Int
-  cat    Cat  @relation(fields: [catId], references: [id])
   catId  Int
 
   @@id([userId, catId])
+
+  user    User @relation(fields: [userId], references: [id])
+  cat     Cat  @relation(fields: [catId], references: [id])
+}
+
+model ReqAdopt {
+  userId Int
+  catId  Int
+
+  @@id([userId, catId])
+
+  user User @relation(fields: [userId], references: [id])
+  cat  Cat  @relation(fields: [catId], references: [id])
+}
+
+
+enum GENDER {
+  MALE
+  FEMALE
+}
+enum STATUS {
+  ADOPTABLE
+  ADOPTED
+  PENDING
 }

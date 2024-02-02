@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 async function getCatsController(req: Request, res: Response) {
     try {
-        let { page = 1, size = 15, ...filters } = req.query
+        let { page = 1, size = 10 } = req.query
         page = Number(page)
         size = Number(size)
 
@@ -27,7 +27,6 @@ async function getCatsController(req: Request, res: Response) {
         }
 
         const cats = await prisma.cat.findMany({
-            where: { ...filters },
             skip,
             take: size,
         })
@@ -138,15 +137,15 @@ async function filtersCatsController(req: Request, res: Response) {
     page = Number(page)
     size = Number(size)
 
-    console.log(filters)
-
     if (page < 1) {
         return res.status(400).json({
             error: 'Invalid page number. Must be greater than or equal to 1.',
         })
     }
 
-    const totalItems = await prisma.cat.count()
+    const totalItems = await prisma.cat.count({
+        where: { ...filters },
+    })
     const skip = (page - 1) * size
     const pages = Math.ceil(totalItems / size)
 

@@ -1,15 +1,17 @@
 import { Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import fetechRequest from "../lib/api";
-import storage from "../lib/storage";
+import useAuthStore from "../store/useAuthStore";
 
 export default function LogoutButton() {
   const navigate = useNavigate();
 
+  const setLogout = useAuthStore((state) => state.setLogout);
+
   const handleLogout = async () => {
     await fetechRequest("POST", `user/logout`);
     navigate("/login");
-    storage.setStorage("auth--chadopt", {});
+    setLogout();
   };
 
   return (

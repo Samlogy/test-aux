@@ -2,10 +2,12 @@ import { Box, Button, Heading, Stack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { Layout, Logo } from "../components";
 import fetechRequest from "../lib/api";
-import storage from "../lib/storage";
+import useAuthStore from "../store/useAuthStore";
 
 export default function Login() {
   const navigate = useNavigate();
+
+  const setLogin = useAuthStore((state) => state.setLogin);
 
   const onAdmin = async () => {
     const data = await fetechRequest("POST", `user/login`, {
@@ -13,17 +15,17 @@ export default function Login() {
       password: "1234",
     });
     if (data) {
-      storage.setStorage("auth--chadopt", data);
+      setLogin(data);
       return navigate("/");
     }
   };
   const onVisitor = async () => {
     const data = await fetechRequest("POST", `user/login`, {
-      email: "admin@gmail.com",
+      email: "visitor@gmail.com",
       password: "1234",
     });
     if (data) {
-      storage.setStorage("auth--chadopt", data);
+      setLogin(data);
       return navigate("/");
     }
   };

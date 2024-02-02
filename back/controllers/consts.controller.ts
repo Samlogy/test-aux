@@ -70,11 +70,11 @@ const RACES = [
 const GENDERS = [
     {
         label: 'Mâle',
-        value: 'male',
+        value: 'MALE',
     },
     {
         label: 'Femelle',
-        value: 'female',
+        value: 'FEMALE',
     },
 ]
 const TOWNS = [
@@ -123,14 +123,14 @@ const TOWNS = [
 const STATUS = [
     {
         label: 'Adoptable',
-        value: 'adoptable',
+        value: 'ADOPTABLE',
     },
     {
         label: 'Adopté',
-        value: 'adopté',
+        value: 'ADOPTED',
     },
     {
-        value: 'en_cours_adoption',
+        value: 'PENDING',
         label: "En cours d'adoption",
     },
 ]
@@ -147,7 +147,10 @@ async function getConstantsController(req: Request, res: Response) {
         res.status(200).json({ success: true, data })
     } catch (err) {
         console.error('Erreur lors de la récupération des données :', err)
-        res.status(500).json({ error: 'Erreur interne du serveur' })
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
     }
 }
 

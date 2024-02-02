@@ -1,13 +1,13 @@
 import express, { Application, NextFunction, Request, Response } from 'express'
 
-import { globalErrorHandler } from './controllers/error.controller'
+import globalErrorHandler from './controllers/error.controller'
 import catRoutes from './routes/cat.route'
-import userRoutes from './routes/user.route'
 import constsRoutes from './routes/consts.route'
-import { AppError } from './utils/appError'
+import userRoutes from './routes/user.route'
+import AppError from './utils/appError'
 import corsOptions from './utils/corsOptions'
-import security from './utils/security'
-import initDb, { deleteData } from './utils/initDb'
+import initDb from './utils/initDb'
+
 require('dotenv').config({ path: '.env' })
 
 const PORT = Number(process.env.PORT)

@@ -8,7 +8,7 @@
         "bcrypt": "^5.1.1",
         "cors": "^2.8.5",
         "dotenv": "^16.0.0",
-        "express": "^4.17.3",
+        "express": "^4.18.2",
         "express-rate-limit": "^6.3.0",
         "helmet": "^5.0.2",
         "jsonwebtoken": "^9.0.2",
@@ -19,7 +19,7 @@
         "@types/bcrypt": "^5.0.2",
         "@types/cors": "^2.8.12",
         "@types/dotenv": "^8.2.0",
-        "@types/express": "^4.17.13",
+        "@types/express": "^4.17.21",
         "@types/jsonwebtoken": "^9.0.5",
         "@types/multer": "^1.4.11",
         "@types/node": "^17.0.24",
@@ -30,10 +30,11 @@
         "prettier": "^2.6.2",
         "prisma": "^5.8.1",
         "ts-node": "^10.7.0",
-        "typescript": "^4.6.3"
+        "typescript": "^5.3.3"
     },
     "scripts": {
         "dev": "nodemon index.ts",
-        "start": "pm2 index.ts"
+        "start": "pm2 dist/index.js",
+        "build": "tsc"
     }
 }

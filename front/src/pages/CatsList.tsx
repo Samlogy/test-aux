@@ -61,7 +61,7 @@ export default function CatsList() {
 
   const [pagination, setPagination] = useState({
     page: 1,
-    pages: 10,
+    pages: 1,
   });
 
   const onLoadCats = async () => {
@@ -156,9 +156,8 @@ export default function CatsList() {
           </Flex>
 
           <Flex flexDir={"column"} flexGrow="2" flexBasis="80%">
+            <DisplayFilters filters={filters} isMobile={isMobile} />
             <View cond={catsList?.length > 0}>
-              <DisplayFilters filters={filters} isMobile={isMobile} />
-
               <Flex
                 flexDir="row"
                 flexWrap="wrap"
@@ -204,13 +203,18 @@ export default function CatsList() {
 
       <View cond={state.delete}>
         <CatDelete
+          setCatsList={setCatsList}
           isOpen={state.delete}
           onClose={() => actions.setDelete(false)}
         />
       </View>
 
       <View cond={isOpenEdit}>
-        <CatAddEdit isOpen={isOpenEdit} onClose={onCloseEdit} />
+        <CatAddEdit
+          isOpen={isOpenEdit}
+          onClose={onCloseEdit}
+          setCatsList={setCatsList}
+        />
       </View>
     </>
   );

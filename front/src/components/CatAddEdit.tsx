@@ -10,25 +10,21 @@ import {
   SelectField,
   TextField,
 } from "./";
+import { ICat } from "../lib/interfaces";
 
 interface ICatAddFormProps {
   onClose: () => void;
   isOpen: boolean;
+  setCatsList: React.Dispatch<React.SetStateAction<ICat[]>>;
 }
 
 type ImageType = { url: string; file: File | null };
 
-const DATA = {
-  name: "ss",
-  description: "descc",
-  sex: "female",
-  town: "paris",
-  race: "guet",
-  status: "adopted",
-  age: 11,
-};
-
-export default function CatAddEdit({ isOpen, onClose }: ICatAddFormProps) {
+export default function CatAddEdit({
+  isOpen,
+  onClose,
+  setCatsList,
+}: ICatAddFormProps) {
   const currentCat = useActionStore((state) => state.cat);
   const setCat = useActionStore((state) => state.setCat);
 
@@ -37,8 +33,6 @@ export default function CatAddEdit({ isOpen, onClose }: ICatAddFormProps) {
     url: "",
     file: null,
   });
-
-  // console.log("img: ", currentCat);
 
   const onCloseAddEdit = () => {
     onClose();
@@ -59,9 +53,23 @@ export default function CatAddEdit({ isOpen, onClose }: ICatAddFormProps) {
       });
 
       if (chat?.id) {
-        await fetechRequest("PUT", `cat/${chat?.id}`, formData, true);
+        const data = await fetechRequest(
+          "PUT",
+          `cat/${chat?.id}`,
+          formData,
+          true
+        );
+        setCatsList((prev) =>
+          prev.map((c) => {
+            if (c.id === currentCat.id) {
+              return data;
+            }
+            return c;
+          })
+        );
       } else {
-        await fetechRequest("POST", `cat`, formData, true);
+        const data = await fetechRequest("POST", `cat`, formData, true);
+        setCatsList((prev) => [data, ...prev]);
       }
 
       onCloseAddEdit();
@@ -160,8 +168,8 @@ export default function CatAddEdit({ isOpen, onClose }: ICatAddFormProps) {
               autoComplete="on"
             >
               {constants.genders.map((gender, idx) => (
-                <option key={idx} value={gender.label}>
-                  {gender.value}
+                <option key={idx} value={gender.value}>
+                  {gender.label}
                 </option>
               ))}
             </SelectField>
@@ -175,8 +183,8 @@ export default function CatAddEdit({ isOpen, onClose }: ICatAddFormProps) {
               autoComplete="on"
             >
               {constants.races.map((race, idx) => (
-                <option key={idx} value={race.label}>
-                  {race.value}
+                <option key={idx} value={race.value}>
+                  {race.label}
                 </option>
               ))}
             </SelectField>
@@ -190,8 +198,8 @@ export default function CatAddEdit({ isOpen, onClose }: ICatAddFormProps) {
               autoComplete="on"
             >
               {constants.towns.map((town, idx) => (
-                <option key={idx} value={town.label}>
-                  {town.value}
+                <option key={idx} value={town.value}>
+                  {town.label}
                 </option>
               ))}
             </SelectField>

@@ -10,13 +10,19 @@ import {
 import { useRef } from "react";
 import fetechRequest from "../lib/api";
 import useActionStore, { INIT_CAT } from "../store/useActionStore";
+import { ICat } from "../lib/interfaces";
 
 interface ICatDelete {
   isOpen: boolean;
   onClose: () => void;
+  setCatsList: React.Dispatch<React.SetStateAction<ICat[]>>;
 }
 
-export default function CatDelete({ isOpen, onClose }: ICatDelete) {
+export default function CatDelete({
+  isOpen,
+  onClose,
+  setCatsList,
+}: ICatDelete) {
   const cancelRef = useRef();
 
   const currentCat = useActionStore((state) => state.cat);
@@ -27,9 +33,9 @@ export default function CatDelete({ isOpen, onClose }: ICatDelete) {
     setCat(INIT_CAT);
   };
   const onDelete = async () => {
-    console.log("delete: ", currentCat.id);
     onCloseDelete();
     await fetechRequest("DELETE", `cat/${currentCat?.id}`);
+    setCatsList((prev) => prev.filter((c) => c.id !== currentCat.id));
   };
 
   return (

@@ -19,7 +19,6 @@ export default function Card({ cat }: { cat: ICat }) {
     () => storage.getStorage("auth--chadopt")?.user.isAdmin,
     []
   );
-  console.log(cat.picture);
 
   const onEdit = (e: MouseEvent) => {
     actions.setEdit(true);

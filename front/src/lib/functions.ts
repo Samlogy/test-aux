@@ -7,3 +7,8 @@ export function generateQuery(obj: any): string {
   }
   return query.join("&");
 }
+
+export const getValueLabel = (arr: string[], value: string) => {
+  const foundOption = arr.find((option) => option.value === value);
+  return foundOption ? foundOption.label : null;
+};

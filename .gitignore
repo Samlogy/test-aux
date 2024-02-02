@@ -3,6 +3,10 @@ back/.config.dev.env
 back/.config.prod.env
 back/.env
 
+back/uploads/*
+back/prisma/migrations/*
+back/dist/*
+
 
 # back/
 

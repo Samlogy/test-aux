@@ -1,11 +1,16 @@
 import { Box, Flex } from "@chakra-ui/react";
 import { IFilters } from "../store/useFilterStore";
+import { useMemo } from "react";
+import storage from "../lib/storage";
+import { getValueLabel } from "../lib/functions";
 
 interface IDisplayFilters {
   filters: IFilters["filters"];
   isMobile: boolean;
 }
 export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
+  const constants = useMemo(() => storage.getStorage("consts--chadopt"), []);
+
   return (
     <Flex
       flexDir="row"
@@ -15,6 +20,12 @@ export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
       ml={isMobile ? "1em" : "0"}
     >
       {Object.entries(filters).reduce((acc: any, [key, value]) => {
+        const arr =
+          key === "town"
+            ? constants["towns"]
+            : key === "status"
+            ? constants["status"]
+            : null;
         if (value !== "") {
           acc.push(
             <Box
@@ -29,7 +40,7 @@ export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
               mr=".25em"
               textTransform="capitalize"
             >
-              {value}
+              {key !== "name" ? getValueLabel(arr, value) : value}
             </Box>
           );
         }

@@ -14,8 +14,6 @@ interface IFilterProps {
   setPagination: React.Dispatch<
     React.SetStateAction<{
       page: number;
-      totalItems: number;
-      size: number;
       pages: number;
     }>
   >;
@@ -34,23 +32,24 @@ export default function Filter({
   ) => {
     if (e.target == null) return;
 
+    const { name, value } = e.target;
+
     setFilters({
       ...filters,
-      [e.target.name]: e.target.value,
+      [name]: name === "name" ? value.toLowerCase() : value,
     });
   };
 
   const onReset = async () => {
     setFilters({ name: "", status: "", town: "" });
-    // const res = await getData("cat");
     const res = await fetechRequest("GET", `cat`);
     setCatsList(res.data);
     setPagination(res.pagination);
   };
+
   const onSubmit = async () => {
     const query = generateQuery(filters);
-    // const res = await getData(`cat/filter?${query}`);
-    const res = await fetechRequest("GET", `cat/filter/${query}`);
+    const res = await fetechRequest("GET", `cat/filter?${query}`);
     setCatsList(res.data);
     setPagination(res.pagination);
   };
@@ -104,7 +103,7 @@ export default function Filter({
         <Button
           color="accent.1"
           bgColor="white"
-          colorScheme="accent"
+          // colorScheme="accent"
           onClick={onReset}
         >
           Reset

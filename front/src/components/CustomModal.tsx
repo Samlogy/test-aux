@@ -25,9 +25,9 @@ export default function CustomModal({
   footer,
 }: ICustomModal) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent maxW={["full", "80%", "50em"]}>
         <ModalHeader>{header && header}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{body && body}</ModalBody>

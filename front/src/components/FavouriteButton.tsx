@@ -37,10 +37,9 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
 
     storage.setStorage("favourite--chadopt", newCats);
 
-    await fetechRequest(
-      "GET",
-      `cat/FAVOURITE/${cat.id}/user/${userData.user.id}`
-    );
+    console.log(`cat/fav/${cat.id}/user/${userData.user.id}`);
+
+    await fetechRequest("POST", `cat/fav/${cat.id}/user/${userData.user.id}`);
   };
 
   const handleFavourite = (e: MouseEvent) => {

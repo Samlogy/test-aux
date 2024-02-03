@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
-import path from 'path'
 import { AuthenticatedRequest } from '../middlewares/auth'
 import { paginateData, updateCatsWithAdoptionStatus } from '../utils/fn'
 
@@ -56,12 +55,16 @@ async function postCatController(req: Request, res: Response) {
                 .json({ error: "Aucune image n'a été upload !" })
         }
         const image = req.file
-        const imgPath = path.join(__dirname, 'uploads', image.originalname)
 
         const body = req.body
+        delete body.isReqAdopt
 
         const newCat = await prisma.cat.create({
-            data: { ...body, picture: imgPath, age: Number(body.age) },
+            data: {
+                ...body,
+                picture: image.path,
+                age: Number(body.age),
+            },
         })
         res.status(201).json({ success: true, data: newCat })
     } catch (error) {
@@ -89,11 +92,12 @@ async function putCatByIdController(req: Request, res: Response) {
         }
 
         const image = req.file
-        const imgPath = path.join(__dirname, 'uploads', image.originalname)
         const body = req.body
+        delete body.isReqAdopt
+
         const updatedCat = await prisma.cat.update({
             where: { id },
-            data: { ...body, picture: imgPath, age: Number(body.age) },
+            data: { ...body, picture: image.path, age: Number(body.age) },
         })
         res.status(201).json({ success: true, data: updatedCat })
     } catch (err) {

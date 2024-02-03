@@ -15,6 +15,7 @@ interface ICustomModal {
   header?: ReactNode;
   body?: ReactNode;
   footer?: ReactNode;
+  size?: any;
 }
 
 export default function CustomModal({
@@ -23,11 +24,12 @@ export default function CustomModal({
   header,
   body,
   footer,
+  size = "sm",
 }: ICustomModal) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size={size}>
       <ModalOverlay />
-      <ModalContent maxW={["full", "80%", "50em"]}>
+      <ModalContent>
         <ModalHeader>{header && header}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>{body && body}</ModalBody>

@@ -35,6 +35,8 @@ export default function Card({ cat }: { cat: ICat }) {
     setCat(cat);
   };
 
+  const BASE_URL = "http://localhost:3001/" + cat?.picture;
+
   return (
     <Flex
       m={".5em 1em"}
@@ -52,9 +54,8 @@ export default function Card({ cat }: { cat: ICat }) {
     >
       <Box w="full" rounded="lg" shadow="lg" pos="relative">
         <FavouriteButton cat={cat} />
-
         <Image
-          src={cat?.picture}
+          src={cat?.picture.includes("http") ? cat?.picture : BASE_URL}
           alt={`Picture of ${cat?.name}`}
           roundedTop="lg"
         />

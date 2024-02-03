@@ -1,13 +1,13 @@
 import { extendTheme } from "@chakra-ui/react";
 
-export const colors = {
+const colors = {
   accent: {
     1: "#7B341E",
     2: "#652B19",
   },
 };
 
-export const breakpoints = {
+const breakpoints = {
   sm: "40em",
   md: "52em",
   lg: "64em",
@@ -15,7 +15,7 @@ export const breakpoints = {
   "2xl": "90em",
 };
 
-export const fonts = {
+const fonts = {
   body: `'Poppins', sans-serif`,
   heading: `'Poppins', sans-serif`,
 };

@@ -3,6 +3,7 @@ import {
   Flex,
   Heading,
   IconButton,
+  Spinner,
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
@@ -26,10 +27,13 @@ import storage from "../lib/storage";
 import useAction from "../store/useActionStore";
 import useFavCatstore from "../store/useFavCatsStore";
 import useFilterStore from "../store/useFilterStore";
+import useApiRequest from "../lib/hooks/useApiRequest";
 
 export default function CatsList() {
   const actions = useAction((state) => state.actions);
   const state = useAction((state) => state.state);
+
+  const [isLoading, setLoading] = useState(false);
 
   const onCloseEdit = () =>
     state.edit
@@ -65,18 +69,23 @@ export default function CatsList() {
   });
 
   const onLoadCats = async () => {
+    setLoading(true);
     const { data, pagination: paginate } = await fetechRequest(
       "GET",
       `cat?page=${pagination.page}`
     );
+
+    setLoading(false);
 
     setCatsList(data);
     setPagination({ pages: paginate.pages, page: paginate.page });
 
     if (isFav) setCatsList(catsFav);
     if (!isFav) {
+      setLoading(true);
       setCatsList(data);
       setPagination(pagination);
+      setLoading(false);
     }
   };
 
@@ -86,6 +95,8 @@ export default function CatsList() {
 
   // console.log("List: ", catsList);
 
+  if (isLoading)
+    return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;
   return (
     <>
       <Layout isHeaderVisible>

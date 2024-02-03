@@ -26,6 +26,7 @@ export default function CatDetails({
   const setCat = useActionStore((state) => state.setCat);
 
   const userData = useMemo(() => storage.getStorage("auth--chadopt").user, []);
+  const constants = useMemo(() => storage.getStorage("consts--chadopt"), []);
 
   const userIdVisitor = !userData.isAdmin && userData.id;
 
@@ -62,31 +63,20 @@ export default function CatDetails({
     onCloseDetails();
   };
 
-  const onApprove = async (userId: number) => {
-    await fetechRequest("PATCH", `cat/adopt/${currentCat?.id}/user/${userId}`);
-
-    setCatsList((prev) =>
-      prev.map((c) => {
-        if (c.id === currentCat.id) {
-          return { ...c, status: "ADOPTED" };
-        }
-        return c;
-      })
-    );
-    onCloseDetails();
-  };
-
-  const constants = useMemo(() => storage.getStorage("consts--chadopt"), []);
-
+  const BASE_URL = "http://localhost:3001/" + currentCat.picture;
   const Body = (
     <>
       <FavouriteButton cat={currentCat} />
       <Flex flexDir="column">
-        <Flex flexDir={["column", "", "row"]}>
+        <Flex flexDir={["column", "", "row"]} justifyContent="space-evenly">
           <Image
-            src={currentCat?.picture}
+            src={
+              currentCat.picture.includes("http")
+                ? currentCat.picture
+                : BASE_URL
+            }
             alt={`Picture of ${currentCat?.name}`}
-            boxSize={["100%", "", "50%"]}
+            boxSize={["100%", "80%", "50%"]}
             rounded="lg"
             m={["0 auto 1em auto", "", "0 .5em 0 0"]}
           />
@@ -128,25 +118,7 @@ export default function CatDetails({
           </Flex>
         </Flex>
 
-        {userData.isAdmin && (
-          <Button
-            bgColor={currentCat?.isReqAdopt ? "accent.1" : "white"}
-            color={currentCat?.isReqAdopt ? "white" : "accent.1"}
-            _hover={{ bg: currentCat?.isReqAdopt ? "accent.2" : "gray.100" }}
-            onClick={() =>
-              !currentCat?.isReqAdopt
-                ? onApprove(userIdVisitor)
-                : onCancel(userIdVisitor)
-            }
-            m="1em  auto 0 auto"
-            display="flex"
-            w="50%"
-          >
-            {!currentCat?.isReqAdopt ? "Approuver" : "Rejeter"}
-          </Button>
-        )}
-
-        {currentCat.status !== "ADOPTED" && (
+        {!userData.isAdmin && currentCat.status !== "ADOPTED" && (
           <Button
             color={currentCat?.isReqAdopt ? "accent.1" : "white"}
             bgColor={currentCat?.isReqAdopt ? "white" : "accent.1"}
@@ -167,7 +139,14 @@ export default function CatDetails({
     </>
   );
 
-  return <CustomModal isOpen={isOpen} onClose={onCloseDetails} body={Body} />;
+  return (
+    <CustomModal
+      isOpen={isOpen}
+      onClose={onCloseDetails}
+      body={Body}
+      size={["sm", "md", ""]}
+    />
+  );
 }
 
 const DisplayInfo = ({ label, value }: IDisplayInfoProps) => {

@@ -7,6 +7,7 @@ import userRoutes from './routes/user.route'
 import AppError from './utils/appError'
 import corsOptions from './utils/corsOptions'
 import initDb from './utils/initDb'
+import path from 'path'
 
 require('dotenv').config({ path: '.env' })
 
@@ -16,6 +17,7 @@ const app: Application = express()
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // cors options
 corsOptions(app)
@@ -39,7 +41,7 @@ app.listen(PORT, () => {
     console.log(`Server: `, PORT)
 
     // init db
-    // initDb()
+    initDb()
     // deleteData()
 
     // Routes

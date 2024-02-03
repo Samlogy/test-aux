@@ -12,6 +12,18 @@ export const updateCatsWithAdoptionStatus = (
     return updatedCats
 }
 
+export function generateFileName(ext: string): string {
+    const currentDate = new Date()
+    const timestamp = Date.now()
+
+    // Extract date components
+    const year = currentDate.getFullYear()
+    const month = String(currentDate.getMonth() + 1)
+    const day = String(currentDate.getDate())
+
+    return `${year}-${month}-${day}-${timestamp}${ext}`
+}
+
 interface PaginationResult {
     data: any[]
     pagination: {
@@ -49,7 +61,7 @@ export async function paginateData(
         const skip = (page - 1) * size
         const pages = Math.ceil(totalItems / size)
 
-        if (page > totalItems) {
+        if (pages > 0 && page > pages) {
             throw {
                 message:
                     'Page not found. The requested page exceeds the total number of pages.',

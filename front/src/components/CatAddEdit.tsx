@@ -72,7 +72,7 @@ export default function CatAddEdit({
         setCatsList((prev) => [data, ...prev]);
       }
 
-      onCloseAddEdit();
+      // onCloseAddEdit();
     }
   };
 
@@ -80,49 +80,23 @@ export default function CatAddEdit({
     setChat({ ...chat, [e.target.name]: e.target.value });
   };
 
-  async function imageUrlToFile(imageUrl: string) {
-    try {
-      const urlParts = imageUrl.split("/");
-      const fileNameFromUrl = urlParts[urlParts.length - 1];
-      const res = await fetch(imageUrl);
-      if (!res.ok) {
-        throw new Error(
-          `Failed to fetch image: ${res.status} ${res.statusText}`
-        );
-      }
-      const imageBlob = await res.blob();
-
-      const file = new File([imageBlob], fileNameFromUrl, {
-        type: res.headers.get("content-type"),
-      });
-
-      const objectURL = URL.createObjectURL(imageBlob);
-
-      return {
-        file,
-        url: objectURL,
-      };
-    } catch (err) {
-      console.error("Error converting image URL to File:", err);
-      return null;
-    }
-  }
-
   useEffect(() => {
     setChat(currentCat);
-    imageUrlToFile(currentCat.picture).then((res) =>
-      setImage({
-        url: res?.url,
-        file: res.file,
-      })
-    );
+
+    const BASE_URL = "http://localhost:3001/" + currentCat.picture;
+    console.log(BASE_URL, currentCat.picture);
+
+    setImage({
+      url: currentCat.picture.includes("http") ? currentCat.picture : BASE_URL,
+      file: null,
+    });
   }, [currentCat]);
 
   console.log("image: ", image);
 
   const Body = (
     <Flex flexDir="column">
-      <Flex>
+      <Flex justifyContent="center">
         <Flex flexDir="column">
           <HandleImage label="Photo" image={image} setImage={setImage} />
           <SimpleGrid columns={2} spacing={1}>
@@ -226,10 +200,17 @@ export default function CatAddEdit({
         w="50%"
         m="1em auto 0 auto"
       >
-        {chat.id ? "Modifier" : "Ajouter"}
+        {chat?.id ? "Modifier" : "Ajouter"}
       </Button>
     </Flex>
   );
 
-  return <CustomModal isOpen={isOpen} onClose={onCloseAddEdit} body={Body} />;
+  return (
+    <CustomModal
+      isOpen={isOpen}
+      onClose={onCloseAddEdit}
+      body={Body}
+      size={["sm", "", "lg"]}
+    />
+  );
 }

@@ -1,5 +1,5 @@
 export interface ICat {
-  id: number | string;
+  id?: number | string;
   name: string;
   age: number | string;
   race: string;

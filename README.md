@@ -5,7 +5,7 @@ Chadopt'. Chadopt' est l'équivalent du celèbre site `https://www.adopteunmec.c
 
 ## Stack Technique
 
-1. **Front-end:** React 18+, Typescript 4+, Tanstack React-query 5+
+1. **Front-end:** React 18+, Typescript 4+
 2. **Back-end:** Node.js 18+, Express 4+, Typescript 4+, Postgresql 16+, Prisma 5+
 3. yarn 1.2+
 

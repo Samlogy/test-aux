@@ -2,22 +2,26 @@ import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
 import path from 'path'
 import { AuthenticatedRequest } from '../middlewares/auth'
-import { updateCatsWithAdoptionStatus } from '../utils/fn'
+import { paginateData, updateCatsWithAdoptionStatus } from '../utils/fn'
 
 const prisma = new PrismaClient()
 
 async function getCatsController(req: AuthenticatedRequest, res: Response) {
     try {
         let { page = 1, size = 10 } = req.query
-        page = Number(page)
-        size = Number(size)
-
         const userId = req.user?.userId
         const isAdmin = req.user?.role
 
-        if (page < 1) {
-            return res.status(400).json({
-                error: 'Invalid page number. Must be greater than or equal to 1.',
+        const result = await paginateData(
+            Number(page),
+            Number(size),
+            prisma.cat
+        )
+
+        if ('status' in result) {
+            return res.status(result?.status).json({
+                success: false,
+                error: result?.message,
             })
         }
 
@@ -27,37 +31,14 @@ async function getCatsController(req: AuthenticatedRequest, res: Response) {
                   where: { userId },
               })
 
-        const totalItems = await prisma.cat.count()
-        const skip = (page - 1) * size
-        const pages = Math.ceil(totalItems / size)
-
-        if (page > totalItems) {
-            return res.status(404).json({
-                error: 'Page not found. The requested page exceeds the total number of pages.',
-            })
-        }
-
-        const cats = await prisma.cat.findMany({
-            skip,
-            take: size,
-        })
-
-        const updatedCats = updateCatsWithAdoptionStatus(
-            cats,
+        const updatedFiltredCats = updateCatsWithAdoptionStatus(
+            result.data,
             allRowsAdoptRequests
         )
 
         res.status(200).json({
             success: true,
-            data: {
-                data: updatedCats,
-                pagination: {
-                    page,
-                    size,
-                    totalItems,
-                    pages,
-                },
-            },
+            data: { data: updatedFiltredCats, pagination: result.pagination },
         })
     } catch (err) {
         console.error('Erreur lors de la récupération des données :', err)
@@ -149,60 +130,39 @@ async function deleteCatByIdController(req: Request, res: Response) {
     }
 }
 async function filtersCatsController(req: AuthenticatedRequest, res: Response) {
-    let { page = 1, size = 10, ...filters } = req.query
-    page = Number(page)
-    size = Number(size)
-
-    const userId = req.user?.userId
-    const isAdmin = req.user?.role
-
-    if (page < 1) {
-        return res.status(400).json({
-            error: 'Invalid page number. Must be greater than or equal to 1.',
-        })
-    }
-
-    const allRowsAdoptRequests = isAdmin
-        ? await prisma.reqAdopt.findMany()
-        : await prisma.reqAdopt.findMany({
-              where: { userId },
-          })
-
-    const totalItems = await prisma.cat.count({
-        where: { ...filters },
-    })
-    const skip = (page - 1) * size
-    const pages = Math.ceil(totalItems / size)
-
-    if (page > totalItems) {
-        return res.status(404).json({
-            error: 'Page not found. The requested page exceeds the total number of pages.',
-        })
-    }
-
     try {
-        const filtredCats = await prisma.cat.findMany({
-            where: { ...filters },
-            skip,
-            take: size,
-        })
+        let { page = 1, size = 10, ...filters } = req.query
+        const userId = req.user?.userId
+        const isAdmin = req.user?.role
+
+        const result = await paginateData(
+            Number(page),
+            Number(size),
+            prisma.cat,
+            filters
+        )
+
+        if ('status' in result) {
+            return res.status(result?.status).json({
+                success: false,
+                error: result?.message,
+            })
+        }
+
+        const allRowsAdoptRequests = isAdmin
+            ? await prisma.reqAdopt.findMany()
+            : await prisma.reqAdopt.findMany({
+                  where: { userId },
+              })
 
         const updatedFiltredCats = updateCatsWithAdoptionStatus(
-            filtredCats,
+            result.data,
             allRowsAdoptRequests
         )
 
         res.status(200).json({
             success: true,
-            data: {
-                data: updatedFiltredCats,
-                pagination: {
-                    page,
-                    size,
-                    totalItems,
-                    pages,
-                },
-            },
+            data: { data: updatedFiltredCats, pagination: result.pagination },
         })
     } catch (err) {
         console.error(
@@ -262,8 +222,21 @@ async function setFavoriteCatController(req: Request, res: Response) {
 }
 async function getAdoptionRequestsController(req: Request, res: Response) {
     try {
-        const allRows = await prisma.reqAdopt.findMany()
-        res.status(200).json({ succes: true, data: allRows })
+        let { page = 1, size = 10 } = req.query
+
+        const result = await paginateData(
+            Number(page),
+            Number(size),
+            prisma.reqAdopt
+        )
+
+        if ('status' in result) {
+            return res.status(result?.status).json({
+                success: false,
+                error: result?.message,
+            })
+        }
+        res.status(200).json({ success: true, data: result })
     } catch (err) {
         console.error('Erreur lors de la mise à jour des données par ID :', err)
         res.status(500).json({

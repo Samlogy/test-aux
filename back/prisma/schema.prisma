@@ -40,7 +40,7 @@ model FavCat {
   @@id([userId, catId])
 
   user    User @relation(fields: [userId], references: [id])
-  cat     Cat  @relation(fields: [catId], references: [id])
+  cat     Cat  @relation(fields: [catId], references: [id], onDelete: Cascade)
 }
 
 model ReqAdopt {
@@ -50,7 +50,7 @@ model ReqAdopt {
   @@id([userId, catId])
 
   user User @relation(fields: [userId], references: [id])
-  cat  Cat  @relation(fields: [catId], references: [id])
+  cat  Cat  @relation(fields: [catId], references: [id], onDelete: Cascade)
 }
 
 

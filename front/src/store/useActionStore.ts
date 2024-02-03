@@ -33,6 +33,7 @@ export const INIT_CAT = {
   town: "",
   age: "",
   popularity: 0,
+  isReqAdopt: false,
 };
 
 const INIT_STATE = {

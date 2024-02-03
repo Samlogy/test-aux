@@ -65,14 +65,6 @@ export default function CatsList() {
   });
 
   const onLoadCats = async () => {
-    // const userReqsAdopt = await getData(`cat/adopt/user/${userData.id}`);
-    // add to storage
-    // compare el.status = currentCat.status => exist status== pending
-
-    // const { data, pagination: paginate } = await getData(
-    //   `cat?page=${pagination.page}`
-    // );
-
     const { data, pagination: paginate } = await fetechRequest(
       "GET",
       `cat?page=${pagination.page}`
@@ -198,6 +190,7 @@ export default function CatsList() {
         <CatDetails
           isOpen={state.details}
           onClose={() => actions.setDetails(false)}
+          setCatsList={setCatsList}
         />
       </View>
 

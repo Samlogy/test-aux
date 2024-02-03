@@ -1,20 +1,31 @@
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
 import path from 'path'
+import { AuthenticatedRequest } from '../middlewares/auth'
+import { updateCatsWithAdoptionStatus } from '../utils/fn'
 
 const prisma = new PrismaClient()
 
-async function getCatsController(req: Request, res: Response) {
+async function getCatsController(req: AuthenticatedRequest, res: Response) {
     try {
         let { page = 1, size = 10 } = req.query
         page = Number(page)
         size = Number(size)
+
+        const userId = req.user?.userId
+        const isAdmin = req.user?.role
 
         if (page < 1) {
             return res.status(400).json({
                 error: 'Invalid page number. Must be greater than or equal to 1.',
             })
         }
+
+        const allRowsAdoptRequests = isAdmin
+            ? await prisma.reqAdopt.findMany()
+            : await prisma.reqAdopt.findMany({
+                  where: { userId },
+              })
 
         const totalItems = await prisma.cat.count()
         const skip = (page - 1) * size
@@ -31,10 +42,15 @@ async function getCatsController(req: Request, res: Response) {
             take: size,
         })
 
+        const updatedCats = updateCatsWithAdoptionStatus(
+            cats,
+            allRowsAdoptRequests
+        )
+
         res.status(200).json({
             success: true,
             data: {
-                data: cats,
+                data: updatedCats,
                 pagination: {
                     page,
                     size,
@@ -132,16 +148,25 @@ async function deleteCatByIdController(req: Request, res: Response) {
         })
     }
 }
-async function filtersCatsController(req: Request, res: Response) {
+async function filtersCatsController(req: AuthenticatedRequest, res: Response) {
     let { page = 1, size = 10, ...filters } = req.query
     page = Number(page)
     size = Number(size)
+
+    const userId = req.user?.userId
+    const isAdmin = req.user?.role
 
     if (page < 1) {
         return res.status(400).json({
             error: 'Invalid page number. Must be greater than or equal to 1.',
         })
     }
+
+    const allRowsAdoptRequests = isAdmin
+        ? await prisma.reqAdopt.findMany()
+        : await prisma.reqAdopt.findMany({
+              where: { userId },
+          })
 
     const totalItems = await prisma.cat.count({
         where: { ...filters },
@@ -162,10 +187,15 @@ async function filtersCatsController(req: Request, res: Response) {
             take: size,
         })
 
+        const updatedFiltredCats = updateCatsWithAdoptionStatus(
+            filtredCats,
+            allRowsAdoptRequests
+        )
+
         res.status(200).json({
             success: true,
             data: {
-                data: filtredCats,
+                data: updatedFiltredCats,
                 pagination: {
                     page,
                     size,
@@ -201,8 +231,6 @@ async function setFavoriteCatController(req: Request, res: Response) {
                     catId,
                 },
             })
-
-            // Increase popularity by 1
             await prisma.cat.update({
                 where: { id: catId },
                 data: {
@@ -217,7 +245,6 @@ async function setFavoriteCatController(req: Request, res: Response) {
             where: { userId_catId: { userId, catId } },
         })
 
-        // Decrease popularity by 1
         await prisma.cat.update({
             where: { id: catId },
             data: {

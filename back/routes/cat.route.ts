@@ -25,7 +25,11 @@ export default function (route: string, app: Application) {
         auth.authorize,
         controllers.deleteCatByIdController
     )
-    app.get(route, auth.authenticate, controllers.getCatsController)
+    app.get(
+        route,
+        // auth.authenticate,
+        controllers.getCatsController
+    )
     app.post(
         route,
         auth.authenticate,

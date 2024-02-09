@@ -7,6 +7,8 @@ back/uploads/*
 back/prisma/migrations/*
 back/dist/*
 
+tasks.txt
+
 
 # back/
 

@@ -4,15 +4,12 @@ import { Request, Response, NextFunction } from 'express'
 const validate = (schema: z.ZodObject<any, any>) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // Validate the request body against the Zod schema
             schema.parse(req.body)
 
-            // If validation is successful, proceed to the next middleware
             next()
-        } catch (error) {
-            // Handle validation errors
-            if (error instanceof ZodError) {
-                const details = error.errors.map((err) => ({
+        } catch (err) {
+            if (err instanceof ZodError) {
+                const details = err.errors.map((err) => ({
                     message: err.message,
                     path: err.path[0],
                 }))
@@ -23,8 +20,7 @@ const validate = (schema: z.ZodObject<any, any>) => {
                 })
             }
 
-            // Handle unexpected errors
-            console.error(error)
+            console.error(err)
             res.status(500).json({
                 success: false,
                 error: 'Internal server error',

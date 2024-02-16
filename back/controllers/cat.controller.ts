@@ -1,7 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
 import { AuthenticatedRequest } from '../middlewares/auth'
-import { paginateData, updateCatsWithAdoptionStatus } from '../utils/fn'
+import { updateCatsWithAdoptionStatus } from '../utils/fn'
+import paginateData from '../utils/pagination'
 
 const prisma = new PrismaClient()
 

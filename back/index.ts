@@ -8,6 +8,7 @@ import AppError from './utils/appError'
 import corsOptions from './utils/corsOptions'
 import initDb from './utils/initDb'
 import path from 'path'
+import docs from './routes/doc.route'
 
 require('dotenv').config({ path: '.env' })
 
@@ -44,6 +45,7 @@ app.listen(PORT, () => {
     initDb()
     // deleteData()
 
+    docs('/api/v1/docs', app)
     // Routes
     catRoutes('/api/v1/cat', app)
     userRoutes('/api/v1/user', app)

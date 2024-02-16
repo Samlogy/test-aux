@@ -6,4 +6,5 @@ import auth from '../middlewares/auth'
 export default function (route: string, app: Application) {
     app.post(route + '/login', controllers.login)
     app.post(route + '/logout', auth.authenticate, controllers.logout)
+    app.post(route + '/refresh', auth.authenticate, controllers.refresh)
 }

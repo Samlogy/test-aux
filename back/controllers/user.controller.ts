@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
 import hash from '../utils/hash'
 import jwt from '../utils/jwt'
+import logger from '../utils/logger'
 
 const prisma = new PrismaClient()
 
@@ -40,6 +41,10 @@ const login = async (req: Request, res: Response) => {
             role: user.isAdmin,
         })
 
+        logger.info(
+            `user logged in => accessToken ${accessToken} - refreshToken ${refreshToken}`
+        )
+
         return res.status(201).json({
             success: true,
             data: {
@@ -57,6 +62,7 @@ const login = async (req: Request, res: Response) => {
 }
 
 const logout = (req: Request, res: Response) => {
+    logger.info('user logout !')
     return res
         .status(201)
         .json({ success: true, message: 'Déconnexion réussie' })

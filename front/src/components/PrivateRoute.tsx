@@ -3,6 +3,9 @@ import storage from "../lib/storage";
 import { useMemo } from "react";
 
 export default function PrivateRoute() {
-  const token = useMemo(() => storage.getStorage("auth--chadopt")?.token, []);
+  const token = useMemo(
+    () => storage.getStorage("auth--chadopt")?.accessToken,
+    []
+  );
   return token ? <Outlet /> : <Navigate to="/login" />;
 }

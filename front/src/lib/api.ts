@@ -2,7 +2,7 @@ import storage from "../lib/storage";
 
 const apiUrl = "http://localhost:3001/api/v1";
 
-const token = storage.getStorage("auth--chadopt")?.token;
+const token = storage.getStorage("auth--chadopt")?.accessToken;
 
 const fetechRequest = async (
   method: string,

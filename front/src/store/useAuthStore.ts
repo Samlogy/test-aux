@@ -8,12 +8,18 @@ interface IUser {
   password: string;
 }
 
-type AuthStore = { isLogged: boolean; user: IUser; token: string };
+type AuthStore = {
+  isLogged: boolean;
+  user: IUser;
+  accessToken: string;
+  refreshToken: string;
+};
 
 type UseAuthSore = {
   isLogged: boolean;
   user: IUser;
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   setLogin: (d: AuthStore) => void;
   setLogout: () => void;
 };
@@ -27,14 +33,16 @@ const INIT_USER = {
 const loginState = (payload: AuthStore) => ({
   isLogged: true,
   user: payload.user,
-  token: payload.token,
+  accessToken: payload.accessToken,
+  refreshToken: payload.refreshToken,
 });
 
 const logoutState = () => ({ isLogged: false, user: INIT_USER, token: "" });
 
 let authStore = (set: any) => ({
   isLogged: false,
-  token: "",
+  accessToken: "",
+  refreshToken: "",
   user: INIT_USER,
   setLogin: (payload: AuthStore) => {
     set(() => loginState(payload));

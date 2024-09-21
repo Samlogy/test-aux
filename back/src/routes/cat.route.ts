@@ -3,13 +3,17 @@ import multer from 'multer'
 import controllers from '../controllers/cat.controller'
 import auth from '../middlewares/auth'
 import storage from '../utils/storage'
+import catchAsync from '../utils/catchAsync'
+import validate from '../middlewares/validate'
+import validationSchema from '../validation'
+import csrf from "../middlewares/crsf"
 
 const upload = multer({ storage })
 
 export default function (route: string, app: Application) {
     app.get(
         route + '/filter',
-        auth.authenticate,
+        //auth.authenticate,
         controllers.filtersCatsController
     )
     app.put(
@@ -32,10 +36,11 @@ export default function (route: string, app: Application) {
     )
     app.post(
         route,
-        auth.authenticate,
-        auth.authorize,
+        // auth.authenticate,
+        // auth.authorize,
         upload.single('image'),
-        controllers.postCatController
+        validate(validationSchema.loginSchema),
+        catchAsync(controllers.postCatController)
     )
 
     app.post(

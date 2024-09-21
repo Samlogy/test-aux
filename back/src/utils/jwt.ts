@@ -2,9 +2,11 @@ import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || ''
 const JWT_REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_TOKEN_SECRET || ''
+const JWT_REFRESH_TOKEN_EXPIRATION_TIME = process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME || ''
+const JWT_TOKEN_EXPIRATION_TIME = process.env.JWT_TOKEN_EXPIRATION_TIME || ''
 
 const createToken = (data: any): string => {
-    return jwt.sign(data, JWT_SECRET || '', { expiresIn: '1h' })
+    return jwt.sign(data, JWT_SECRET || '', { expiresIn: JWT_TOKEN_EXPIRATION_TIME })
 }
 
 function decodeToken(token: string) {
@@ -21,7 +23,7 @@ function decodeToken(token: string) {
 }
 
 const createRefreshToken = (data: any): string => {
-    return jwt.sign(data, JWT_REFRESH_TOKEN_SECRET || '', { expiresIn: '7d' })
+    return jwt.sign(data, JWT_REFRESH_TOKEN_SECRET || '', { expiresIn: JWT_REFRESH_TOKEN_EXPIRATION_TIME })
 }
 
 // function decodeRefreshToken(token: string) {

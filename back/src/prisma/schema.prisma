@@ -17,6 +17,7 @@ model User {
   reqAdopts ReqAdopt[]
 }
 
+
 model Cat {
   id          Int       @id @default(autoincrement())
   name        String

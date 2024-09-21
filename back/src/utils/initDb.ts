@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client'
 // import { PrismaClient } from '@prisma/client/edge'
-import hash from '../utils/hash'
+import hash from './hash'
 const prisma = new PrismaClient()
 
 const CATS: Prisma.CatCreateManyInput[] = [
@@ -143,7 +143,6 @@ const CATS: Prisma.CatCreateManyInput[] = [
 
 export default async function initDb() {
     const usersExist = await prisma.user.findMany()
-
     if (usersExist.length === 0) {
         await prisma.user.createMany({
             data: [

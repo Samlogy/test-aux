@@ -17,3 +17,7 @@ export default function (route: string, app: Application) {
         })
     )
 }
+
+export function docsRoute(arg0: string, app: Application) {
+    throw new Error('Function not implemented.')
+}

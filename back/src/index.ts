@@ -98,7 +98,8 @@ export const createHttpServer = (app: Application) => {
         // deleteData()
 
         //doc
-        docSwagger(app)
+        const version = '1'
+        docSwagger(app, version)
 
         // Routes
         healthRoute('/api/v1/health', app)

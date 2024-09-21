@@ -6,7 +6,6 @@ import storage from '../utils/storage'
 import catchAsync from '../utils/catchAsync'
 import validate from '../middlewares/validate'
 import validationSchema from '../validation'
-import csrf from "../middlewares/crsf"
 
 const upload = multer({ storage })
 
@@ -14,25 +13,25 @@ export default function (route: string, app: Application) {
     app.get(
         route + '/filter',
         //auth.authenticate,
-        controllers.filtersCatsController
+        catchAsync(controllers.filtersCatsController)
     )
     app.put(
         route + '/:id',
         auth.authenticate,
         auth.authorize,
         upload.single('image'),
-        controllers.putCatByIdController
+        catchAsync(controllers.putCatByIdController)
     )
     app.delete(
         route + '/:id',
         auth.authenticate,
         auth.authorize,
-        controllers.deleteCatByIdController
+        catchAsync(controllers.deleteCatByIdController)
     )
     app.get(
         route,
         // auth.authenticate,
-        controllers.getCatsController
+        catchAsync(controllers.getCatsController)
     )
     app.post(
         route,
@@ -46,34 +45,34 @@ export default function (route: string, app: Application) {
     app.post(
         route + '/fav/:catId/user/:userId',
         auth.authenticate,
-        controllers.setFavoriteCatController
+        catchAsync(controllers.setFavoriteCatController)
     )
     app.post(
         route + '/adopt/:catId/user/:userId',
         auth.authenticate,
-        controllers.requestAdoptionController
+        catchAsync(controllers.requestAdoptionController)
     )
     app.delete(
         route + '/adopt/:catId/user/:userId',
         auth.authenticate,
-        controllers.cancelAdoptionController
+        catchAsync(controllers.cancelAdoptionController)
     )
     app.patch(
         route + '/adopt/:catId/user/:userId',
         auth.authenticate,
         auth.authorize,
-        controllers.approveAdoptionRequestController
+        catchAsync(controllers.approveAdoptionRequestController)
     )
     app.get(
         route + '/adopt',
         auth.authenticate,
         auth.authorize,
-        controllers.getAdoptionRequestsController
+        catchAsync(controllers.getAdoptionRequestsController)
     )
     app.get(
         route + '/adopt/user/:userId',
         auth.authenticate,
         auth.authorize,
-        controllers.getAdoptionRequestsByUserIdController
+        catchAsync(controllers.getAdoptionRequestsByUserIdController)
     )
 }

@@ -11,7 +11,7 @@ import constsRoutes from './routes/consts.route'
 import userRoutes from './routes/user.route'
 import healthRoute from './routes/health.route'
 
-import globalErrorHandler from './controllers/error.controller'
+import globalErrorHandler from './middlewares/error'
 
 import docSwagger from "./utils/doc"
 import AppError from './utils/appError'

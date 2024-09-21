@@ -10,7 +10,7 @@ const loginSchema = z.object({
 const GenderEnum = z.enum(["MALE", "FEMALE", "OTHER"]);
 const StatusEnum = z.enum(["AVAILABLE", "ADOPTED", "PENDING"]);
 
-const catSchema = z.object({
+const postCatSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"), 
   race: z.string().min(1, "Race is required"), 
@@ -19,19 +19,10 @@ const catSchema = z.object({
   town: z.string().min(1, "Town is required"), 
   picture: z.string().url("Picture must be a valid URL"), 
   status: StatusEnum, 
-  popularity: z.number().int().nonnegative().default(0),
-  users: z.array(z.object({
-    id: z.number().int().positive(),
-  })).optional(), 
-  favCats: z.array(z.object({
-    id: z.number().int().positive(), 
-  })).optional(), 
-  reqAdopts: z.array(z.object({
-    id: z.number().int().positive(), 
-  })).optional(), 
+  popularity: z.number().int().nonnegative().default(0)
 });
 
 export default {
     loginSchema,
-    catSchema
+    postCatSchema
 }

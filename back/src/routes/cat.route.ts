@@ -39,7 +39,7 @@ export default function (route: string, app: Application) {
         // auth.authenticate,
         // auth.authorize,
         upload.single('image'),
-        validate(validationSchema.loginSchema),
+        validate(validationSchema.postCatSchema),
         catchAsync(controllers.postCatController)
     )
 

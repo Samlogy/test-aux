@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: API documentation for the health check endpoint
+
+paths:
+  /api/v1/health:
+    get:
+      summary: Health check of the API
+      description: Returns the status and health message of the API.
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'OK'
+                  message:
+                    type: string
+                    example: 'API is healthy'

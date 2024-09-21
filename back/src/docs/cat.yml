@@ -1,0 +1,80 @@
+openapi: 3.0.0
+info:
+  title: Cat API Documentation
+  version: 1.0.0
+  description: API documentation for the Cat application
+
+paths:
+  /cats:
+    post:
+      summary: Create a new cat
+      description: Uploads a cat's image and creates a new cat entry in the database.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The image file of the cat.
+                name:
+                  type: string
+                  description: The name of the cat.
+                race:
+                  type: string
+                  description: The breed of the cat.
+                sex:
+                  type: string
+                  description: The sex of the cat (male or female).
+                age:
+                  type: integer
+                  description: The age of the cat.
+                town:
+                  type: string
+                  description: The town where the cat is located.
+                status:
+                  type: string
+                  description: The status of the cat (available, adopted, etc.).
+                popularity:
+                  type: integer
+                  description: The popularity rating of the cat.
+      responses:
+        '201':
+          description: Cat created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    additionalProperties: true
+        '400':
+          description: Bad request (e.g., no image uploaded)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Aucune image n'a été upload !"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Erreur interne du serveur"

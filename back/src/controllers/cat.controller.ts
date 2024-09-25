@@ -248,7 +248,7 @@ async function postCatController(req: Request, res: Response) {
         const image = req.file
 
         const body = req.body
-        delete body.isReqAdopt
+        // delete body.isReqAdopt
 
         const newCat = await prisma.cat.create({
             data: {
@@ -284,7 +284,7 @@ async function putCatByIdController(req: Request, res: Response) {
 
         const image = req.file
         const body = req.body
-        delete body.isReqAdopt
+        // delete body.isReqAdopt
 
         const updatedCat = await prisma.cat.update({
             where: { id },
@@ -292,7 +292,7 @@ async function putCatByIdController(req: Request, res: Response) {
         })
         res.status(201).json({ success: true, data: updatedCat })
     } catch (err) {
-        console.error('Erreur lors de la mise à jour des données par ID :', err)
+        console.error('Erreur lors de la mise à jour des données du chat par ID :', err)
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -306,7 +306,7 @@ async function deleteCatByIdController(req: Request, res: Response) {
             where: { id },
         })
         if (!chatExistante) {
-            return res.status(404).json({ error: "Ce chat n'existe pas" })
+            return res.status(404).json({ success: false, error: "Ce chat n'existe pas" })
         }
 
         await prisma.cat.delete({
@@ -315,7 +315,7 @@ async function deleteCatByIdController(req: Request, res: Response) {
         res.status(204).json()
     } catch (error) {
         console.error(
-            'Erreur lors de la suppression des données par ID :',
+            'Erreur lors de la suppression du chat par ID :',
             error
         )
         res.status(500).json({

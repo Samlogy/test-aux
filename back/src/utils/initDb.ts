@@ -13,7 +13,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'tabby',
         town: 'paris',
         status: 'ADOPTABLE',
-        sex: 'MALE',
+        gender: 'MALE',
     },
     {
         name: 'Mittens',
@@ -23,7 +23,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'calico',
         town: 'marseille',
         status: 'ADOPTABLE',
-        sex: 'FEMALE',
+        gender: 'FEMALE',
     },
     {
         name: 'Shadow',
@@ -33,7 +33,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'domestic_shorthair',
         town: 'lyon',
         status: 'ADOPTABLE',
-        sex: 'MALE',
+        gender: 'MALE',
     },
     {
         name: 'Cupcake',
@@ -43,7 +43,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'persian',
         town: 'nice',
         status: 'ADOPTABLE',
-        sex: 'FEMALE',
+        gender: 'FEMALE',
     },
     {
         name: 'Leo',
@@ -53,7 +53,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'maine_coon',
         town: 'toulouse',
         status: 'ADOPTABLE',
-        sex: 'MALE',
+        gender: 'MALE',
     },
     {
         name: 'Luna',
@@ -63,7 +63,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'siamese',
         town: 'strasbourg',
         status: 'ADOPTABLE',
-        sex: 'FEMALE',
+        gender: 'FEMALE',
     },
     {
         name: 'Oliver',
@@ -73,7 +73,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'bengal',
         town: 'bordeaux',
         status: 'ADOPTABLE',
-        sex: 'MALE',
+        gender: 'MALE',
     },
     {
         name: 'Daisy',
@@ -84,7 +84,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'ragdoll',
         town: 'nantes',
         status: 'ADOPTABLE',
-        sex: 'FEMALE',
+        gender: 'FEMALE',
     },
     {
         name: 'Simba',
@@ -94,7 +94,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'siberian',
         town: 'montpellier',
         status: 'ADOPTABLE',
-        sex: 'MALE',
+        gender: 'MALE',
     },
     {
         name: 'Mocha',
@@ -105,7 +105,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'siberian',
         town: 'lille',
         status: 'ADOPTABLE',
-        sex: 'FEMALE',
+        gender: 'FEMALE',
     },
 
     {
@@ -116,7 +116,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'egyptian_mau',
         town: 'toulon',
         status: 'ADOPTABLE',
-        sex: 'FEMALE',
+        gender: 'FEMALE',
     },
     {
         name: 'Teddy',
@@ -127,7 +127,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'norwegian_horest',
         town: 'le_havre',
         status: 'ADOPTABLE',
-        sex: 'MALE',
+        gender: 'MALE',
     },
     {
         name: 'Misty',
@@ -137,7 +137,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'russian_blue',
         town: 'grenoble',
         status: 'ADOPTABLE',
-        sex: 'FEMALE',
+        gender: 'FEMALE',
     },
 ]
 

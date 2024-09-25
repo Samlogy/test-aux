@@ -16,7 +16,7 @@ import AppError from './utils/appError'
 import corsOptions from './utils/corsOptions'
 import docSwagger from "./utils/doc"
 import checkSignals, { signals } from './utils/gracefullShutdown'
-import initDb from './utils/initDb'
+import initDb, { deleteData } from './utils/initDb'
 import logger from './utils/logger'
 
 require('dotenv').config({ path: '../.env' })

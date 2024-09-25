@@ -24,20 +24,6 @@ export default function (route: string, app: Application) {
         catchAsync(controllers.setFavoriteCatController)
     )
 
-    app.put(
-        route + '/:id',
-        auth.authenticate,
-        auth.authorize,
-        upload.single('image'),
-        catchAsync(controllers.putCatByIdController)
-    )
-    app.delete(
-        route + '/:id',
-        auth.authenticate,
-        auth.authorize,
-        catchAsync(controllers.deleteCatByIdController)
-    )
-    
     app.post(
         route,
         // auth.authenticate,
@@ -46,13 +32,21 @@ export default function (route: string, app: Application) {
         validate(validationSchema.postCatSchema),
         catchAsync(controllers.postCatController)
     )
-
-    app.post(
-        route + '/fav/:catId/user/:userId',
-        auth.authenticate,
-        catchAsync(controllers.setFavoriteCatController)
+    app.put(
+        route + '/:id',
+        // auth.authenticate,
+        // auth.authorize,
+        upload.single('image'),
+        catchAsync(controllers.putCatByIdController)
+    )
+    app.delete(
+        route + '/:id',
+        // auth.authenticate,
+        // auth.authorize,
+        catchAsync(controllers.deleteCatByIdController)
     )
 
+ 
     app.get(
         route + '/adopt/:catId',
         // auth.authenticate,
@@ -77,13 +71,10 @@ export default function (route: string, app: Application) {
         // auth.authorize,
         catchAsync(controllers.denyAdoptionRequestController)
     )
-    
-
-
-    // app.get(
-    //     route + '/adopt/user/:userId',
-    //     auth.authenticate,
-    //     auth.authorize,
-    //     catchAsync(controllers.getAdoptionRequestsByUserIdController)
-    // )
+    app.get(
+        route + '/popularity/:catId',
+        // auth.authenticate,
+        // auth.authorize,
+        catchAsync(controllers.getCatPopularityController)
+    )
 }

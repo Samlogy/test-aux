@@ -112,6 +112,25 @@ async function setFavoriteCatController(req: Request, res: Response) {
         })
     }
 }
+async function getCatPopularityController(req: Request, res: Response) {
+    try {
+        const catId = Number(req.params.catId)
+
+        const popularity = await prisma.reqAdopt.count({
+            where: {
+              catId: catId,
+            },
+        });
+        
+        return res.status(200).json({success: true, data: popularity})
+    } catch (err) {
+        console.error('Erreur lors de la favorisation du chat :', err)
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
 
 async function getAdoptionRequestsController(req: Request, res: Response) {
     try {
@@ -310,10 +329,10 @@ export default {
     getCatDetailsById,
     filtersCatsController,
     setFavoriteCatController,
+    getCatPopularityController,
 
     getAdoptionRequestsController,
     createAdoptionRequestController,
-
     acceptAdoptionRequestController,
     denyAdoptionRequestController,
 

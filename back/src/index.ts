@@ -1,23 +1,22 @@
 import express, { Application, NextFunction, Request, Response } from 'express'
-import https from "https"
 import fs from "fs"
-import path from 'path'
 import { Server } from 'http'
-import session from 'express-session'
-import cookieParser from 'cookie-parser'
+import https from "https"
+import path from 'path'
 
 import catRoutes from './routes/cat.route'
 import constsRoutes from './routes/consts.route'
-import userRoutes from './routes/user.route'
 import healthRoute from './routes/health.route'
+import userRoutes from './routes/user.route'
 
+import apiVersion from './middlewares/apiVersion'
 import globalErrorHandler from './middlewares/error'
 
-import docSwagger from "./utils/doc"
 import AppError from './utils/appError'
 import corsOptions from './utils/corsOptions'
-import initDb from './utils/initDb'
+import docSwagger from "./utils/doc"
 import checkSignals, { signals } from './utils/gracefullShutdown'
+import initDb from './utils/initDb'
 import logger from './utils/logger'
 
 require('dotenv').config({ path: '../.env' })
@@ -39,25 +38,9 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-app.use(cookieParser());
 
-const sessionConfig = session({
-    secret: SESSION_SECRET,
-    // keys: ['some random key'],
-    resave: false,
-    saveUninitialized: false,
-    name: 'sessid',
-    cookie: {
-        maxAge: COOKIE_EXPIRESIN, // Used for expiration time.
-        sameSite: 'strict', // Cookies will only be sent in a first-party context. 'lax' is default value for third-parties.
-        httpOnly: true, //Ensures the cookie is sent only over HTTP(S)
-        domain: HOST_DEV, //Used to compare against the domain of the server in which the URL is being requested.
-        secure: false // Ensures the browser only sends the cookie over HTTPS. false for localhost.
-    }
-});
-app.use(sessionConfig);
 
-  
+
 export const createHttpsServer = (app: Application) => {
     const options = {
         key: fs.readFileSync('key.pem'),
@@ -97,10 +80,13 @@ export const createHttpServer = (app: Application) => {
         // initDb()
         // deleteData()
 
-        //doc
-        const version = '1'
-        docSwagger(app, version)
 
+        // app.use(apiVersion);
+
+        docSwagger(app)
+
+        // api versioning
+        
         // Routes
         healthRoute('/api/v1/health', app)
         catRoutes('/api/v1/cat', app)
@@ -161,3 +147,8 @@ process.on('unhandledRejection', (err: Error) => {
 
     server.close(() => process.exit(1))
 })
+
+
+// versioning:
+// middleware that will check version => path /api/v1/.., headers "x-api-version"
+// redirect to the correct url api version

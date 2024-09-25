@@ -6,16 +6,17 @@ import paginateData from '../utils/pagination'
 
 const prisma = new PrismaClient()
 
-async function getCatsController(req: AuthenticatedRequest, res: Response) {
+async function filtersCatsController(req: AuthenticatedRequest, res: Response) {
     try {
-        let { page = 1, size = 10 } = req.query
+        let { page = 1, size = 10, ...filters } = req.query
         const userId = req.user?.userId
         const isAdmin = req.user?.role
 
         const result = await paginateData(
             Number(page),
             Number(size),
-            prisma.cat
+            prisma.cat,
+            filters
         )
 
         if ('status' in result) {
@@ -41,13 +42,43 @@ async function getCatsController(req: AuthenticatedRequest, res: Response) {
             data: { data: updatedFiltredCats, pagination: result.pagination },
         })
     } catch (err) {
-        console.error('Erreur lors de la récupération des données :', err)
+        console.error(
+            'Erreur lors de la récupération des données filtrées :',
+            err
+        )
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
         })
     }
 }
+async function getCatDetailsById(req: AuthenticatedRequest, res: Response) {
+    try {
+        const id = Number(req.params.id)
+
+        const catExist = await prisma.cat.findUnique({
+            where: { id },
+        })
+        if (!catExist) {
+            return res.status(404).json({ error: "Ce chat n'existe pas" })
+        }
+
+        res.status(200).json({
+            success: true,
+            data: catExist,
+        })
+    } catch (err) {
+        console.error(
+            'Erreur lors de la récupération des données du chat:',
+            err
+        )
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
+
 async function postCatController(req: Request, res: Response) {
     try {
         if (!req.file) {
@@ -134,52 +165,7 @@ async function deleteCatByIdController(req: Request, res: Response) {
         })
     }
 }
-async function filtersCatsController(req: AuthenticatedRequest, res: Response) {
-    try {
-        let { page = 1, size = 10, ...filters } = req.query
-        const userId = req.user?.userId
-        const isAdmin = req.user?.role
 
-        const result = await paginateData(
-            Number(page),
-            Number(size),
-            prisma.cat,
-            filters
-        )
-
-        if ('status' in result) {
-            return res.status(result?.status).json({
-                success: false,
-                error: result?.message,
-            })
-        }
-
-        const allRowsAdoptRequests = isAdmin
-            ? await prisma.reqAdopt.findMany()
-            : await prisma.reqAdopt.findMany({
-                  where: { userId },
-              })
-
-        const updatedFiltredCats = updateCatsWithAdoptionStatus(
-            result.data,
-            allRowsAdoptRequests
-        )
-
-        res.status(200).json({
-            success: true,
-            data: { data: updatedFiltredCats, pagination: result.pagination },
-        })
-    } catch (err) {
-        console.error(
-            'Erreur lors de la récupération des données filtrées :',
-            err
-        )
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
 async function setFavoriteCatController(req: Request, res: Response) {
     try {
         const userId = Number(req.params.userId)
@@ -354,11 +340,12 @@ async function getAdoptionRequestsByUserIdController(
 }
 
 export default {
-    getCatsController,
+    getCatDetailsById,
+    filtersCatsController,
+
     postCatController,
     putCatByIdController,
-    deleteCatByIdController,
-    filtersCatsController,
+    deleteCatByIdController,    
     setFavoriteCatController,
     getAdoptionRequestsController,
     requestAdoptionController,

@@ -18,7 +18,6 @@ export default function (route: string, app: Application) {
         route+ "/:id",
         catchAsync(controllers.getCatDetailsById)
     )
-
     app.get(
         route + '/favorite/:catId/user/:userId',
         // auth.authenticate,
@@ -53,32 +52,38 @@ export default function (route: string, app: Application) {
         auth.authenticate,
         catchAsync(controllers.setFavoriteCatController)
     )
+
+    app.get(
+        route + '/adopt/:catId',
+        // auth.authenticate,
+        // auth.authorize,
+        catchAsync(controllers.getAdoptionRequestsController)
+    )
     app.post(
+        route + '/adopt',
+        // auth.authenticate,
+        // auth.authorize,
+        catchAsync(controllers.createAdoptionRequestController)
+    )
+    app.get(
         route + '/adopt/:catId/user/:userId',
-        auth.authenticate,
-        catchAsync(controllers.requestAdoptionController)
+        // auth.authenticate,
+        // auth.authorize,
+        catchAsync(controllers.acceptAdoptionRequestController)
     )
     app.delete(
         route + '/adopt/:catId/user/:userId',
-        auth.authenticate,
-        catchAsync(controllers.cancelAdoptionController)
+        // auth.authenticate,
+        // auth.authorize,
+        catchAsync(controllers.denyAdoptionRequestController)
     )
-    app.patch(
-        route + '/adopt/:catId/user/:userId',
-        auth.authenticate,
-        auth.authorize,
-        catchAsync(controllers.approveAdoptionRequestController)
-    )
-    app.get(
-        route + '/adopt',
-        auth.authenticate,
-        auth.authorize,
-        catchAsync(controllers.getAdoptionRequestsController)
-    )
-    app.get(
-        route + '/adopt/user/:userId',
-        auth.authenticate,
-        auth.authorize,
-        catchAsync(controllers.getAdoptionRequestsByUserIdController)
-    )
+    
+
+
+    // app.get(
+    //     route + '/adopt/user/:userId',
+    //     auth.authenticate,
+    //     auth.authorize,
+    //     catchAsync(controllers.getAdoptionRequestsByUserIdController)
+    // )
 }

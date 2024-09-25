@@ -78,6 +78,146 @@ async function getCatDetailsById(req: AuthenticatedRequest, res: Response) {
         })
     }
 }
+async function setFavoriteCatController(req: Request, res: Response) {
+    try {
+        const userId = Number(req.params.userId)
+        const catId = Number(req.params.catId)
+
+        const existingFavorite = await prisma.favCat.findUnique({
+            where: { userId_catId: { userId, catId } },
+        })
+        
+        // set cat to favorite
+        if (!existingFavorite) { 
+            await prisma.favCat.create({
+                data: {
+                    userId,
+                    catId,
+                },
+            })
+            
+            return res.status(204).json()
+        }
+
+        // unset cat fron favorite
+        await prisma.favCat.delete({
+            where: { userId_catId: { userId, catId } },
+        })
+        return res.status(204).json()
+    } catch (err) {
+        console.error('Erreur lors de la favorisation du chat :', err)
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
+
+async function getAdoptionRequestsController(req: Request, res: Response) {
+    try {
+        const catId = Number(req.params.catId);
+        let { page = 1, size = 10 } = req.query
+
+        const result = await paginateData(
+            Number(page),
+            Number(size),
+            prisma.reqAdopt,
+            catId
+        )
+        res.status(200).json({ success: true, data: result })
+    } catch (err) {
+        console.error('Erreur lors de la mise à jour des données par ID :', err)
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
+async function createAdoptionRequestController(req: Request, res: Response) {
+    try {
+        const catId = Number(req.body.catId)
+        const userId = Number(req.body.userId)
+
+        const newReq = await prisma.reqAdopt.create({
+            data: {
+                userId,
+                catId,
+            },
+        })
+        res.status(201).json({ succes: true, data: newReq })
+    } catch (err) {
+        console.error('Erreur lors de la création d"une requête d"adoption de chat :', err)
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
+async function acceptAdoptionRequestController(req: Request, res: Response) {
+    try {
+        const catId = Number(req.params.catId)
+        const userId = Number(req.params.userId)
+
+        const existingRequest = await prisma.reqAdopt.findUnique({
+            where: { userId_catId: { userId, catId } },
+        })
+
+        if (!existingRequest) {
+            return res.status(400).json({
+                error: "Cette demande d'adoption pour ce chat n'existe pas ! ",
+            })
+        }
+
+        const updatedCat = await prisma.cat.update({
+            where: {
+              id: catId,
+            },
+            data: {
+              status: "ADOPTED",
+            },
+          });
+
+        await prisma.reqAdopt.delete({
+            where: { userId_catId: { userId, catId } },
+        })
+
+        res.status(201).json({ succes: true, data: updatedCat })
+    } catch (err) {
+        console.error('Erreur lors dé l"acceptation de la requête d"adoption du chat :', err)
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
+async function denyAdoptionRequestController(req: Request, res: Response) {
+    try {
+        const catId = Number(req.params.catId)
+        const userId = Number(req.params.userId)
+
+        const existingRequest = await prisma.reqAdopt.findUnique({
+            where: { userId_catId: { userId, catId } },
+        })
+
+        if (!existingRequest) {
+            return res.status(400).json({
+                error: "Il n y a aucune demande d'adoption pour ce chat !",
+            })
+        }
+
+        await prisma.reqAdopt.delete({
+            where: { userId_catId: { userId, catId } },
+        })
+
+        res.status(204).json()
+    } catch (err) {
+        console.error('Erreur lors du refus de la requete d"adoption du chat: ', err)
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
 
 async function postCatController(req: Request, res: Response) {
     try {
@@ -166,190 +306,18 @@ async function deleteCatByIdController(req: Request, res: Response) {
     }
 }
 
-async function setFavoriteCatController(req: Request, res: Response) {
-    try {
-        const userId = Number(req.params.userId)
-        const catId = Number(req.params.catId)
-
-        const existingFavorite = await prisma.favCat.findUnique({
-            where: { userId_catId: { userId, catId } },
-        })
-
-        if (!existingFavorite) {
-            await prisma.favCat.create({
-                data: {
-                    userId,
-                    catId,
-                },
-            })
-            await prisma.cat.update({
-                where: { id: catId },
-                data: {
-                    popularity: { increment: 1 },
-                },
-            })
-
-            return res.status(201).json({ success: true, data: {} })
-        }
-
-        await prisma.favCat.delete({
-            where: { userId_catId: { userId, catId } },
-        })
-
-        await prisma.cat.update({
-            where: { id: catId },
-            data: {
-                popularity: { decrement: 1 },
-            },
-        })
-        return res.status(204).json()
-    } catch (err) {
-        console.error('Erreur lors de la mise à jour des données par ID :', err)
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
-async function getAdoptionRequestsController(req: Request, res: Response) {
-    try {
-        let { page = 1, size = 10 } = req.query
-
-        const result = await paginateData(
-            Number(page),
-            Number(size),
-            prisma.reqAdopt
-        )
-
-        if ('status' in result) {
-            return res.status(result?.status).json({
-                success: false,
-                error: result?.message,
-            })
-        }
-        res.status(200).json({ success: true, data: result })
-    } catch (err) {
-        console.error('Erreur lors de la mise à jour des données par ID :', err)
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
-async function requestAdoptionController(req: Request, res: Response) {
-    try {
-        const catId = Number(req.params.catId)
-        const userId = Number(req.params.userId)
-
-        const newReq = await prisma.reqAdopt.create({
-            data: {
-                userId,
-                catId,
-            },
-        })
-
-        res.status(201).json({ succes: true, data: newReq })
-    } catch (err) {
-        console.error('Erreur lors de la mise à jour des données par ID :', err)
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
-async function cancelAdoptionController(req: Request, res: Response) {
-    try {
-        const catId = Number(req.params.catId)
-        const userId = Number(req.params.userId)
-
-        const existingRequest = await prisma.reqAdopt.findUnique({
-            where: { userId_catId: { userId, catId } },
-        })
-
-        if (!existingRequest) {
-            return res.status(400).json({
-                error: "Vous avez déjà fait une demande d'adoption pour ce chat! ",
-            })
-        }
-
-        await prisma.reqAdopt.delete({
-            where: { userId_catId: { userId, catId } },
-        })
-
-        res.status(204).json()
-    } catch (err) {
-        console.error('Erreur lors de la mise à jour des données par ID :', err)
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
-async function approveAdoptionRequestController(req: Request, res: Response) {
-    try {
-        const catId = Number(req.params.catId)
-        const userId = Number(req.params.userId)
-
-        const existingRequest = await prisma.reqAdopt.findUnique({
-            where: { userId_catId: { userId, catId } },
-        })
-
-        if (!existingRequest) {
-            return res.status(400).json({
-                error: "Vous avez déjà fait une demande d'adoption pour ce chat! ",
-            })
-        }
-
-        const updatedCat = await prisma.cat.update({
-            where: { id: catId },
-            data: {
-                status: 'ADOPTED',
-            },
-        })
-
-        await prisma.reqAdopt.delete({
-            where: { userId_catId: { userId, catId } },
-        })
-
-        res.status(201).json({ succes: true, data: updatedCat })
-    } catch (err) {
-        console.error('Erreur lors de la mise à jour des données par ID :', err)
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
-async function getAdoptionRequestsByUserIdController(
-    req: Request,
-    res: Response
-) {
-    try {
-        const userId = Number(req.params.userId)
-        const allRows = await prisma.reqAdopt.findMany({
-            where: { userId },
-        })
-        res.status(200).json({ succes: true, data: allRows })
-    } catch (err) {
-        console.error('Erreur lors de la mise à jour des données par ID :', err)
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
-
 export default {
     getCatDetailsById,
     filtersCatsController,
+    setFavoriteCatController,
+
+    getAdoptionRequestsController,
+    createAdoptionRequestController,
+
+    acceptAdoptionRequestController,
+    denyAdoptionRequestController,
 
     postCatController,
     putCatByIdController,
-    deleteCatByIdController,    
-    setFavoriteCatController,
-    getAdoptionRequestsController,
-    requestAdoptionController,
-    cancelAdoptionController,
-    approveAdoptionRequestController,
-    getAdoptionRequestsByUserIdController,
+    deleteCatByIdController,
 }

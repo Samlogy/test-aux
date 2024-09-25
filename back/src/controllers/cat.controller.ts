@@ -55,10 +55,11 @@ async function filtersCatsController(req: AuthenticatedRequest, res: Response) {
 async function getCatDetailsById(req: AuthenticatedRequest, res: Response) {
     try {
         const id = Number(req.params.id)
-
+        
         const catExist = await prisma.cat.findUnique({
             where: { id },
         })
+        
         if (!catExist) {
             return res.status(404).json({ error: "Ce chat n'existe pas" })
         }
@@ -106,6 +107,24 @@ async function setFavoriteCatController(req: Request, res: Response) {
         return res.status(204).json()
     } catch (err) {
         console.error('Erreur lors de la favorisation du chat :', err)
+        res.status(500).json({
+            success: false,
+            error: 'Erreur interne du serveur',
+        })
+    }
+}
+async function getFavoriteCatController(req: Request, res: Response) {
+    try {
+        const userId = Number(req.params.userId)
+        const catId = Number(req.params.catId)
+
+        const data = await prisma.favCat.findMany({
+            where: {  userId, catId  },
+        })
+        
+        return res.status(200).json({ success: true, data })
+    } catch (err) {
+        console.error('Erreur lors de la récupération de la liste des chat en favoris favoris: ', err)
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -329,6 +348,7 @@ export default {
     getCatDetailsById,
     filtersCatsController,
     setFavoriteCatController,
+    getFavoriteCatController,
     getCatPopularityController,
 
     getAdoptionRequestsController,

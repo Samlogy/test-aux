@@ -15,13 +15,24 @@ export default function (route: string, app: Application) {
         catchAsync(controllers.filtersCatsController)
     )
     app.get(
-        route+ "/:id",
+        route + "/:id",
         catchAsync(controllers.getCatDetailsById)
+    )
+    app.post(
+        route + '/favorite/:catId/user/:userId',
+        // auth.authenticate,
+        catchAsync(controllers.setFavoriteCatController)
     )
     app.get(
         route + '/favorite/:catId/user/:userId',
         // auth.authenticate,
-        catchAsync(controllers.setFavoriteCatController)
+        catchAsync(controllers.getFavoriteCatController)
+    )
+    app.get(
+        route + '/popularity/:catId',
+        // auth.authenticate,
+        // auth.authorize,
+        catchAsync(controllers.getCatPopularityController)
     )
 
     app.post(
@@ -70,11 +81,5 @@ export default function (route: string, app: Application) {
         // auth.authenticate,
         // auth.authorize,
         catchAsync(controllers.denyAdoptionRequestController)
-    )
-    app.get(
-        route + '/popularity/:catId',
-        // auth.authenticate,
-        // auth.authorize,
-        catchAsync(controllers.getCatPopularityController)
     )
 }

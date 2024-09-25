@@ -12,14 +12,19 @@ const upload = multer({ storage })
 export default function (route: string, app: Application) {
     app.get(
         route,
-        // auth.authenticate,
         catchAsync(controllers.filtersCatsController)
     )
     app.get(
         route+ "/:id",
-        // auth.authenticate,
         catchAsync(controllers.getCatDetailsById)
     )
+
+    app.get(
+        route + '/favorite/:catId/user/:userId',
+        // auth.authenticate,
+        catchAsync(controllers.setFavoriteCatController)
+    )
+
     app.put(
         route + '/:id',
         auth.authenticate,

@@ -1,10 +1,11 @@
 import { IconButton } from "@chakra-ui/react";
-import { MouseEvent, useEffect, useMemo, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
+import useAuthStore from "../store/useAuthStore";
 import useFavCatsStore from "../store/useFavCatsStore";
-import fetechRequest from "../lib/api";
 
 interface IFavouriteButton {
   cat: ICat;
@@ -17,7 +18,7 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
   const isFavState = useFavCatsStore((state) => state.isFav);
   const setFavCats = useFavCatsStore((state) => state.setFavCats);
 
-  const userData = useMemo(() => storage.getStorage("auth--chadopt"), []);
+  const user = useAuthStore((state) => state.user);  
 
   const isFavourite = (cat: ICat) => {
     return loadCats().some((c) => c.id === cat.id);
@@ -37,15 +38,14 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
 
     storage.setStorage("favourite--chadopt", newCats);
 
-    console.log(`cat/fav/${cat.id}/user/${userData.user.id}`);
+    console.log(`cat/fav/${cat.id}/user/${user.id}`);
 
-    await fetechRequest("POST", `cat/fav/${cat.id}/user/${userData.user.id}`);
+    await fetechRequest("POST", `cat/fav/${cat.id}/user/${user.id}`);
   };
 
   const handleFavourite = (e: MouseEvent) => {
     setIsFav(!isFav);
     setIsFavourite(cat);
-
     e.stopPropagation();
   };
 

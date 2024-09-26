@@ -25,14 +25,13 @@ interface IActionStore {
 export const INIT_CAT = {
   id: "",
   name: "",
-  sex: "",
+  gender: "",
   description: "",
   status: "",
   race: "",
   picture: "",
   town: "",
   age: "",
-  popularity: 0,
   isReqAdopt: false,
 };
 

@@ -134,15 +134,15 @@ export default function CatAddEdit({
             </SelectField>
 
             <SelectField
-              placeholder="Sexe"
-              name="sex"
+              placeholder="Gender"
+              name="gender"
               onChange={onChange}
-              value={chat?.sex}
-              label="Sexe"
+              value={chat?.gender}
+              label="Gender"
               autoComplete="on"
             >
-              {constants.genders.map((gender, idx) => (
-                <option key={idx} value={gender.value}>
+              {constants.genders.map((gender) => (
+                <option key={gender} value={gender.value}>
                   {gender.label}
                 </option>
               ))}
@@ -156,8 +156,8 @@ export default function CatAddEdit({
               label="Race"
               autoComplete="on"
             >
-              {constants.races.map((race, idx) => (
-                <option key={idx} value={race.value}>
+              {constants.races.map((race) => (
+                <option key={race} value={race.value}>
                   {race.label}
                 </option>
               ))}
@@ -171,8 +171,8 @@ export default function CatAddEdit({
               label="Ville"
               autoComplete="on"
             >
-              {constants.towns.map((town, idx) => (
-                <option key={idx} value={town.value}>
+              {constants.towns.map((town) => (
+                <option key={town} value={town.value}>
                   {town.label}
                 </option>
               ))}

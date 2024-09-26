@@ -4,10 +4,9 @@ export interface ICat {
   age: number | string;
   race: string;
   town: string;
-  sex: string;
+  gender: string;
   description: string;
   picture: string;
   status: string;
-  popularity: number;
   isReqAdopt?: boolean;
 }

@@ -6,6 +6,7 @@ interface IUser {
   id: number | string;
   email: string;
   password: string;
+  isAdmin: boolean
 }
 
 type AuthStore = {
@@ -28,6 +29,7 @@ const INIT_USER = {
   id: "",
   email: "",
   password: "",
+  isAdmin: false,
 };
 
 const loginState = (payload: AuthStore) => ({

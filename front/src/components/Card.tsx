@@ -72,7 +72,7 @@ export default function Card({ cat }: { cat: ICat }) {
               {cat?.name}
             </Box>
 
-            {cat?.sex === "Female" ? (
+            {cat?.gender === "Female" ? (
               <GiFemale size="22" />
             ) : (
               <GiMale size="22" />

@@ -8,7 +8,7 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useState } from "react";
 import {
   AiFillHeart,
   AiOutlineClose,
@@ -17,10 +17,10 @@ import {
 } from "react-icons/ai";
 import { Link as RouterLink } from "react-router-dom";
 import { Logo, LogoutButton, View } from "../components";
+import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
 import useFavCatsStore from "../store/useFavCatsStore";
-import { ICat } from "../lib/interfaces";
-import fetechRequest from "../lib/api";
+import useAuthStore from "../store/useAuthStore";
 
 const Links = [
   {
@@ -62,6 +62,8 @@ export default function NavBar() {
 
   const isVisible = useBreakpointValue({ base: false, md: true });
 
+  const user = useAuthStore((state) => state.user);  
+
   const menuIcon = (
     <Flex justify="center" align="center">
       {isOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
@@ -98,7 +100,9 @@ export default function NavBar() {
             ))}
           </HStack>
         </HStack>
-        <FavBtn />
+        {
+          !user.isAdmin ? <FavBtn /> : ""
+        }
         <LogoutButton />
       </Flex>
 

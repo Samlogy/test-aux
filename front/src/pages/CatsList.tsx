@@ -27,7 +27,6 @@ import storage from "../lib/storage";
 import useAction from "../store/useActionStore";
 import useFavCatstore from "../store/useFavCatsStore";
 import useFilterStore from "../store/useFilterStore";
-import useApiRequest from "../lib/hooks/useApiRequest";
 
 export default function CatsList() {
   const actions = useAction((state) => state.actions);
@@ -104,22 +103,6 @@ export default function CatsList() {
           <Heading fontSize="1.5rem" mb="2rem" textTransform={"capitalize"}>
             Nos Chats
           </Heading>
-
-          <View cond={userData.isAdmin} display="flex" ml="auto">
-            <Button
-              bgColor="accent.1"
-              color="white"
-              _hover={{
-                bg: "accent.2",
-              }}
-              onClick={() => {
-                console.log("1");
-                actions.setAdd(true);
-              }}
-            >
-              Ajouter un Chat
-            </Button>
-          </View>
         </Flex>
 
         <Flex flexDir={"row"} justifyContent="space-between">
@@ -196,7 +179,7 @@ export default function CatsList() {
           />
         </View>
       </Layout>
-
+      
       <View cond={state.details}>
         <CatDetails
           isOpen={state.details}
@@ -205,7 +188,7 @@ export default function CatsList() {
         />
       </View>
 
-      <View cond={state.delete}>
+      {/* <View cond={state.delete}>
         <CatDelete
           setCatsList={setCatsList}
           isOpen={state.delete}
@@ -219,7 +202,7 @@ export default function CatsList() {
           onClose={onCloseEdit}
           setCatsList={setCatsList}
         />
-      </View>
+      </View> */}
     </>
   );
 }

@@ -6,6 +6,7 @@ import storage from "../lib/storage";
 import useActionStore, { INIT_CAT } from "../store/useActionStore";
 import { CustomModal, FavouriteButton } from "./";
 import { ICat } from "../lib/interfaces";
+import useAuthStore from "../store/useAuthStore";
 
 interface ICatDetailsProps {
   isOpen: boolean;
@@ -63,10 +64,14 @@ export default function CatDetails({
     onCloseDetails();
   };
 
+  const user = useAuthStore((state) => state.user);  
+
   const BASE_URL = "http://localhost:3001/" + currentCat.picture;
   const Body = (
     <>
-      <FavouriteButton cat={currentCat} />
+      {
+        !user.isAdmin ? <FavouriteButton cat={currentCat} /> : ""
+      }
       <Flex flexDir="column">
         <Flex flexDir={["column", "", "row"]} justifyContent="space-evenly">
           <Image

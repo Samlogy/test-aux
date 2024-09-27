@@ -187,22 +187,6 @@ export default function CatsList() {
           setCatsList={setCatsList}
         />
       </View>
-
-      {/* <View cond={state.delete}>
-        <CatDelete
-          setCatsList={setCatsList}
-          isOpen={state.delete}
-          onClose={() => actions.setDelete(false)}
-        />
-      </View>
-
-      <View cond={isOpenEdit}>
-        <CatAddEdit
-          isOpen={isOpenEdit}
-          onClose={onCloseEdit}
-          setCatsList={setCatsList}
-        />
-      </View> */}
     </>
   );
 }

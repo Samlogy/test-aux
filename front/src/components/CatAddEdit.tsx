@@ -15,7 +15,7 @@ import { ICat } from "../lib/interfaces";
 interface ICatAddFormProps {
   onClose: () => void;
   isOpen: boolean;
-  setCatsList: React.Dispatch<React.SetStateAction<ICat[]>>;
+  setCatsList: any;
 }
 
 type ImageType = { url: string; file: File | null };

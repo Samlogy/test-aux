@@ -6,6 +6,11 @@ interface State {
   add: boolean;
   details: boolean;
   delete: boolean;
+  adoption: {
+    list: boolean,
+    accept: boolean,
+    deny: boolean,
+  }
 }
 
 interface Actions {
@@ -13,6 +18,10 @@ interface Actions {
   setAdd: (payload: boolean) => void;
   setDetails: (payload: boolean) => void;
   setDelete: (payload: boolean) => void;
+
+  setAdoptionList: (payload: boolean) => void;
+  setAdoptionAccept: (payload: boolean) => void;
+  setAdoptionDeny: (payload: boolean) => void;
 }
 
 interface IActionStore {
@@ -40,6 +49,11 @@ const INIT_STATE = {
   add: false,
   details: false,
   delete: false,
+  adoption: {
+    list: false,
+    accept: false,
+    deny: false,
+  }
 };
 
 const updateState = (state: IActionStore, payload: boolean) => ({
@@ -58,6 +72,36 @@ const addState = (state: IActionStore, payload: boolean) => ({
   state: { ...state.state, add: payload },
 });
 
+const acceptAdoptionRequest = (state: IActionStore, payload: boolean) => ({
+  state: { 
+    ...state.state, 
+    adoption: {
+      ...state.state.adoption,
+      accept: payload
+    } 
+  },
+});
+
+const getAdoptionList = (state: IActionStore, payload: boolean) => ({
+  state: { 
+    ...state.state, 
+    adoption: {
+      ...state.state.adoption,
+      list: payload
+    } 
+  },
+})
+
+const denyAdoptionRequest = (state: IActionStore, payload: boolean) => ({
+  state: { 
+    ...state.state, 
+    adoption: {
+      ...state.state.adoption,
+      deny: payload
+    } 
+  },
+})
+
 const useActionStore = create<IActionStore>((set) => ({
   state: INIT_STATE,
   cat: INIT_CAT,
@@ -69,6 +113,13 @@ const useActionStore = create<IActionStore>((set) => ({
       set((state) => detailsState(state, payload)),
     setDelete: (payload: boolean) =>
       set((state) => deleteState(state, payload)),
+
+    setAdoptionList: (payload: boolean) =>
+      set((state) => getAdoptionList(state, payload)),
+    setAdoptionAccept: (payload: boolean) =>
+      set((state) => acceptAdoptionRequest(state, payload)),
+    setAdoptionDeny: (payload: boolean) =>
+      set((state) => denyAdoptionRequest(state, payload)),
   },
 }));
 

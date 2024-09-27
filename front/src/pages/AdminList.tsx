@@ -1,31 +1,34 @@
 import {
   Avatar,
   Button,
-  Flex, HStack, Menu,
+  Flex,
+  HStack,
+  IconButton,
+  Menu,
   MenuButton,
   MenuItem,
-  MenuList, Spinner, Stack, Tag,
-  Text
+  MenuList,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Stack,
+  Tag,
+  Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Table, createColumn } from "react-chakra-pagination";
-import { FiChevronDown, FiUser } from "react-icons/fi";
-import {
-  CatAddEdit,
-  CatDelete,
-  CatDetails,
-  Layout,
-  View
-} from "../components";
+import { CgOptions, CgAdd } from "react-icons/cg";
+import { FiUser } from "react-icons/fi";
+import { CatAddEdit, CatDelete, CatDetails, Layout, View } from "../components";
 import fetechRequest from "../lib/api";
-import useAction from "../store/useActionStore";
-import useFavCatstore from "../store/useFavCatsStore";
-import useFilterStore from "../store/useFilterStore";
 import { ICat } from "../lib/interfaces";
+import useAction from "../store/useActionStore";
 
-
-
-const data: ICat[] = [
+const DATA: ICat[] = [
   {
     id: 1,
     name: "Whiskers",
@@ -36,7 +39,7 @@ const data: ICat[] = [
     gender: "MALE",
     picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
     isReqAdopt: false,
-    description: "description"
+    description: "description",
   },
   {
     id: 2,
@@ -48,7 +51,7 @@ const data: ICat[] = [
     gender: "FEMALE",
     picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
     isReqAdopt: false,
-    description: "description"
+    description: "description",
   },
   {
     id: 3,
@@ -60,7 +63,7 @@ const data: ICat[] = [
     gender: "MALE",
     picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
     isReqAdopt: false,
-    description: "description"
+    description: "description",
   },
   {
     id: 4,
@@ -72,17 +75,29 @@ const data: ICat[] = [
     gender: "FEMALE",
     picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
     isReqAdopt: false,
-    description: "description"
+    description: "description",
   },
 ];
+
 export default function AdminList() {
-  const [cats, setCats] = useState({ all: data, adoptions: [] });
-  const [currentTab, setCurrentTab] = useState("all");
+  // const [currentTab, setCurrentTab] = useState("all");
+  const [catsList, setCatsList] = useState<ICat[]>([]);
+  const [filters, setFilters] = useState({
+    status: "all",
+    race: "",
+    age: "",
+    gender: "",
+    town: "",
+  });
 
   const actions = useAction((state) => state.actions);
   const state = useAction((state) => state.state);
   const setCat = useAction((state) => state.setCat);
-  
+
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+  });
 
   const catStatus = (cat: ICat) => {
     return cat.status === "ADOPTABLE"
@@ -96,41 +111,48 @@ export default function AdminList() {
   const catGender = (cat: ICat) => {
     return cat.gender === "MALE" ? "Mâle" : "Femelle";
   };
-  const catFilterStatus = (type: string) => {
-    return type === "all"
-      ? cats.all
-      : type === "adoptions"
-      ? cats.adoptions
-      : [];
+
+  const onReset = () => {
+    setFilters({
+      status: "all",
+      race: "",
+      age: "",
+      gender: "",
+      town: "",
+    })
+  }
+  const onFilter = () => {
+    return catsList.filter(
+      (cat) =>
+        (filters.status === "all" || cat.status === filters.status) &&
+        (!filters.race || cat.race.includes(filters.race)) &&
+        (!filters.age || cat.age === Number(filters.age)) &&
+        (!filters.gender || cat.gender === filters.gender) &&
+        (!filters.town || cat.town.includes(filters.town))
+    );
   };
-
-  // const onDelete = (id: number) => {
-  //   console.log("delete cat!");
-  // };
-  // const onEdit = (cat: ICat) => {
-  //   console.log("edit cat!");
-  // };
-  // const onDetails = (cat: ICat) => {
-  //   console.log("details cat!");
-  // };
-
   const onEdit = (cat: ICat) => {
     actions.setEdit(true);
-    setCat(cat)
-    console.log(cat)
+    setCat(cat);
   };
-  const onDelete = (id: number) => {
+  const onDelete = (cat: ICat) => {
     actions.setDelete(true);
-    const currentCat = cats.all.find(c => c.id == id)
-    console.log(currentCat)
+    setCat(cat);
   };
-  const onDetails = (cat:ICat) => {
+  const onDetails = (cat: ICat) => {
     actions.setDetails(!state.details);
-    setCat(cat)
-    console.log(cat)
+    setCat(cat);
+  };
+  const onListAdoptions = (cat: ICat) => {
+    actions.setAdoptionList(true);
+    setCat(cat);
   };
 
-  const tableData = catFilterStatus("all").map((cat: ICat) => ({
+  const closeAdoptReqs = () => {
+    actions.setAdoptionList(false);
+  };
+
+  const tableData = onFilter().map((cat: ICat) => ({
     name: (
       <Flex align="center">
         <Avatar name={cat.name} src={cat.picture} size="md" mr="4" />
@@ -138,61 +160,56 @@ export default function AdminList() {
       </Flex>
     ),
     race: cat.race,
+    age: cat.age,
     gender: catGender(cat),
     town: cat.town,
     status: catStatus(cat),
     action: (
       <Menu>
-        <MenuButton as={Button} rightIcon={<FiChevronDown />}>
-          Actions
-        </MenuButton>
+        <MenuButton as={IconButton} icon={<CgOptions />}></MenuButton>
         <MenuList>
-          <MenuItem onClick={() => onDelete(cat.id)}>Delete</MenuItem>
+          <MenuItem onClick={() => onDelete(cat)}>Delete</MenuItem>
           <MenuItem onClick={() => onEdit(cat)}>Edit</MenuItem>
           <MenuItem onClick={() => onDetails(cat)}>Détails</MenuItem>
+          <MenuItem onClick={() => onListAdoptions(cat)}>Adoptions</MenuItem>
         </MenuList>
       </Menu>
     ),
   }));
-
-  // Need pass type of `tableDate` for ts autocomplete
   const columnHelper = createColumn<(typeof tableData)[0]>();
-
   const columns = [
     columnHelper.accessor("name", {
       cell: (info) => info.getValue(),
       header: "Name",
     }),
-    columnHelper.accessor("town", {
-      cell: (info) => info.getValue(),
-      header: "Town",
-    }),
     columnHelper.accessor("race", {
       cell: (info) => info.getValue(),
       header: "Race",
     }),
-    columnHelper.accessor("status", {
+    columnHelper.accessor("age", {
       cell: (info) => info.getValue(),
-      header: "Status",
+      header: "Age",
     }),
     columnHelper.accessor("gender", {
       cell: (info) => info.getValue(),
       header: "Gender",
     }),
+    columnHelper.accessor("town", {
+      cell: (info) => info.getValue(),
+      header: "Town",
+    }),
+
+    columnHelper.accessor("status", {
+      cell: (info) => info.getValue(),
+      header: "Status",
+    }),
     columnHelper.accessor("action", {
       cell: (info) => info.getValue(),
-      header: "",
+      header: "Actions",
     }),
   ];
 
-  const onFilter = (type: string) => {
-    setCurrentTab(type);
-
-  }
-
-
-
-
+  // const onFilter = (type: string) => setCurrentTab(type);
 
   const [isLoading, setLoading] = useState(false);
 
@@ -207,55 +224,42 @@ export default function AdminList() {
     state.edit ? state.edit : state.add ? state.add : null
   ) as boolean;
 
-  // const userData = useMemo(() => storage.getStorage("auth--chadopt")?.user, []);
-
-  const isFav = useFavCatstore((state) => state.isFav);
-  const catsFav = useFavCatstore((state) => state.cats);
-
-  // const filters = useFilterStore((state) => state.filters);
-  // const setFilters = useFilterStore((state) => state.setFilters);
-
-  const [catsList, setCatsList] = useState<any>([]);
-  const [isOpen, setOpen] = useState(false);
-
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pages: 1,
-  });
-
   const onLoadCats = async () => {
     setLoading(true);
     const { data, pagination: paginate } = await fetechRequest(
       "GET",
-      `cat?page=${pagination.page}`
+      `cat?page=${pagination.page}&size=2`
     );
 
     setLoading(false);
 
-    setCatsList(data);
+    setCatsList(DATA);
     setPagination({ pages: paginate.pages, page: paginate.page });
 
-    setLoading(true);
-    setCatsList(data);
-    setPagination(pagination);
-    setLoading(false);
+    // setLoading(true);
+    // setCatsList(data);
+    // setPagination(pagination);
+    // setLoading(false);
   };
 
   useEffect(() => {
     onLoadCats();
-  }, [isFav, catsFav, pagination.page]);
+  }, [pagination.page]);
 
   const tabStyle: any = {
     active: {
       bgColor: "accent.1",
       color: "white",
-      hover: "accent.2"
-    }, inactive: {
+      hover: "accent.2",
+    },
+    inactive: {
       bgColor: "white",
       color: "accent.1",
-      hover: "accent.2"
-    }
-  }
+      hover: "accent.2",
+    },
+  };
+  
+  // console.log("adopt; ", onFilter());
 
   if (isLoading)
     return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;
@@ -270,50 +274,93 @@ export default function AdminList() {
           rounded="xl"
           bg="white"
         >
-          <Flex justifyContent="space-between">
-          <HStack spacing={4}>
-            {["all", "adoptions"].map((v) => (
-              <Tag
-                size={"md"}
-                key={v}
-                bgColor={v === currentTab ? tabStyle["active"].bgColor : tabStyle['inactive'].bgColor}
-                color={v === currentTab ? tabStyle["active"].color : tabStyle['inactive'].color}
-                _hover={{
-                  bg: v === currentTab ? tabStyle["active"].hover : tabStyle['inactive'].hover,
-                  cursor: "pointer"
-                }}
-                textTransform={"capitalize"}
-                onClick={() => onFilter(v)}
-              >
-                {v}
-              </Tag>
-            ))}
-          </HStack>
+            <HStack justifyContent="center" spacing={4}>
+              <form>
+              <select
+                  value={filters.status}
+                  onChange={(e) =>
+                    setFilters({ ...filters, status: e.target.value })
+                  }
+                >
+                  <option value="all">All</option>
+                  <option value="ADOPTABLE">Available</option>
+                  <option value="ADOPTED">Adopted</option>
+                  <option value="PENDING">Pending</option>
+                </select>
+                <select
+                  value={filters.race}
+                  onChange={(e) =>
+                    setFilters({ ...filters, race: e.target.value })
+                  }
+                >
+                  <option value="">Race</option>
+                </select>
+                <select
+                  value={filters.gender}
+                  onChange={(e) =>
+                    setFilters({ ...filters, gender: e.target.value })
+                  }
+                >
+                  <option value="">Gender</option>
+                  <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                </select>
+                <input
+                  placeholder="Age"
+                  type="number"
+                  value={filters.age}
+                  onChange={(e) =>
+                    setFilters({ ...filters, age: e.target.value })
+                  }
+                />                
+                <input
+                  placeholder="Town"
+                  value={filters.town}
+                  onChange={(e) =>
+                    setFilters({ ...filters, town: e.target.value })
+                  }
+                />
+                <Button
+                  _hover={{
+                    bg: "accent.2",
+                  }}
+                  bgColor="accent.1"
+                  color="white"
+                  onClick={onFilter}
+                >
+                  Appliquer
+                </Button>
+                <Button
+                  bgColor="white"
+                  color="accent.1"
+                  onClick={onReset}
+                >
+                  Reset
+                </Button>
+              </form>
+            </HStack>
 
-
-            <Button
+            <IconButton
+              aria-label="ajouter un chat"
               bgColor="accent.1"
               color="white"
               display="flex"
+              marginLeft="auto"
               _hover={{
                 bg: "accent.2",
               }}
-              onClick={() => {
-                console.log("1");
-                actions.setAdd(true);
-              }}
-            >
-              Ajouter un Chat
-            </Button>
+              onClick={() => 
+                actions.setAdd(true)
+              }
+              icon={<CgAdd size={26} />}
+            />
 
-          </Flex>
 
           <Table
-            colorScheme="blue"
-            // Fallback component when list is empty
+            colorScheme="teal"
             emptyData={{
               icon: FiUser,
-              text: "Aucun chat n'a été ajouté !",
+              text: "Aucune requête d'adoption !",
             }}
             totalRegisters={12}
             onPageChange={(page) => console.log(page)}
@@ -346,8 +393,167 @@ export default function AdminList() {
           setCatsList={setCatsList}
         />
       </View>
+
+      <View cond={state.adoption.list}>
+        <AdoptionRequestList
+          isOpen={state.adoption.list}
+          onClose={closeAdoptReqs}
+        />
+      </View>
     </>
   );
 }
 
+const AdoptionRequestList = ({ isOpen, onClose }: any) => {
+  const USERS = [
+    {
+      id: 1,
+      name: "sam",
+      date: "2024-05-22",
+      picture:
+        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+    },
+    {
+      id: 2,
+      name: "sam",
+      date: "2024-05-22",
+      picture:
+        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+    },
+    {
+      id: 3,
+      name: "sam",
+      date: "2024-05-22",
+      picture:
+        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+    },
+    {
+      id: 4,
+      name: "sam",
+      date: "2024-05-22",
+      picture:
+        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+    },
+    {
+      id: 5,
+      name: "sam",
+      date: "2024-05-22",
+      picture:
+        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+    },
+    {
+      id: 6,
+      name: "sam",
+      date: "2024-05-22",
+      picture:
+        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+    },
+  ];
 
+  const [adoptionsReq, setAdoptionReq] = useState({
+    data: USERS,
+    isLoading: false,
+  });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+  });
+
+  const cat = useAction((state) => state.cat);
+
+  const onAcceptAdoption = async (userId: number) => {
+    // actions.setAdoptionAccept(true);
+    // call api
+    console.log(cat.id, userId);
+    await fetechRequest(
+      "GET",
+      `cat/adopt/${cat.id}/user/${userId}?page=${pagination.page}&size=2`
+    );
+  };
+  const onDenyAdoption = async (userId: number) => {
+    // actions.setAdoptionDeny(true);
+    // call api
+    console.log(cat.id, userId);
+    await fetechRequest(
+      "DELETE",
+      `cat/adopt/${cat.id}/user/${userId}?page=${pagination.page}&size=2`
+    );
+  };
+  const onLoadAdoptionRequets = async () => {
+    setAdoptionReq({ ...adoptionsReq, isLoading: true });
+    const { data, pagination: paginate } = await fetechRequest(
+      "GET",
+      `cat/adopt/${cat.id}?page=${pagination.page}&size=2`
+    );
+    setAdoptionReq({ ...adoptionsReq, isLoading: false });
+
+    setAdoptionReq(data);
+    setPagination({ pages: paginate.pages, page: paginate.page });
+  };
+
+  const tableData = adoptionsReq.data.map((user: any) => ({
+    name: (
+      <Flex align="center">
+        <Avatar name={user.name} src={user.picture} size="md" mr="4" />
+        <Text>{user.name}</Text>
+      </Flex>
+    ),
+    date: user.date,
+    action: (
+      <Menu>
+        <MenuButton as={IconButton} icon={<CgOptions />}></MenuButton>
+        <MenuList>
+          <MenuItem onClick={() => onDenyAdoption(user.id)}>Deny</MenuItem>
+          <MenuItem onClick={() => onAcceptAdoption(user.id)}>Accept</MenuItem>
+        </MenuList>
+      </Menu>
+    ),
+  }));
+
+  const columnHelper = createColumn<(typeof tableData)[0]>();
+  const columns = [
+    columnHelper.accessor("name", {
+      cell: (info) => info.getValue(),
+      header: "Name",
+    }),
+    columnHelper.accessor("date", {
+      cell: (info) => info.getValue(),
+      header: "Race",
+    }),
+    columnHelper.accessor("action", {
+      cell: (info) => info.getValue(),
+      header: "Actions",
+    }),
+  ];
+
+  useEffect(() => {
+    // onLoadAdoptionRequets();
+  }, []);
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Adoption List</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          {adoptionsReq.isLoading ? (
+            <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />
+          ) : (
+            <Table
+              colorScheme="brown"
+              emptyData={{
+                icon: FiUser,
+                text: "Aucune requête pour ce chat !",
+              }}
+              totalRegisters={12}
+              onPageChange={(page) => console.log(page)}
+              columns={columns}
+              data={tableData}
+            />
+          )}
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  );
+};

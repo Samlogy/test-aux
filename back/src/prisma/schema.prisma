@@ -23,12 +23,11 @@ model Cat {
   name        String
   description String
   race        String
-  gender      GENDER                // delete
+  gender      GENDER                
   age         Int
   town        String
   picture     String
   status      STATUS
-  // popularity  Int       @default(0) // delete
   users       User[]
   favCats  FavCat[]
   reqAdopts ReqAdopt[]

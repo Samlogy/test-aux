@@ -9,7 +9,7 @@ const createToken = (data: any): string => {
     return jwt.sign(data, JWT_SECRET || '', { expiresIn: JWT_TOKEN_EXPIRATION_TIME })
 }
 
-function decodeToken(token: string) {
+const decodeToken = (token: string) => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET)
         return { valid: true, expired: false, decoded }
@@ -25,19 +25,6 @@ function decodeToken(token: string) {
 const createRefreshToken = (data: any): string => {
     return jwt.sign(data, JWT_REFRESH_TOKEN_SECRET || '', { expiresIn: JWT_REFRESH_TOKEN_EXPIRATION_TIME })
 }
-
-// function decodeRefreshToken(token: string) {
-//     try {
-//         const decoded = jwt.verify(token, JWT_SECRET)
-//         return { valid: true, expired: false, decoded }
-//     } catch (err: any) {
-//         return {
-//             valid: false,
-//             expired: err.message === 'jwt expired',
-//             decoded: null,
-//         }
-//     }
-// }
 
 export default {
     decodeToken,

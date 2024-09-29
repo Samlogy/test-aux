@@ -21,8 +21,6 @@ import logger from './utils/logger'
 
 require('dotenv').config({ path: '../.env' })
 
-// console.log('Current Environment:', process.env.NODE_ENV);
-
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'
 const HTTP_PORT = Number(process.env.HTTP_PORT as string) || ''

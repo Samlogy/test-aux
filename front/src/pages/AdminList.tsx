@@ -10,9 +10,9 @@ import {
   MenuList,
   Spinner,
   Stack,
-  Text
+  Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Table, createColumn } from "react-chakra-pagination";
 import { CgAdd, CgOptions } from "react-icons/cg";
 import { FiUser } from "react-icons/fi";
@@ -21,62 +21,19 @@ import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
 import useAction from "../store/useActionStore";
 import AdoptionRequestList from "../components/AdoptionRequestList";
+import storage from "../lib/storage";
 
-const DATA: ICat[] = [
-  {
-    id: 1,
-    name: "Whiskers",
-    age: 2,
-    race: "tabby",
-    town: "paris",
-    status: "ADOPTABLE",
-    gender: "MALE",
-    picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
-    isReqAdopt: false,
-    description: "description",
-  },
-  {
-    id: 2,
-    name: "Mittens",
-    age: 3,
-    race: "calico",
-    town: "marseille",
-    status: "ADOPTABLE",
-    gender: "FEMALE",
-    picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
-    isReqAdopt: false,
-    description: "description",
-  },
-  {
-    id: 3,
-    name: "Shadow",
-    age: 1,
-    race: "domestic_shorthair",
-    town: "lyon",
-    status: "ADOPTABLE",
-    gender: "MALE",
-    picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
-    isReqAdopt: false,
-    description: "description",
-  },
-  {
-    id: 4,
-    name: "Cupcake",
-    age: 1,
-    race: "persian",
-    town: "nice",
-    status: "ADOPTABLE",
-    gender: "FEMALE",
-    picture: "https://robohash.org/undevelitdolor.png?size=50x50&set=set1",
-    isReqAdopt: false,
-    description: "description",
-  },
-];
 
-interface ICatsList {data: ICat[], isLoading: boolean}
+interface ICatsList {
+  data: ICat[];
+  isLoading: boolean;
+}
 
 export default function AdminList() {
-  const [catsList, setCatsList] = useState<ICatsList>({data: [], isLoading: false});
+  const [catsList, setCatsList] = useState<ICatsList>({
+    data: [],
+    isLoading: false,
+  });
   const [filters, setFilters] = useState({
     status: "all",
     race: "",
@@ -84,15 +41,12 @@ export default function AdminList() {
     gender: "",
     town: "",
   });
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pages: 1,
-  });
+
+  const CONSTANTS = useMemo(() => storage.getStorage("consts--chadopt"), [])
 
   const actions = useAction((state) => state.actions);
   const state = useAction((state) => state.state);
   const setCat = useAction((state) => state.setCat);
-
 
   const catStatus = (cat: ICat) => {
     return cat.status === "ADOPTABLE"
@@ -114,11 +68,11 @@ export default function AdminList() {
       age: "",
       gender: "",
       town: "",
-    })
-  }
+    });
+  };
   const onFilter = () => {
     return catsList.data.filter(
-      (cat:ICat) =>
+      (cat: ICat) =>
         (filters.status === "all" || cat.status === filters.status) &&
         (!filters.race || cat.race.includes(filters.race)) &&
         (!filters.age || cat.age === Number(filters.age)) &&
@@ -142,25 +96,24 @@ export default function AdminList() {
     actions.setAdoptionList(true);
     setCat(cat);
   };
-  const onLoadCats = async () => {
-    setCatsList({...catsList, isLoading: true})
+  const onLoadCats = async (page = 1) => {
+    setCatsList({ ...catsList, isLoading: true });
     const { data, pagination: paginate } = await fetechRequest(
       "GET",
-      `cat?page=${pagination.page}&size=2`
+      `cat?page=${page}&size=2`
     );
-    setCatsList({data: DATA, isLoading: false})
-    setPagination({ pages: paginate.pages, page: paginate.page });
+    setCatsList({ data, isLoading: false });
   };
 
   const closeAdoptReqs = () => {
     actions.setAdoptionList(false);
   };
-  const closeEdit = () =>  {
+  const closeEdit = () => {
     if (state.edit || state.add) {
       actions.setEdit(false);
       actions.setAdd(false);
     }
-  }
+  };
 
   const tableData = onFilter().map((cat: ICat) => ({
     name: (
@@ -219,11 +172,9 @@ export default function AdminList() {
     }),
   ];
 
-  
   useEffect(() => {
     onLoadCats();
-  }, [pagination.page]);
-
+  }, []);
 
   if (catsList.isLoading)
     return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;
@@ -238,96 +189,89 @@ export default function AdminList() {
           rounded="xl"
           bg="white"
         >
-            <HStack justifyContent="center" spacing={4}>
-              <form>
-              <select
-                  value={filters.status}
-                  onChange={(e) =>
-                    setFilters({ ...filters, status: e.target.value })
-                  }
-                >
-                  <option value="all">All</option>
-                  <option value="ADOPTABLE">Available</option>
-                  <option value="ADOPTED">Adopted</option>
-                  <option value="PENDING">Pending</option>
-                </select>
-                <select
-                  value={filters.race}
-                  onChange={(e) =>
-                    setFilters({ ...filters, race: e.target.value })
-                  }
-                >
-                  <option value="">Race</option>
-                </select>
-                <select
-                  value={filters.gender}
-                  onChange={(e) =>
-                    setFilters({ ...filters, gender: e.target.value })
-                  }
-                >
-                  <option value="">Gender</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                </select>
-                <input
-                  placeholder="Age"
-                  type="number"
-                  value={filters.age}
-                  onChange={(e) =>
-                    setFilters({ ...filters, age: e.target.value })
-                  }
-                />                
-                <input
-                  placeholder="Town"
-                  value={filters.town}
-                  onChange={(e) =>
-                    setFilters({ ...filters, town: e.target.value })
-                  }
-                />
-                <Button
-                  _hover={{
-                    bg: "accent.2",
-                  }}
-                  bgColor="accent.1"
-                  color="white"
-                  onClick={onFilter}
-                >
-                  Appliquer
-                </Button>
-                <Button
-                  bgColor="white"
-                  color="accent.1"
-                  onClick={onReset}
-                >
-                  Reset
-                </Button>
-              </form>
-            </HStack>
-
-            <IconButton
-              aria-label="ajouter un chat"
-              bgColor="accent.1"
-              color="white"
-              display="flex"
-              marginLeft="auto"
+          <HStack justifyContent="center" spacing={4}>
+            <select
+              value={filters.status}
+              onChange={(e) =>
+                setFilters({ ...filters, status: e.target.value })
+              }
+            >
+              {CONSTANTS?.status.map((s:any) => {
+               return <option value={s.value}>{s.label}</option>
+              })}
+            </select>
+            <select
+              value={filters.race}
+              onChange={(e) => setFilters({ ...filters, race: e.target.value })}
+            >
+              <option value="">Race</option>
+              {CONSTANTS?.races.map((g) => {
+               return <option value={g.value}>{g.label}</option>
+              })}
+            </select>
+            <select
+              value={filters.gender}
+              onChange={(e) =>
+                setFilters({ ...filters, gender: e.target.value })
+              }
+            >
+              <option value="">Gender</option>
+              {CONSTANTS?.genders.map((g) => {
+               return <option value={g.value}>{g.label}</option>
+              })}
+            </select>
+            <select
+              value={filters.town}
+              onChange={(e) => setFilters({ ...filters, town: e.target.value })}
+            >
+              <option value="">Villes</option>
+              {CONSTANTS?.towns.map((t) => {
+               return <option value={t.value}>{t.label}</option>
+              })}
+            </select>
+            <input
+              placeholder="Age"
+              type="number"
+              value={filters.age}
+              onChange={(e) => setFilters({ ...filters, age: e.target.value })}
+            />
+            <Button
               _hover={{
                 bg: "accent.2",
               }}
-              onClick={() => 
-                actions.setAdd(true)
-              }
-              icon={<CgAdd size={26} />}
-            />
+              bgColor="accent.1"
+              color="white"
+              w="10em"
+              onClick={onFilter}
+            >
+              Appliquer
+            </Button>
+            <Button bgColor="white" color="accent.1" onClick={onReset} w="6em">
+              Reset
+            </Button>
+          </HStack>
 
+          <IconButton
+            aria-label="ajouter un chat"
+            bgColor="accent.1"
+            color="white"
+            display="flex"
+            marginLeft="auto"
+            _hover={{
+              bg: "accent.2",
+            }}
+            onClick={() => actions.setAdd(true)}
+            icon={<CgAdd size={26} />}
+          />
 
           <Table
-            colorScheme="teal"
+            colorScheme="oange"
             emptyData={{
               icon: FiUser,
               text: "Aucune requête d'adoption !",
             }}
             totalRegisters={12}
-            onPageChange={(page) => console.log(page)}
+            onPageChange={(p) => onLoadCats(p)}
             columns={columns}
             data={tableData}
           />
@@ -367,6 +311,3 @@ export default function AdminList() {
     </>
   );
 }
-
-
-

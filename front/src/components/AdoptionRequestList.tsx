@@ -69,12 +69,8 @@ const USERS = [
 
 const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
   const [adoptionsReq, setAdoptionReq] = useState({
-    data: USERS,
+    data: [],
     isLoading: false,
-  });
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pages: 1,
   });
 
   const cat = useAction((state) => state.cat);
@@ -85,7 +81,7 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
     console.log(cat.id, userId);
     await fetechRequest(
       "GET",
-      `cat/adopt/${cat.id}/user/${userId}?page=${pagination.page}&size=2`
+      `cat/adopt/${cat.id}/user/${userId}`
     );
   };
   const onDenyAdoption = async (userId: number) => {
@@ -94,35 +90,32 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
     console.log(cat.id, userId);
     await fetechRequest(
       "DELETE",
-      `cat/adopt/${cat.id}/user/${userId}?page=${pagination.page}&size=2`
+      `cat/adopt/${cat.id}/user/${userId}`
     );
   };
-  const onLoadAdoptionRequets = async () => {
+  const onLoadAdoptionRequets = async (page = 1) => {
     setAdoptionReq({ ...adoptionsReq, isLoading: true });
     const { data, pagination: paginate } = await fetechRequest(
       "GET",
-      `cat/adopt/${cat.id}?page=${pagination.page}&size=2`
+      `cat/adopt/${cat.id}?page=${page}&size=2`
     );
-    setAdoptionReq({ ...adoptionsReq, isLoading: false });
-
-    setAdoptionReq(data);
-    setPagination({ pages: paginate.pages, page: paginate.page });
+    setAdoptionReq({ data, isLoading: false });
   };
 
-  const tableData = adoptionsReq.data.map((user: any) => ({
+  const tableData = adoptionsReq.data.map((req: any) => ({
     name: (
       <Flex align="center">
-        <Avatar name={user.name} src={user.picture} size="md" mr="4" />
-        <Text>{user.name}</Text>
+        <Avatar name={req.name} src={req.picture} size="md" mr="4" />
+        <Text>{req.name}</Text>
       </Flex>
     ),
-    date: user.date,
+    date: req.date,
     action: (
       <Menu>
         <MenuButton as={IconButton} icon={<CgOptions />}></MenuButton>
         <MenuList>
-          <MenuItem onClick={() => onDenyAdoption(user.id)}>Deny</MenuItem>
-          <MenuItem onClick={() => onAcceptAdoption(user.id)}>Accept</MenuItem>
+          <MenuItem onClick={() => onDenyAdoption(req.id)}>Deny</MenuItem>
+          <MenuItem onClick={() => onAcceptAdoption(req.id)}>Accept</MenuItem>
         </MenuList>
       </Menu>
     ),
@@ -136,7 +129,7 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
     }),
     columnHelper.accessor("date", {
       cell: (info) => info.getValue(),
-      header: "Race",
+      header: "Date",
     }),
     columnHelper.accessor("action", {
       cell: (info) => info.getValue(),
@@ -145,7 +138,7 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
   ];
 
   useEffect(() => {
-    // onLoadAdoptionRequets();
+    onLoadAdoptionRequets();
   }, []);
 
   const Body = (
@@ -160,7 +153,7 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
             text: "Aucune requête pour ce chat !",
           }}
           totalRegisters={12}
-          onPageChange={(page) => console.log(page)}
+          onPageChange={(p) => console.log(p)}
           columns={columns}
           data={tableData}
         />

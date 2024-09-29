@@ -1,5 +1,4 @@
 import { Prisma, PrismaClient } from '@prisma/client'
-// import { PrismaClient } from '@prisma/client/edge'
 import hash from './hash'
 const prisma = new PrismaClient()
 

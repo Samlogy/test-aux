@@ -182,6 +182,14 @@ async function createAdoptionRequestController(req: Request, res: Response) {
                 catId,
             },
         })
+        const updatedCat = await prisma.cat.update({
+            where: {
+              id: catId,
+            },
+            data: {
+              status: "PENDING",
+            },
+          });
         res.status(201).json({ succes: true, data: newReq })
     } catch (err) {
         console.error('Erreur lors de la création d"une requête d"adoption de chat :', err)

@@ -1,47 +1,41 @@
-import { Application } from 'express'
+import { Request, Response, NextFunction, Application } from 'express';
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 
-const options = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'Cat Adoption System',
-            version: '1.0.0',
-            description: 'Cat Adoption System is a Node.js API for managing cat adoption: create, edit, delete, listing, adopting',
-        },
-        servers:[
-            {url:'http://localhost:3001/api/v1'},
-        ],
-    },
-    apis: ['./src/routes/*.route.ts', './src/docs/v1/*.yml'],
-};
-
-const getOptions = (version: string) => {
+const options = (v:string) => {
     return {
         definition: {
             openapi: '3.0.0',
             info: {
                 title: 'Cat Adoption System',
-                version,
+                version: v,
                 description: 'Cat Adoption System is a Node.js API for managing cat adoption: create, edit, delete, listing, adopting',
             },
             servers:[
-                {url:'http://localhost:3001/api/v'+version},
+                {url:'http://localhost:3001/api/'+v},
             ],
         },
-        apis: ['./src/routes/*.route.ts', `./src/docs/v${version}/*.yml`],
-    };
+        apis: ['./src/routes/*.route.ts', `./src/docs/${v}/*.yml`],
+    }
+};
+
+export default function (app: Application) {
+
+    
+    app.use('/api-docs', (req: any, res: Response, next: NextFunction) => {
+        // const version = req.apiVersion;
+    
+       
+    
+        // if (version === 'v2') {
+        //     swaggerUi.serve(req, res, next);
+        //     swaggerUi.setup(swaggerJsdoc(options(version)), { explorer: true })(req, res, next);
+        // } else {
+        //     app.get('/', swaggerUi.serve,
+        //     swaggerUi.setup(swaggerJsdoc(options(version)), { explorer: true }))
+        // }
+
+        console.log(req.path)
+    });
 }
 
-
-
-
-
-export default function (app: Application, version:string) {    
-    const specsV1 = swaggerJsdoc(getOptions(version));
-    const specsV2 = swaggerJsdoc(getOptions(version));
-
-    app.use('/api/v1/doc', swaggerUi.serve, swaggerUi.setup(specsV1, {explorer: true})); 
-    app.use('/api/v2/doc', swaggerUi.serve, swaggerUi.setup(specsV2, {explorer: true})); 
-}

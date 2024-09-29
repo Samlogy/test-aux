@@ -8,25 +8,19 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
   Spinner,
   Stack,
-  Tag,
-  Text,
+  Text
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Table, createColumn } from "react-chakra-pagination";
-import { CgOptions, CgAdd } from "react-icons/cg";
+import { CgAdd, CgOptions } from "react-icons/cg";
 import { FiUser } from "react-icons/fi";
 import { CatAddEdit, CatDelete, CatDetails, Layout, View } from "../components";
 import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
 import useAction from "../store/useActionStore";
+import AdoptionRequestList from "../components/AdoptionRequestList";
 
 const DATA: ICat[] = [
   {
@@ -79,9 +73,10 @@ const DATA: ICat[] = [
   },
 ];
 
+interface ICatsList {data: ICat[], isLoading: boolean}
+
 export default function AdminList() {
-  // const [currentTab, setCurrentTab] = useState("all");
-  const [catsList, setCatsList] = useState<ICat[]>([]);
+  const [catsList, setCatsList] = useState<ICatsList>({data: [], isLoading: false});
   const [filters, setFilters] = useState({
     status: "all",
     race: "",
@@ -89,15 +84,15 @@ export default function AdminList() {
     gender: "",
     town: "",
   });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+  });
 
   const actions = useAction((state) => state.actions);
   const state = useAction((state) => state.state);
   const setCat = useAction((state) => state.setCat);
 
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pages: 1,
-  });
 
   const catStatus = (cat: ICat) => {
     return cat.status === "ADOPTABLE"
@@ -122,8 +117,8 @@ export default function AdminList() {
     })
   }
   const onFilter = () => {
-    return catsList.filter(
-      (cat) =>
+    return catsList.data.filter(
+      (cat:ICat) =>
         (filters.status === "all" || cat.status === filters.status) &&
         (!filters.race || cat.race.includes(filters.race)) &&
         (!filters.age || cat.age === Number(filters.age)) &&
@@ -147,10 +142,25 @@ export default function AdminList() {
     actions.setAdoptionList(true);
     setCat(cat);
   };
+  const onLoadCats = async () => {
+    setCatsList({...catsList, isLoading: true})
+    const { data, pagination: paginate } = await fetechRequest(
+      "GET",
+      `cat?page=${pagination.page}&size=2`
+    );
+    setCatsList({data: DATA, isLoading: false})
+    setPagination({ pages: paginate.pages, page: paginate.page });
+  };
 
   const closeAdoptReqs = () => {
     actions.setAdoptionList(false);
   };
+  const closeEdit = () =>  {
+    if (state.edit || state.add) {
+      actions.setEdit(false);
+      actions.setAdd(false);
+    }
+  }
 
   const tableData = onFilter().map((cat: ICat) => ({
     name: (
@@ -209,59 +219,13 @@ export default function AdminList() {
     }),
   ];
 
-  // const onFilter = (type: string) => setCurrentTab(type);
-
-  const [isLoading, setLoading] = useState(false);
-
-  const onCloseEdit = () =>
-    state.edit
-      ? actions.setEdit(false)
-      : state.add
-      ? actions.setAdd(false)
-      : null;
-
-  const isOpenEdit = (
-    state.edit ? state.edit : state.add ? state.add : null
-  ) as boolean;
-
-  const onLoadCats = async () => {
-    setLoading(true);
-    const { data, pagination: paginate } = await fetechRequest(
-      "GET",
-      `cat?page=${pagination.page}&size=2`
-    );
-
-    setLoading(false);
-
-    setCatsList(DATA);
-    setPagination({ pages: paginate.pages, page: paginate.page });
-
-    // setLoading(true);
-    // setCatsList(data);
-    // setPagination(pagination);
-    // setLoading(false);
-  };
-
+  
   useEffect(() => {
     onLoadCats();
   }, [pagination.page]);
 
-  const tabStyle: any = {
-    active: {
-      bgColor: "accent.1",
-      color: "white",
-      hover: "accent.2",
-    },
-    inactive: {
-      bgColor: "white",
-      color: "accent.1",
-      hover: "accent.2",
-    },
-  };
-  
-  // console.log("adopt; ", onFilter());
 
-  if (isLoading)
+  if (catsList.isLoading)
     return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;
   return (
     <>
@@ -386,10 +350,10 @@ export default function AdminList() {
         />
       </View>
 
-      <View cond={isOpenEdit}>
+      <View cond={state.edit || state.add}>
         <CatAddEdit
-          isOpen={isOpenEdit}
-          onClose={onCloseEdit}
+          isOpen={state.edit || state.add}
+          onClose={closeEdit}
           setCatsList={setCatsList}
         />
       </View>
@@ -404,156 +368,5 @@ export default function AdminList() {
   );
 }
 
-const AdoptionRequestList = ({ isOpen, onClose }: any) => {
-  const USERS = [
-    {
-      id: 1,
-      name: "sam",
-      date: "2024-05-22",
-      picture:
-        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-    },
-    {
-      id: 2,
-      name: "sam",
-      date: "2024-05-22",
-      picture:
-        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-    },
-    {
-      id: 3,
-      name: "sam",
-      date: "2024-05-22",
-      picture:
-        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-    },
-    {
-      id: 4,
-      name: "sam",
-      date: "2024-05-22",
-      picture:
-        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-    },
-    {
-      id: 5,
-      name: "sam",
-      date: "2024-05-22",
-      picture:
-        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-    },
-    {
-      id: 6,
-      name: "sam",
-      date: "2024-05-22",
-      picture:
-        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-    },
-  ];
 
-  const [adoptionsReq, setAdoptionReq] = useState({
-    data: USERS,
-    isLoading: false,
-  });
-  const [pagination, setPagination] = useState({
-    page: 1,
-    pages: 1,
-  });
 
-  const cat = useAction((state) => state.cat);
-
-  const onAcceptAdoption = async (userId: number) => {
-    // actions.setAdoptionAccept(true);
-    // call api
-    console.log(cat.id, userId);
-    await fetechRequest(
-      "GET",
-      `cat/adopt/${cat.id}/user/${userId}?page=${pagination.page}&size=2`
-    );
-  };
-  const onDenyAdoption = async (userId: number) => {
-    // actions.setAdoptionDeny(true);
-    // call api
-    console.log(cat.id, userId);
-    await fetechRequest(
-      "DELETE",
-      `cat/adopt/${cat.id}/user/${userId}?page=${pagination.page}&size=2`
-    );
-  };
-  const onLoadAdoptionRequets = async () => {
-    setAdoptionReq({ ...adoptionsReq, isLoading: true });
-    const { data, pagination: paginate } = await fetechRequest(
-      "GET",
-      `cat/adopt/${cat.id}?page=${pagination.page}&size=2`
-    );
-    setAdoptionReq({ ...adoptionsReq, isLoading: false });
-
-    setAdoptionReq(data);
-    setPagination({ pages: paginate.pages, page: paginate.page });
-  };
-
-  const tableData = adoptionsReq.data.map((user: any) => ({
-    name: (
-      <Flex align="center">
-        <Avatar name={user.name} src={user.picture} size="md" mr="4" />
-        <Text>{user.name}</Text>
-      </Flex>
-    ),
-    date: user.date,
-    action: (
-      <Menu>
-        <MenuButton as={IconButton} icon={<CgOptions />}></MenuButton>
-        <MenuList>
-          <MenuItem onClick={() => onDenyAdoption(user.id)}>Deny</MenuItem>
-          <MenuItem onClick={() => onAcceptAdoption(user.id)}>Accept</MenuItem>
-        </MenuList>
-      </Menu>
-    ),
-  }));
-
-  const columnHelper = createColumn<(typeof tableData)[0]>();
-  const columns = [
-    columnHelper.accessor("name", {
-      cell: (info) => info.getValue(),
-      header: "Name",
-    }),
-    columnHelper.accessor("date", {
-      cell: (info) => info.getValue(),
-      header: "Race",
-    }),
-    columnHelper.accessor("action", {
-      cell: (info) => info.getValue(),
-      header: "Actions",
-    }),
-  ];
-
-  useEffect(() => {
-    // onLoadAdoptionRequets();
-  }, []);
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Adoption List</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          {adoptionsReq.isLoading ? (
-            <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />
-          ) : (
-            <Table
-              colorScheme="brown"
-              emptyData={{
-                icon: FiUser,
-                text: "Aucune requête pour ce chat !",
-              }}
-              totalRegisters={12}
-              onPageChange={(page) => console.log(page)}
-              columns={columns}
-              data={tableData}
-            />
-          )}
-        </ModalBody>
-      </ModalContent>
-    </Modal>
-  );
-};

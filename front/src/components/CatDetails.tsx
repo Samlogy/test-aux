@@ -149,7 +149,7 @@ export default function CatDetails({
       isOpen={isOpen}
       onClose={onCloseDetails}
       body={Body}
-      size={["sm", "md", ""]}
+      size="xl"
     />
   );
 }

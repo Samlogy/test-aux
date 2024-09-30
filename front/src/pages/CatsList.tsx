@@ -1,29 +1,25 @@
 import {
-  Button,
   Flex,
   Heading,
   IconButton,
   Spinner,
   Text,
-  useBreakpointValue,
+  useBreakpointValue
 } from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { BsFilterLeft } from "react-icons/bs";
 import {
   Card,
-  CatAddEdit,
-  CatDelete,
   CatDetails,
   CustomDrawer,
   DisplayFilters,
   Filter,
   Layout,
   Pagination,
-  View,
+  View
 } from "../components";
 import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
-import storage from "../lib/storage";
 import useAction from "../store/useActionStore";
 import useFavCatstore from "../store/useFavCatsStore";
 import useFilterStore from "../store/useFilterStore";
@@ -33,19 +29,6 @@ export default function CatsList() {
   const state = useAction((state) => state.state);
 
   const [isLoading, setLoading] = useState(false);
-
-  const onCloseEdit = () =>
-    state.edit
-      ? actions.setEdit(false)
-      : state.add
-      ? actions.setAdd(false)
-      : null;
-
-  const isOpenEdit = (
-    state.edit ? state.edit : state.add ? state.add : null
-  ) as boolean;
-
-  const userData = useMemo(() => storage.getStorage("auth--chadopt")?.user, []);
 
   const isFav = useFavCatstore((state) => state.isFav);
   const catsFav = useFavCatstore((state) => state.cats);
@@ -71,8 +54,10 @@ export default function CatsList() {
     setLoading(true);
     const { data, pagination: paginate } = await fetechRequest(
       "GET",
-      `cat?page=${pagination.page}`
+      `cat?page=${pagination.page}&size=10`
     );
+
+    console.log('pagination => ', pagination)
 
     setLoading(false);
 
@@ -91,8 +76,6 @@ export default function CatsList() {
   useEffect(() => {
     onLoadCats();
   }, [isFav, catsFav, pagination.page]);
-
-  // console.log("List: ", catsList);
 
   if (isLoading)
     return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;
@@ -175,7 +158,7 @@ export default function CatsList() {
           <Pagination
             setPagination={setPagination}
             pagination={pagination}
-            isMobile={isMobile}
+            // isMobile={isMobile}
           />
         </View>
       </Layout>

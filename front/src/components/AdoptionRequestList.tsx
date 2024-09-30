@@ -150,7 +150,7 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
           colorScheme="brown"
           emptyData={{
             icon: FiUser,
-            text: "Aucune requête pour ce chat !",
+            text: "Aucune requête d'adoption pour ce chat !",
           }}
           totalRegisters={12}
           onPageChange={(p) => console.log(p)}

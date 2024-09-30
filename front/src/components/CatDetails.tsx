@@ -66,11 +66,13 @@ export default function CatDetails({
 
   const user = useAuthStore((state) => state.user);  
 
+  console.log('catt => ', currentCat)
+
   const BASE_URL = "http://localhost:3001/" + currentCat.picture;
   const Body = (
     <>
       {
-        !user.isAdmin ? <FavouriteButton cat={currentCat} /> : ""
+        !user.isAdmin ? <FavouriteButton cat={currentCat} /> : null
       }
       <Flex flexDir="column">
         <Flex flexDir={["column", "", "row"]} justifyContent="space-evenly">
@@ -101,8 +103,8 @@ export default function CatDetails({
                 value={getValueLabel(constants.races, currentCat?.race)}
               />
               <DisplayInfo
-                label="Sexe: "
-                value={getValueLabel(constants.genders, currentCat?.sex)}
+                label="Genre: "
+                value={getValueLabel(constants.genders, currentCat?.gender)}
               />
               <DisplayInfo label="Age: " value={currentCat?.age} />
               <DisplayInfo

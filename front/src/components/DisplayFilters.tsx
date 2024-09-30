@@ -9,7 +9,15 @@ interface IDisplayFilters {
   isMobile: boolean;
 }
 export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
-  const constants = useMemo(() => storage.getStorage("consts--chadopt"), []);
+  const CONSTANTS = useMemo(() => storage.getStorage("consts--chadopt"), []);
+
+  const displayValue = (key: string)  => {
+    if (key === "town") return CONSTANTS["towns"]
+    else if (key === "status") return CONSTANTS["status"]
+    else if (key === "race") return CONSTANTS["races"]
+    else if (key === "gender") return CONSTANTS["genders"]
+    else return null
+  }
 
   return (
     <Flex
@@ -20,12 +28,7 @@ export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
       ml={isMobile ? "1em" : "0"}
     >
       {Object.entries(filters).reduce((acc: any, [key, value]) => {
-        const arr =
-          key === "town"
-            ? constants["towns"]
-            : key === "status"
-            ? constants["status"]
-            : null;
+        const arr = displayValue(key)
         if (value !== "") {
           acc.push(
             <Box
@@ -40,7 +43,8 @@ export default function DisplayFilters({ filters, isMobile }: IDisplayFilters) {
               mr=".25em"
               textTransform="capitalize"
             >
-              {key !== "name" ? getValueLabel(arr, value) : value}
+              {key === "name" ? value : 
+               key === "age" ? `${value}ans` : getValueLabel(arr, value)}
             </Box>
           );
         }

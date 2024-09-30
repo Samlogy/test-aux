@@ -8,7 +8,14 @@ export function generateQuery(obj: any): string {
   return query.join("&");
 }
 
-export const getValueLabel = (arr: string[], value: string) => {
+export const getValueLabel = (arr, value) => {
+  // console.log('getValueLabel => ', arr, value)
+
+  if (!Array.isArray(arr)) {
+    console.error('getValueLabel => Invalid array', arr);
+    return null;
+  }
+
   const foundOption = arr.find((option) => option.value === value);
   return foundOption ? foundOption.label : null;
 };

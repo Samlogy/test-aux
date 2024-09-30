@@ -4,7 +4,7 @@ import fetechRequest from "../lib/api";
 import { generateQuery } from "../lib/functions";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
-import { IFilters } from "../store/useFilterStore";
+import { IFilters, INIT_FILTERS } from "../store/useFilterStore";
 import { InputField, SelectField } from "./";
 
 interface IFilterProps {
@@ -41,7 +41,7 @@ export default function Filter({
   };
 
   const onReset = async () => {
-    setFilters({ name: "", status: "", town: "" });
+    setFilters(INIT_FILTERS);
     const res = await fetechRequest("GET", `cat`);
     setCatsList(res.data);
     setPagination(res.pagination);
@@ -49,7 +49,7 @@ export default function Filter({
 
   const onSubmit = async () => {
     const query = generateQuery(filters);
-    const res = await fetechRequest("GET", `cat/filter?${query}`);
+    const res = await fetechRequest("GET", `cat?${query}`);
     setCatsList(res.data);
     setPagination(res.pagination);
   };
@@ -57,7 +57,7 @@ export default function Filter({
   return (
     <SimpleGrid columns={1} spacing={4}>
       <InputField
-        type="search"
+        type="text"
         name="name"
         onChange={onFilter}
         value={filters.name}
@@ -69,8 +69,8 @@ export default function Filter({
         onChange={onFilter}
         value={filters.town}
       >
-        {CONSTANTS?.towns.map((town, idx) => (
-          <option key={idx} value={town.value}>
+        {CONSTANTS?.towns.map((town) => (
+          <option key={town.value} value={town.value}>
             {town.label}
           </option>
         ))}
@@ -81,12 +81,46 @@ export default function Filter({
         onChange={onFilter}
         value={filters.status}
       >
-        {CONSTANTS?.status.map((status, idx) => (
-          <option key={idx} value={status.value}>
+        {CONSTANTS?.status.map((status) => (
+          <option key={status.value} value={status.value}>
             {status.label}
           </option>
         ))}
       </SelectField>
+
+      <SelectField
+        placeholder="Race"
+        name="race"
+        onChange={onFilter}
+        value={filters.race}
+      >
+        {CONSTANTS?.races.map((race) => (
+          <option key={race.value} value={race.value}>
+            {race.label}
+          </option>
+        ))}
+      </SelectField>
+
+      <SelectField
+        placeholder="Genre"
+        name="gender"
+        onChange={onFilter}
+        value={filters.gender}
+      >
+        {CONSTANTS?.genders.map((gender) => (
+          <option key={gender.value} value={gender.value}>
+            {gender.label}
+          </option>
+        ))}
+      </SelectField>
+
+      <InputField
+        type="number"
+        name="age"
+        onChange={onFilter}
+        value={filters.age}
+        placeholder="Age"
+      />
 
       <SimpleGrid columns={1} spacing={2} mt="2em">
         <Button
@@ -103,7 +137,6 @@ export default function Filter({
         <Button
           color="accent.1"
           bgColor="white"
-          // colorScheme="accent"
           onClick={onReset}
         >
           Reset

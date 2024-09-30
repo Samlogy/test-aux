@@ -1,5 +1,5 @@
 import { IconButton } from "@chakra-ui/react";
-import { MouseEvent, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
@@ -12,35 +12,30 @@ interface IFavouriteButton {
 }
 
 export default function FavouriteButton({ cat }: IFavouriteButton) {
-  const loadCats = () => storage.getStorage("favourite--chadopt") || [];
   const [isFav, setIsFav] = useState(false);
 
   const isFavState = useFavCatsStore((state) => state.isFav);
   const setFavCats = useFavCatsStore((state) => state.setFavCats);
-
   const user = useAuthStore((state) => state.user);  
 
-  const isFavourite = (cat: ICat) => {
-    return loadCats().some((c) => c.id === cat.id);
+  const loadCats = useCallback(() => storage.getStorage("favourite--chadopt"), [])
+
+  const isFavourite = (id: string | number | undefined) => {
+    return loadCats().some((c:ICat) => c.id === id);
   };
 
   const setIsFavourite = async (cat: ICat) => {
     const cats = loadCats();
-
     let newCats: ICat[];
 
-    if (isFavourite(cat)) {
-      newCats = cats.filter((el: ICat) => el.id !== cat.id);
+    if (isFavourite(cat.id)) {
+      newCats = cats.filter((c: ICat) => c.id !== cat.id);
     } else {
       newCats = [...cats, cat];
     }
     setFavCats({ isFav: isFavState, cats: newCats });
-
     storage.setStorage("favourite--chadopt", newCats);
-
-    console.log(`cat/fav/${cat.id}/user/${user.id}`);
-
-    await fetechRequest("POST", `cat/fav/${cat.id}/user/${user.id}`);
+    await fetechRequest("POST", `cat/favorite/${cat.id}/user/${user.id}`);
   };
 
   const handleFavourite = (e: MouseEvent) => {

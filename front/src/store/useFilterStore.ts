@@ -6,16 +6,24 @@ export type IFilters = {
     name: string;
     status: string;
     town: string;
+    race: string;
+    gender: string;
+    age: number;
   };
   setFilters: (f: any) => void;
 };
 
+export const INIT_FILTERS = {
+  name: "",
+  status: "",
+  town: "",
+  race: "",
+  gender: "",
+  age: "",
+}
+
 let filterStore = (set) => ({
-  filters: {
-    name: "",
-    status: "",
-    town: "",
-  },
+  filters: INIT_FILTERS,
   setFilters: (f: any) => set(() => ({ filters: { ...f } })),
 });
 

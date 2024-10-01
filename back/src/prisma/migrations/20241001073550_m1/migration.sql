@@ -20,7 +20,7 @@ CREATE TABLE "Cat" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "race" TEXT NOT NULL,
-    "sex" "GENDER" NOT NULL,
+    "gender" "GENDER" NOT NULL,
     "age" INTEGER NOT NULL,
     "town" TEXT NOT NULL,
     "picture" TEXT NOT NULL,
@@ -42,6 +42,9 @@ CREATE TABLE "FavCat" (
 CREATE TABLE "ReqAdopt" (
     "userId" INTEGER NOT NULL,
     "catId" INTEGER NOT NULL,
+    "picture" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ReqAdopt_pkey" PRIMARY KEY ("userId","catId")
 );

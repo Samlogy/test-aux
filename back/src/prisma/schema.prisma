@@ -47,6 +47,8 @@ model FavCat {
 model ReqAdopt {
   userId Int
   catId  Int
+  picture String
+  name String
   createdAt DateTime @default(now())
 
   @@id([userId, catId])

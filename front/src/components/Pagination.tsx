@@ -10,13 +10,13 @@ type PaginationProps = {
     }>
   >;
   pagination: { page: number; pages: number };
-  isMobile: boolean;
+  // isMobile: boolean;
 };
 
 export default function Pagination({
   setPagination,
   pagination,
-  isMobile = false,
+  // isMobile = false,
 }: PaginationProps) {
   const { page, pages: totalPages } = pagination;
 
@@ -30,9 +30,9 @@ export default function Pagination({
     setPagination({ ...pagination, page: page - 1 });
   };
 
-  const onLoadMore = () => (page === totalPages ? onPrev() : onNext());
+  // const onLoadMore = () => (page === totalPages ? onPrev() : onNext());
 
-  console.log("page: ", page);
+  // const isMobile = false
 
   return (
     <Flex
@@ -42,7 +42,7 @@ export default function Pagination({
       w="10.5em"
       m="1.5rem auto"
     >
-      <View cond={isMobile}>
+      {/* <View cond={isMobile}>
         <Flex>
           <Button
             onClick={onLoadMore}
@@ -53,9 +53,9 @@ export default function Pagination({
             {page === totalPages ? "Load Less" : "Load More"}
           </Button>
         </Flex>
-      </View>
+      </View> */}
 
-      <View cond={!isMobile}>
+      <View cond={true}>
         <IconButton
           aria-label="arrow-left"
           icon={<RiArrowLeftSLine size="22" color="black" />}

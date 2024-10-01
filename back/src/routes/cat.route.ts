@@ -24,15 +24,9 @@ export default function (route: string, app: Application) {
         catchAsync(controllers.setFavoriteCatController)
     )
     app.get(
-        route + '/favorite/:catId/user/:userId',
+        route + '/favorite/user/:userId',
         // auth.authenticate,
         catchAsync(controllers.getFavoriteCatController)
-    )
-    app.get(
-        route + '/popularity/:catId',
-        // auth.authenticate,
-        // auth.authorize,
-        catchAsync(controllers.getCatPopularityController)
     )
 
     app.post(

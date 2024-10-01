@@ -113,13 +113,12 @@ const TOWNS = [
     { label: 'Mulhouse', value: 'mulhouse' },
     { label: 'Caen', value: 'caen' },
     { label: 'Nancy', value: 'nancy' },
-    { label: 'Saint-Denis', value: 'saint_denis' },
     { label: 'Argenteuil', value: 'argenteuil' },
     { label: 'Montreuil', value: 'montreuil' },
     { label: 'Roubaix', value: 'roubaix' },
     { label: 'Dunkerque', value: 'dunkerque' },
-    { label: 'Avignon', value: 'avignon' },
-]
+    { label: 'Avignon', value: 'avignon' }
+  ]
 const STATUS = [
     {
         label: 'Adoptable',
@@ -130,8 +129,8 @@ const STATUS = [
         value: 'ADOPTED',
     },
     {
-        value: 'PENDING',
         label: "En cours d'adoption",
+        value: 'PENDING',
     },
 ]
 

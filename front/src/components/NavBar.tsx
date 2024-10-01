@@ -101,7 +101,7 @@ export default function NavBar() {
           </HStack>
         </HStack>
         {
-          !user.isAdmin ? <FavBtn /> : ""
+          !user.isAdmin ? <FavBtn /> : null
         }
         <LogoutButton />
       </Flex>

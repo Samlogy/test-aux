@@ -28,6 +28,7 @@ model Cat {
   town        String
   picture     String
   status      STATUS
+  popularity  Int       @default(0)
   users       User[]
   favCats  FavCat[]
   reqAdopts ReqAdopt[]

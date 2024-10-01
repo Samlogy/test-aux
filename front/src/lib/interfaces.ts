@@ -9,4 +9,5 @@ export interface ICat {
   picture: string;
   status: string;
   isReqAdopt?: boolean;
+  popularity: number;
 }

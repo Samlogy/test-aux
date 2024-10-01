@@ -18,14 +18,14 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
   const setFavCats = useFavCatsStore((state) => state.setFavCats);
   const user = useAuthStore((state) => state.user);  
 
-  const loadCats = useCallback(() => storage.getStorage("favourite--chadopt"), [])
+  const onLoadfavoriteCats = useMemo(() => storage.getStorage("favourite--chadopt") || [], [])
 
-  const isFavourite = (id: string | number | undefined) => {
-    return loadCats().some((c:ICat) => c.id === id);
-  };
+  const isFavourite = useCallback((id: string | number | undefined) => {
+    return onLoadfavoriteCats.some((c:ICat) => c.id === id);
+  }, [onLoadfavoriteCats])
 
-  const setIsFavourite = async (cat: ICat) => {
-    const cats = loadCats();
+  const setIsFavourite = useCallback(async (cat: ICat) => {
+    const cats = onLoadfavoriteCats;
     let newCats: ICat[];
 
     if (isFavourite(cat.id)) {
@@ -33,19 +33,25 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
     } else {
       newCats = [...cats, cat];
     }
+
     setFavCats({ isFav: isFavState, cats: newCats });
     storage.setStorage("favourite--chadopt", newCats);
-    await fetechRequest("POST", `cat/favorite/${cat.id}/user/${user.id}`);
-  };
 
-  const handleFavourite = (e: MouseEvent) => {
-    setIsFav(!isFav);
-    setIsFavourite(cat);
-    e.stopPropagation();
-  };
+    // Async request to save favorite status
+    await fetechRequest("POST", `cat/favorite/${cat.id}/user/${user.id}`);
+  }, [cat, isFavState, isFavourite, onLoadfavoriteCats, setFavCats, user.id]);
+
+  const handleFavourite = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation(); 
+      setIsFav((prev) => !prev); 
+      setIsFavourite(cat);
+    },
+    [cat, setIsFavourite]
+  );
 
   useEffect(() => {
-    setIsFav(loadCats().some((c) => c.id === cat.id));
+    setIsFav(onLoadfavoriteCats.some((c) => c.id === cat.id));
   }, []);
 
   return (

@@ -6,7 +6,7 @@ import {
   Text,
   useBreakpointValue
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BsFilterLeft } from "react-icons/bs";
 import {
   Card,
@@ -23,6 +23,7 @@ import { ICat } from "../lib/interfaces";
 import useAction from "../store/useActionStore";
 import useFavCatstore from "../store/useFavCatsStore";
 import useFilterStore from "../store/useFilterStore";
+import useAuthStore from "../store/useAuthStore";
 
 export default function CatsList() {
   const actions = useAction((state) => state.actions);
@@ -35,8 +36,9 @@ export default function CatsList() {
 
   const filters = useFilterStore((state) => state.filters);
   const setFilters = useFilterStore((state) => state.setFilters);
+  const user = useAuthStore(state => state.user)
 
-  const [catsList, setCatsList] = useState(isFav ? catsFav : []);
+  const [catsList, setCatsList] = useState<ICat[]>([]);
   const [isOpen, setOpen] = useState(false);
 
   const isMobile = useBreakpointValue({
@@ -50,32 +52,30 @@ export default function CatsList() {
     pages: 1,
   });
 
-  const onLoadCats = async () => {
+  const fetchCats = useCallback(async () => {
     setLoading(true);
-    const { data, pagination: paginate } = await fetechRequest(
-      "GET",
-      `cat?page=${pagination.page}&size=10`
-    );
+    const endpoint = isFav
+      ? `cat/favorite/user/${user.id}`
+      : `cat?page=${pagination.page}&size=10`;
 
-    console.log('pagination => ', pagination)
-
-    setLoading(false);
-
-    setCatsList(data);
-    setPagination({ pages: paginate.pages, page: paginate.page });
+    const { data, pagination: paginate } = await fetechRequest("GET", endpoint);
+    
+    console.log('pagination => ', paginate, catsFav);
 
     if (isFav) setCatsList(catsFav);
-    if (!isFav) {
-      setLoading(true);
-      setCatsList(data);
-      setPagination(pagination);
-      setLoading(false);
-    }
-  };
+    else setCatsList(data);
+
+    setPagination({
+      pages: paginate.pages,
+      page: paginate.page,
+    });
+
+    setLoading(false);
+  }, [isFav, pagination.page, catsFav]);
 
   useEffect(() => {
-    onLoadCats();
-  }, [isFav, catsFav, pagination.page]);
+    fetchCats();
+  }, [fetchCats]);
 
   if (isLoading)
     return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;

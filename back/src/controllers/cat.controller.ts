@@ -55,11 +55,11 @@ async function filtersCatsController(req: AuthenticatedRequest, res: Response) {
 async function getCatDetailsById(req: AuthenticatedRequest, res: Response) {
     try {
         const id = Number(req.params.id)
-        
+
         const catExist = await prisma.cat.findUnique({
             where: { id },
         })
-        
+
         if (!catExist) {
             return res.status(404).json({ error: "Ce chat n'existe pas" })
         }
@@ -87,16 +87,16 @@ async function setFavoriteCatController(req: Request, res: Response) {
         const existingFavorite = await prisma.favCat.findUnique({
             where: { userId_catId: { userId, catId } },
         })
-        
+
         // set cat to favorite
-        if (!existingFavorite) { 
+        if (!existingFavorite) {
             await prisma.favCat.create({
                 data: {
                     userId,
                     catId,
                 },
             })
-            
+
             return res.status(204).json()
         }
 
@@ -115,35 +115,27 @@ async function setFavoriteCatController(req: Request, res: Response) {
 }
 async function getFavoriteCatController(req: Request, res: Response) {
     try {
+        let { page = 1, size = 10 } = req.query
+
         const userId = Number(req.params.userId)
-        const catId = Number(req.params.catId)
+        // const catId = Number(req.params.catId)
 
         const data = await prisma.favCat.findMany({
-            where: {  userId, catId  },
+            where: { userId },
         })
-        
-        return res.status(200).json({ success: true, data })
-    } catch (err) {
-        console.error('Erreur lors de la récupération de la liste des chat en favoris favoris: ', err)
-        res.status(500).json({
-            success: false,
-            error: 'Erreur interne du serveur',
-        })
-    }
-}
-async function getCatPopularityController(req: Request, res: Response) {
-    try {
-        const catId = Number(req.params.catId)
 
-        const popularity = await prisma.reqAdopt.count({
-            where: {
-              catId: catId,
-            },
-        });
-        
-        return res.status(200).json({success: true, data: popularity})
+        const result = await paginateData(
+            Number(page),
+            Number(size),
+            prisma.favCat
+        )
+
+        return res.status(200).json({ success: true,  data: result })
     } catch (err) {
-        console.error('Erreur lors de la favorisation du chat :', err)
+        console.error(
+            'Erreur lors de la récupération de la liste des chat en favoris favoris: ',
+            err
+        )
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -153,7 +145,7 @@ async function getCatPopularityController(req: Request, res: Response) {
 
 async function getAdoptionRequestsController(req: Request, res: Response) {
     try {
-        const catId = Number(req.params.catId);
+        const catId = Number(req.params.catId)
         let { page = 1, size = 10 } = req.query
 
         const result = await paginateData(
@@ -162,6 +154,7 @@ async function getAdoptionRequestsController(req: Request, res: Response) {
             prisma.reqAdopt,
             catId
         )
+
         res.status(200).json({ success: true, data: result })
     } catch (err) {
         console.error('Erreur lors de la mise à jour des données par ID :', err)
@@ -184,15 +177,21 @@ async function createAdoptionRequestController(req: Request, res: Response) {
         })
         const updatedCat = await prisma.cat.update({
             where: {
-              id: catId,
+                id: catId,
             },
             data: {
-              status: "PENDING",
+                status: 'PENDING',
+                popularity: {
+                    increment: 1,
+                }
             },
-          });
-        res.status(201).json({ succes: true, data: newReq })
+        })
+        res.status(201).json({ succes: true, data: updatedCat })
     } catch (err) {
-        console.error('Erreur lors de la création d"une requête d"adoption de chat :', err)
+        console.error(
+            'Erreur lors de la création d"une requête d"adoption de chat :',
+            err
+        )
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -216,12 +215,12 @@ async function acceptAdoptionRequestController(req: Request, res: Response) {
 
         const updatedCat = await prisma.cat.update({
             where: {
-              id: catId,
+                id: catId,
             },
             data: {
-              status: "ADOPTED",
+                status: 'ADOPTED',
             },
-          });
+        })
 
         await prisma.reqAdopt.delete({
             where: { userId_catId: { userId, catId } },
@@ -229,7 +228,10 @@ async function acceptAdoptionRequestController(req: Request, res: Response) {
 
         res.status(201).json({ succes: true, data: updatedCat })
     } catch (err) {
-        console.error('Erreur lors dé l"acceptation de la requête d"adoption du chat :', err)
+        console.error(
+            'Erreur lors dé l"acceptation de la requête d"adoption du chat :',
+            err
+        )
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -257,7 +259,10 @@ async function denyAdoptionRequestController(req: Request, res: Response) {
 
         res.status(204).json()
     } catch (err) {
-        console.error('Erreur lors du refus de la requete d"adoption du chat: ', err)
+        console.error(
+            'Erreur lors du refus de la requete d"adoption du chat: ',
+            err
+        )
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -319,7 +324,10 @@ async function putCatByIdController(req: Request, res: Response) {
         })
         res.status(201).json({ success: true, data: updatedCat })
     } catch (err) {
-        console.error('Erreur lors de la mise à jour des données du chat par ID :', err)
+        console.error(
+            'Erreur lors de la mise à jour des données du chat par ID :',
+            err
+        )
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -333,7 +341,9 @@ async function deleteCatByIdController(req: Request, res: Response) {
             where: { id },
         })
         if (!chatExistante) {
-            return res.status(404).json({ success: false, error: "Ce chat n'existe pas" })
+            return res
+                .status(404)
+                .json({ success: false, error: "Ce chat n'existe pas" })
         }
 
         await prisma.cat.delete({
@@ -341,10 +351,7 @@ async function deleteCatByIdController(req: Request, res: Response) {
         })
         res.status(204).json()
     } catch (error) {
-        console.error(
-            'Erreur lors de la suppression du chat par ID :',
-            error
-        )
+        console.error('Erreur lors de la suppression du chat par ID :', error)
         res.status(500).json({
             success: false,
             error: 'Erreur interne du serveur',
@@ -357,7 +364,6 @@ export default {
     filtersCatsController,
     setFavoriteCatController,
     getFavoriteCatController,
-    getCatPopularityController,
 
     getAdoptionRequestsController,
     createAdoptionRequestController,

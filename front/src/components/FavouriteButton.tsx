@@ -4,7 +4,6 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
-import useAuthStore from "../store/useAuthStore";
 import useFavCatsStore from "../store/useFavCatsStore";
 
 interface IFavouriteButton {
@@ -15,9 +14,9 @@ export default function FavouriteButton({ cat }: IFavouriteButton) {
   const [isFav, setIsFav] = useState(false);
 
   const isFavState = useFavCatsStore((state) => state.isFav);
-  const setFavCats = useFavCatsStore((state) => state.setFavCats);
-  const user = useAuthStore((state) => state.user);  
+  const setFavCats = useFavCatsStore((state) => state.setFavCats); 
 
+  const user = useMemo(() => storage.getStorage("auth--chadopt").user, []);
   const onLoadfavoriteCats = useMemo(() => storage.getStorage("favourite--chadopt") || [], [])
 
   const isFavourite = useCallback((id: string | number | undefined) => {

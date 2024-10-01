@@ -8,7 +8,7 @@ import {
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { ReactNode, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import {
   AiFillHeart,
   AiOutlineClose,
@@ -20,7 +20,6 @@ import { Logo, LogoutButton, View } from "../components";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
 import useFavCatsStore from "../store/useFavCatsStore";
-import useAuthStore from "../store/useAuthStore";
 
 const Links = [
   {
@@ -62,7 +61,7 @@ export default function NavBar() {
 
   const isVisible = useBreakpointValue({ base: false, md: true });
 
-  const user = useAuthStore((state) => state.user);  
+  const user = useMemo(() => storage.getStorage("auth--chadopt").user, []);
 
   const menuIcon = (
     <Flex justify="center" align="center">

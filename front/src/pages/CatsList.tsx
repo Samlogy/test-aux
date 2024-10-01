@@ -6,7 +6,7 @@ import {
   Text,
   useBreakpointValue
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BsFilterLeft } from "react-icons/bs";
 import {
   Card,
@@ -20,10 +20,10 @@ import {
 } from "../components";
 import fetechRequest from "../lib/api";
 import { ICat } from "../lib/interfaces";
+import storage from "../lib/storage";
 import useAction from "../store/useActionStore";
 import useFavCatstore from "../store/useFavCatsStore";
 import useFilterStore from "../store/useFilterStore";
-import useAuthStore from "../store/useAuthStore";
 
 export default function CatsList() {
   const actions = useAction((state) => state.actions);
@@ -36,7 +36,8 @@ export default function CatsList() {
 
   const filters = useFilterStore((state) => state.filters);
   const setFilters = useFilterStore((state) => state.setFilters);
-  const user = useAuthStore(state => state.user)
+  // const user = useAuthStore(state => state.user)
+  const user = useMemo(() => storage.getStorage("auth--chadopt").user, []);
 
   const [catsList, setCatsList] = useState<ICat[]>([]);
   const [isOpen, setOpen] = useState(false);
@@ -76,6 +77,8 @@ export default function CatsList() {
   useEffect(() => {
     fetchCats();
   }, [fetchCats]);
+
+  // console.log('catsList => ', catsList)
 
   if (isLoading)
     return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;

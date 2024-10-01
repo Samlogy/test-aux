@@ -2,11 +2,10 @@ import { Box, Button, Flex, Image, SimpleGrid } from "@chakra-ui/react";
 import { useMemo } from "react";
 import fetechRequest from "../lib/api";
 import { getValueLabel } from "../lib/functions";
+import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
 import useActionStore, { INIT_CAT } from "../store/useActionStore";
-import { CustomModal, FavouriteButton } from "./";
-import { ICat } from "../lib/interfaces";
-import useAuthStore from "../store/useAuthStore";
+import { CustomModal, FavouriteButton, View } from "./";
 
 interface ICatDetailsProps {
   isOpen: boolean;
@@ -26,18 +25,20 @@ export default function CatDetails({
   const currentCat = useActionStore((state) => state.cat);
   const setCat = useActionStore((state) => state.setCat);
 
-  const userData = useMemo(() => storage.getStorage("auth--chadopt").user, []);
-  const constants = useMemo(() => storage.getStorage("consts--chadopt"), []);
-
-  const userIdVisitor = !userData.isAdmin && userData.id;
+  const user = useMemo(() => storage.getStorage("auth--chadopt").user, []);
+  const CONSTANTS = useMemo(() => storage.getStorage("consts--chadopt"), []);
 
   const onCloseDetails = () => {
     onClose();
     setCat(INIT_CAT);
   };
 
-  const onAdopt = async (userId: number) => {
-    await fetechRequest("POST", `cat/adopt/${currentCat?.id}/user/${userId}`);
+  const onAdopt = async () => {
+    const payload = {
+      userId: user.id,
+      catId: currentCat.id
+    }
+    await fetechRequest("POST", `cat/adopt`, payload);
 
     setCatsList((prev) =>
       prev.map((c) => {
@@ -47,11 +48,10 @@ export default function CatDetails({
         return c;
       })
     );
-
     onCloseDetails();
   };
-  const onCancel = async (userId: number) => {
-    await fetechRequest("DELETE", `cat/adopt/${currentCat?.id}/user/${userId}`);
+  const onCancel = async () => {
+    await fetechRequest("DELETE", `cat/adopt/${currentCat?.id}/user/${user.id}`);
 
     setCatsList((prev) =>
       prev.map((c) => {
@@ -63,8 +63,6 @@ export default function CatDetails({
     );
     onCloseDetails();
   };
-
-  const user = useAuthStore((state) => state.user);  
 
   console.log('catt => ', currentCat)
 
@@ -92,19 +90,19 @@ export default function CatDetails({
               <DisplayInfo label="Nom: " value={currentCat?.name} />
               <DisplayInfo
                 label="Statut: "
-                value={getValueLabel(constants.status, currentCat?.status)}
+                value={getValueLabel(CONSTANTS.status, currentCat?.status)}
               />
               <DisplayInfo
                 label="Ville: "
-                value={getValueLabel(constants.towns, currentCat?.town)}
+                value={getValueLabel(CONSTANTS.towns, currentCat?.town)}
               />
               <DisplayInfo
                 label="Race: "
-                value={getValueLabel(constants.races, currentCat?.race)}
+                value={getValueLabel(CONSTANTS.races, currentCat?.race)}
               />
               <DisplayInfo
                 label="Genre: "
-                value={getValueLabel(constants.genders, currentCat?.gender)}
+                value={getValueLabel(CONSTANTS.genders, currentCat?.gender)}
               />
               <DisplayInfo label="Age: " value={currentCat?.age} />
               <DisplayInfo
@@ -125,15 +123,15 @@ export default function CatDetails({
           </Flex>
         </Flex>
 
-        {!userData.isAdmin && currentCat.status !== "ADOPTED" && (
+        {/* {!user.isAdmin && currentCat.status !== "ADOPTED" ? (
           <Button
             color={currentCat?.isReqAdopt ? "accent.1" : "white"}
             bgColor={currentCat?.isReqAdopt ? "white" : "accent.1"}
             _hover={{ bg: currentCat?.isReqAdopt ? "gray.100" : "accent.2" }}
             onClick={() =>
-              !currentCat?.isReqAdopt
-                ? onAdopt(userIdVisitor)
-                : onCancel(userIdVisitor)
+              currentCat?.isReqAdopt
+                ? onCancel(userIdVisitor)
+                : onAdopt(userIdVisitor)
             }
             m="1em  auto 0 auto"
             display="flex"
@@ -141,7 +139,25 @@ export default function CatDetails({
           >
             {!currentCat?.isReqAdopt ? "Adopter" : "Annuler"}
           </Button>
-        )}
+        ) : null} */}
+
+        <View cond={!user.isAdmin && currentCat.status !== "ADOPTED"}>
+          <Button
+            color={currentCat?.isReqAdopt ? "accent.1" : "white"}
+            bgColor={currentCat?.isReqAdopt ? "white" : "accent.1"}
+            _hover={{ bg: currentCat?.isReqAdopt ? "gray.100" : "accent.2" }}
+            onClick={() =>
+              currentCat?.isReqAdopt
+                ? onCancel()
+                : onAdopt()
+            }
+            m="1em  auto 0 auto"
+            display="flex"
+            w="50%"
+          >
+            {currentCat?.isReqAdopt ? "Annuler" : "Adopter"}
+          </Button>
+        </View>
       </Flex>
     </>
   );

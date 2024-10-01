@@ -22,50 +22,6 @@ interface IAdoptionRequestList {
   onClose: () => void;
 }
 
-const USERS = [
-  {
-    id: 1,
-    name: "sam",
-    date: "2024-05-22",
-    picture:
-      "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-  },
-  {
-    id: 2,
-    name: "sam",
-    date: "2024-05-22",
-    picture:
-      "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-  },
-  {
-    id: 3,
-    name: "sam",
-    date: "2024-05-22",
-    picture:
-      "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-  },
-  {
-    id: 4,
-    name: "sam",
-    date: "2024-05-22",
-    picture:
-      "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-  },
-  {
-    id: 5,
-    name: "sam",
-    date: "2024-05-22",
-    picture:
-      "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-  },
-  {
-    id: 6,
-    name: "sam",
-    date: "2024-05-22",
-    picture:
-      "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-  },
-];
 
 const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
   const [adoptionsReq, setAdoptionReq] = useState({
@@ -95,27 +51,39 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
   };
   const onLoadAdoptionRequets = async (page = 1) => {
     setAdoptionReq({ ...adoptionsReq, isLoading: true });
-    const { data, pagination: paginate } = await fetechRequest(
+    const { data } = await fetechRequest(
       "GET",
       `cat/adopt/${cat.id}?page=${page}&size=2`
     );
-    setAdoptionReq({ data, isLoading: false });
+    const newData = data.map(d => {
+      const dateTime = new Date(d.createdAt);
+      const date = dateTime.toLocaleDateString()
+      const time = dateTime.toLocaleTimeString()
+      return {
+        ...d, 
+        picture:
+        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+        createdAt: date + " " + time
+      }
+    })
+    console.log('newData => ', newData)
+    setAdoptionReq({ data: newData, isLoading: false });
   };
 
   const tableData = adoptionsReq.data.map((req: any) => ({
     name: (
       <Flex align="center">
         <Avatar name={req.name} src={req.picture} size="md" mr="4" />
-        <Text>{req.name}</Text>
+        <Text fontSize=".9rem">{req.name}</Text>
       </Flex>
     ),
-    date: req.date,
+    date: <Text fontSize=".9rem">{req.createdAt}</Text>,
     action: (
       <Menu>
         <MenuButton as={IconButton} icon={<CgOptions />}></MenuButton>
         <MenuList>
-          <MenuItem onClick={() => onDenyAdoption(req.id)}>Deny</MenuItem>
-          <MenuItem onClick={() => onAcceptAdoption(req.id)}>Accept</MenuItem>
+          <MenuItem onClick={() => onDenyAdoption(req.userId)}>Deny</MenuItem>
+          <MenuItem onClick={() => onAcceptAdoption(req.userId)}>Accept</MenuItem>
         </MenuList>
       </Menu>
     ),

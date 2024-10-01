@@ -36,7 +36,9 @@ export default function CatDetails({
   const onAdopt = async () => {
     const payload = {
       userId: user.id,
-      catId: currentCat.id
+      catId: currentCat.id,
+      name: user.email.split('@')[0],
+      picture: user.picture ? user.picture : ""
     }
     await fetechRequest("POST", `cat/adopt`, payload);
 

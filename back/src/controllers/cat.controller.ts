@@ -148,12 +148,16 @@ async function getAdoptionRequestsController(req: Request, res: Response) {
         const catId = Number(req.params.catId)
         let { page = 1, size = 10 } = req.query
 
-        const result = await paginateData(
-            Number(page),
-            Number(size),
-            prisma.reqAdopt,
-            catId
-        )
+        const result = await prisma.reqAdopt.findMany({
+            where: {
+              catId,
+            },
+            skip: (Number(page) - 1) * Number(size), 
+            take: Number(size),
+            orderBy: {
+              createdAt: 'desc', 
+            },
+          });
 
         res.status(200).json({ success: true, data: result })
     } catch (err) {
@@ -166,13 +170,14 @@ async function getAdoptionRequestsController(req: Request, res: Response) {
 }
 async function createAdoptionRequestController(req: Request, res: Response) {
     try {
-        const catId = Number(req.body.catId)
-        const userId = Number(req.body.userId)
+        const {name, picture, userId, catId} = req.body
 
         const newReq = await prisma.reqAdopt.create({
             data: {
-                userId,
-                catId,
+                userId: Number(userId),
+                catId: Number(catId),
+                picture,
+                name
             },
         })
         const updatedCat = await prisma.cat.update({
@@ -247,15 +252,26 @@ async function denyAdoptionRequestController(req: Request, res: Response) {
             where: { userId_catId: { userId, catId } },
         })
 
+        console.log('existingRequest => ', existingRequest)
+
         if (!existingRequest) {
             return res.status(400).json({
                 error: "Il n y a aucune demande d'adoption pour ce chat !",
             })
         }
 
-        await prisma.reqAdopt.delete({
-            where: { userId_catId: { userId, catId } },
-        })
+        // await prisma.reqAdopt.delete({
+        //     where: { userId_catId: { userId, catId } },
+        // })
+
+        // const updatedCat = await prisma.cat.update({
+        //     where: {
+        //         id: catId,
+        //     },
+        //     data: {
+        //         status: 'ADOPTABLE',
+        //     },
+        // })
 
         res.status(204).json()
     } catch (err) {

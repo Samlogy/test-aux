@@ -98,9 +98,9 @@ export default function AdminList() {
   };
   const onLoadCats = async (page = 1) => {
     setCatsList({ ...catsList, isLoading: true });
-    const { data, pagination: paginate } = await fetechRequest(
+    const { data } = await fetechRequest(
       "GET",
-      `cat?page=${page}&size=2`
+      `cat?page=${page}&size=10`
     );
     setCatsList({ data, isLoading: false });
   };
@@ -171,6 +171,8 @@ export default function AdminList() {
       header: "Actions",
     }),
   ];
+
+  console.log('cats => ', catsList)
 
   useEffect(() => {
     onLoadCats();
@@ -265,10 +267,10 @@ export default function AdminList() {
           />
 
           <Table
-            colorScheme="oange"
+            colorScheme="blue"
             emptyData={{
               icon: FiUser,
-              text: "Aucune requête d'adoption !",
+              text: "Aucun chat disponible !",
             }}
             totalRegisters={12}
             onPageChange={(p) => onLoadCats(p)}

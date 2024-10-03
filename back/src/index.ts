@@ -9,24 +9,22 @@ import constsRoutes from './routes/consts.route'
 import healthRoute from './routes/health.route'
 import userRoutes from './routes/user.route'
 
-import apiVersion from './middlewares/apiVersion'
 import globalErrorHandler from './middlewares/error'
 
 import AppError from './utils/appError'
 import corsOptions from './utils/corsOptions'
 import docSwagger from "./utils/doc"
 import checkSignals, { signals } from './utils/gracefullShutdown'
-import initDb, { deleteData } from './utils/initDb'
 import logger from './utils/logger'
 
 require('dotenv').config({ path: '../.env' })
 
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'
-const HTTP_PORT = Number(process.env.HTTP_PORT as string) || ''
+const HTTP_PORT = 3001//Number(process.env.HTTP_PORT as string) || ''
 const HTTPS_PORT = Number(process.env.HTTPS_PORT as string) || ''
 const HOST_DEV = process.env.HOST_DEV as string || "";
-const HOST_PROD = process.env.HOST_PROD as string || "";
+const HOST_PROD = 'localhost' //process.env.HOST_PROD as string || "";
 const COOKIE_EXPIRESIN = parseInt(process.env.COOKIE_EXPIRESIN as string)
 const SESSION_SECRET = process.env.SESSION_SECRET || ""
 
@@ -50,10 +48,6 @@ export const createHttpsServer = (app: Application) => {
 
         checkSignals(server, signals)
 
-        // init db
-        initDb()
-        // deleteData()
-
         // Routes
         healthRoute('/api/v1/health', app)
         catRoutes('/api/v1/cat', app)
@@ -73,10 +67,6 @@ export const createHttpServer = (app: Application) => {
         logger.info(`Server: ${HTTP_PORT} => ${NODE_ENV}`)
 
         checkSignals(server, signals)
-
-        // init db
-        // initDb()
-        // deleteData()
 
 
         // app.use(apiVersion);

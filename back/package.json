@@ -1,10 +1,9 @@
 {
     "name": "express-ts-boilerplate",
     "version": "1.0.0",
-    "main": "index.ts",
     "license": "MIT",
     "dependencies": {
-        "@prisma/client": "^5.8.1",
+        "@prisma/client": "^5.20.0",
         "bcrypt": "^5.1.1",
         "cors": "^2.8.5",
         "dotenv": "^16.0.0",
@@ -34,13 +33,15 @@
         "eslint-plugin-prettier": "^4.0.0",
         "nodemon": "^3.0.3",
         "prettier": "^2.6.2",
-        "prisma": "^5.9.1",
+        "prisma": "^5.20.0",
         "ts-node": "^10.7.0",
         "typescript": "^5.3.3"
     },
+    "main": "src/index.ts",
     "scripts": {
         "dev": "NODE_ENV=dev nodemon src/index.ts",
         "build": "tsc",
-        "start": "NODE_ENV=prod node dist/index.js"
+        "start": "NODE_ENV=prod node dist/index.js",
+        "seed": "ts-node src/prisma/seed.ts"
     }
 }

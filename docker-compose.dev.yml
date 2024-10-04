@@ -4,30 +4,29 @@ services:
   client_app:
     build:
       context: ./front
-      dockerfile: Dockerfile
+      dockerfile: dockerfile.dev
+      # args:
+      #  - VITE_API_END_POINT=http://localhost
+    environment:
+     - VITE_API_END_POINT=http://localhost/api
     ports:
       - "5173:5173"
+    restart: always
     depends_on:
       - postgres
       - server_app
-    environment:
-      - API_END_POINT=http://server_app:3001
-    networks:
-      - front-net
-
+    
   server_app:
     build:
       context: ./back
-      dockerfile: Dockerfile
+      dockerfile: dockerfile.dev
     ports:
       - "3001:3001"
+    restart: always
     depends_on:
       - postgres
     environment:
       - NODE_ENV=dev
-    networks:
-      - back-net
-      - front-net
 
   postgres:
     image: postgres:16-alpine
@@ -35,17 +34,11 @@ services:
     ports:
       - "5433:5433"
     environment:
-      - POSTGRES_USER=myuser
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - back-net
-
-networks:
-  front-net:
-  back-net:
+      - pgdata:/var/lib/postgresql/data 
 
 volumes:
   pgdata:

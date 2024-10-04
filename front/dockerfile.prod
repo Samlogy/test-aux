@@ -1,0 +1,17 @@
+FROM node:18-alpine as builder
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --production --frozen-lockfile && yarn cache clean
+RUN yarn add -D typescript
+COPY . .
+ARG VITE_API_END_POINT
+ENV VITE_API_END_POINT $VITE_API_END_POINT
+RUN yarn
+RUN yarn build
+RUN yarn remove typescript
+
+FROM nginx:1.25.4-alpine-slim as prod
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf  /etc/nginx/conf.d
+EXPOSE 5173
+CMD ["nginx", "-g", "daemon off;"]

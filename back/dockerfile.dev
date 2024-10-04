@@ -1,0 +1,9 @@
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install
+COPY src/prisma ./prisma/
+COPY . .
+RUN npx prisma generate
+EXPOSE 3001
+CMD ["node", "dist/index.js"] 

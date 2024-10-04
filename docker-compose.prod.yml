@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  client_app:
+    build:
+      context: ./front
+      dockerfile: dockerfile.prod
+      args:
+       - VITE_API_END_POINT=http://localhost
+    ports:
+      - "5173:5173"
+    restart: always
+    depends_on:
+      - postgres
+      - server_app
+    
+
+  server_app:
+    build:
+      context: ./back
+      dockerfile: dockerfile.prod
+    ports:
+      - "3001:3001"
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      - NODE_ENV=dev
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - "5433:5433"
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+
+
+volumes:
+  pgdata:

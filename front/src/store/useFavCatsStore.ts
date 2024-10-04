@@ -13,7 +13,8 @@ type favCatsStore = {
   setFavCats: IFavCats["setFavCats"];
 };
 
-const favCatsStore = (set: any) => ({
+
+const favCatsStore = (set) => ({
   isFav: false,
   cats: [],
   setFavCats: (f: { isFav: boolean; cats: ICat[] }) =>

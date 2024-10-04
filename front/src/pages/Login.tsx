@@ -13,7 +13,7 @@ export default function Login() {
     const data = await fetechRequest("POST", `user/login`, {
       email: "admin@gmail.com",
       password: "1234",
-    });
+    } as unknown as BodyInit);
     if (data) {
       setLogin(data);
       return navigate("/");
@@ -23,7 +23,7 @@ export default function Login() {
     const data = await fetechRequest("POST", `user/login`, {
       email: "visitor@gmail.com",
       password: "1234",
-    });
+    } as unknown as BodyInit);
     if (data) {
       setLogin(data);
       return navigate("/");

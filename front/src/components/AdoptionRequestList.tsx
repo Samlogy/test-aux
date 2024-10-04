@@ -22,6 +22,14 @@ interface IAdoptionRequestList {
   onClose: () => void;
 }
 
+type requestType = {
+  id: number;
+  picture: string;
+  name: string
+  userId: number
+  createdAt: string
+}
+
 
 const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
   const [adoptionsReq, setAdoptionReq] = useState({
@@ -55,7 +63,7 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
       "GET",
       `cat/adopt/${cat.id}?page=${page}&size=2`
     );
-    const newData = data.map(d => {
+    const newData = data.map((d:requestType) => {
       const dateTime = new Date(d.createdAt);
       const date = dateTime.toLocaleDateString()
       const time = dateTime.toLocaleTimeString()
@@ -70,7 +78,7 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
     setAdoptionReq({ data: newData, isLoading: false });
   };
 
-  const tableData = adoptionsReq.data.map((req: any) => ({
+  const tableData = adoptionsReq.data.map((req: requestType) => ({
     name: (
       <Flex align="center">
         <Avatar name={req.name} src={req.picture} size="md" mr="4" />

@@ -15,7 +15,7 @@ interface ICustomModal {
   header?: ReactNode;
   body?: ReactNode;
   footer?: ReactNode;
-  size?: any;
+  size?: string | string[];
 }
 
 export default function CustomModal({

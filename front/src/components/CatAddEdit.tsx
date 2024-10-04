@@ -1,6 +1,7 @@
 import { Button, Flex, SimpleGrid } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 import fetechRequest from "../lib/api";
+import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
 import useActionStore, { INIT_CAT } from "../store/useActionStore";
 import {
@@ -10,12 +11,16 @@ import {
   SelectField,
   TextField,
 } from "./";
-import { ICat } from "../lib/interfaces";
 
 interface ICatAddFormProps {
   onClose: () => void;
   isOpen: boolean;
-  setCatsList: any;
+  setCatsList: React.Dispatch<React.SetStateAction<ICat[]>>;
+}
+
+export type SelectType = {
+  label: string,
+  value: string
 }
 
 type ImageType = { url: string; file: File | null };
@@ -28,7 +33,7 @@ export default function CatAddEdit({
   const currentCat = useActionStore((state) => state.cat);
   const setCat = useActionStore((state) => state.setCat);
 
-  const [chat, setChat] = useState(INIT_CAT);
+  const [chat, setChat] = useState<ICat>(INIT_CAT);
   const [image, setImage] = useState<ImageType>({
     url: "",
     file: null,
@@ -60,7 +65,7 @@ export default function CatAddEdit({
           true
         );
         setCatsList((prev) =>
-          prev.map((c) => {
+          prev.map((c:ICat) => {
             if (c.id === currentCat.id) {
               return data;
             }
@@ -93,6 +98,8 @@ export default function CatAddEdit({
   }, [currentCat]);
 
   console.log("image: ", image);
+
+  
 
   const Body = (
     <Flex flexDir="column">
@@ -141,8 +148,8 @@ export default function CatAddEdit({
               label="Gender"
               autoComplete="on"
             >
-              {constants.genders.map((gender) => (
-                <option key={gender} value={gender.value}>
+              {constants.genders.map((gender:SelectType) => (
+                <option key={gender.value} value={gender.value}>
                   {gender.label}
                 </option>
               ))}
@@ -156,8 +163,8 @@ export default function CatAddEdit({
               label="Race"
               autoComplete="on"
             >
-              {constants.races.map((race) => (
-                <option key={race} value={race.value}>
+              {constants.races.map((race: SelectType) => (
+                <option key={race.value} value={race.value}>
                   {race.label}
                 </option>
               ))}
@@ -171,8 +178,8 @@ export default function CatAddEdit({
               label="Ville"
               autoComplete="on"
             >
-              {constants.towns.map((town) => (
-                <option key={town} value={town.value}>
+              {constants.towns.map((town:SelectType) => (
+                <option key={town.value} value={town.value}>
                   {town.label}
                 </option>
               ))}

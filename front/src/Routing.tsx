@@ -1,6 +1,7 @@
 import { Spinner } from "@chakra-ui/react";
 import { Suspense, lazy } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+
 import { PrivateRoute } from "./components";
 import useAuthStore from "./store/useAuthStore";
 

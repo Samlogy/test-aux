@@ -40,7 +40,7 @@ export default function CatDetails({
       name: user.email.split('@')[0],
       picture: user.picture ? user.picture : ""
     }
-    await fetechRequest("POST", `cat/adopt`, payload);
+    await fetechRequest("POST", `cat/adopt`, payload as unknown as BodyInit);
 
     setCatsList((prev) =>
       prev.map((c) => {
@@ -66,7 +66,7 @@ export default function CatDetails({
     onCloseDetails();
   };
 
-  console.log('catt => ', currentCat)
+  // console.log('catt => ', currentCat)
 
   const BASE_URL = "http://localhost:3001/" + currentCat.picture;
   const Body = (
@@ -75,7 +75,7 @@ export default function CatDetails({
         !user.isAdmin ? <FavouriteButton cat={currentCat} /> : null
       }
       <Flex flexDir="column">
-        <Flex flexDir={["column", "", "row"]} justifyContent="space-evenly">
+        <Flex flexDir={["column", "column", "row"]} justifyContent="space-evenly">
           <Image
             src={
               currentCat.picture.includes("http")

@@ -7,15 +7,15 @@ interface ISelectField {
   autoComplete?: string;
   placeholder?: string;
   children: ReactNode;
-  icon?: ReactNode;
-  [restProps: string]: any;
+  // icon?: ReactElement<any, string | JSXElementConstructor<any>>//ReactNode;
+  [restProps: string]: unknown;
 }
 
 export default function SelectField({
   name,
   label,
   placeholder,
-  icon,
+  // icon,
   children,
   autoComplete = "off",
   ...restProps
@@ -31,7 +31,7 @@ export default function SelectField({
         name={name}
         placeholder={placeholder}
         autoComplete={autoComplete}
-        icon={icon && icon}
+        // icon={icon}
         _placeholder={{ color: "gray.400" }}
         focusBorderColor="accent.1"
         borderRadius="5px"

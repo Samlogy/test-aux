@@ -4,13 +4,14 @@ import fetechRequest from "../lib/api";
 import { generateQuery } from "../lib/functions";
 import { ICat } from "../lib/interfaces";
 import storage from "../lib/storage";
-import { IFilters, INIT_FILTERS } from "../store/useFilterStore";
+import { filtersType, INIT_FILTERS } from "../store/useFilterStore";
 import { InputField, SelectField } from "./";
+import { SelectType } from "./CatAddEdit";
 
 interface IFilterProps {
   setCatsList: React.Dispatch<React.SetStateAction<ICat[]>>;
-  filters: IFilters["filters"];
-  setFilters: React.Dispatch<React.SetStateAction<IFilters["filters"]>>;
+  filters: filtersType;
+  setFilters: React.Dispatch<React.SetStateAction<filtersType>>;
   setPagination: React.Dispatch<
     React.SetStateAction<{
       page: number;
@@ -69,7 +70,7 @@ export default function Filter({
         onChange={onFilter}
         value={filters.town}
       >
-        {CONSTANTS?.towns.map((town) => (
+        {CONSTANTS?.towns.map((town:SelectType) => (
           <option key={town.value} value={town.value}>
             {town.label}
           </option>
@@ -81,7 +82,7 @@ export default function Filter({
         onChange={onFilter}
         value={filters.status}
       >
-        {CONSTANTS?.status.map((status) => (
+        {CONSTANTS?.status.map((status:SelectType) => (
           <option key={status.value} value={status.value}>
             {status.label}
           </option>
@@ -94,7 +95,7 @@ export default function Filter({
         onChange={onFilter}
         value={filters.race}
       >
-        {CONSTANTS?.races.map((race) => (
+        {CONSTANTS?.races.map((race:SelectType) => (
           <option key={race.value} value={race.value}>
             {race.label}
           </option>
@@ -107,7 +108,7 @@ export default function Filter({
         onChange={onFilter}
         value={filters.gender}
       >
-        {CONSTANTS?.genders.map((gender) => (
+        {CONSTANTS?.genders.map((gender:SelectType) => (
           <option key={gender.value} value={gender.value}>
             {gender.label}
           </option>

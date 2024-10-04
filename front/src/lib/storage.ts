@@ -1,4 +1,4 @@
-const setStorage = (key: string, data: any) => {
+const setStorage = (key: string, data: unknown) => {
   try {
     const jsonData = JSON.stringify(data);
     localStorage.setItem(key, jsonData);

@@ -1,16 +1,16 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
 
+export type filtersType = {
+  name: string;
+  status: string;
+  town: string;
+  race: string;
+  gender: string;
+  age: number | string;
+}
 export type IFilters = {
-  filters: {
-    name: string;
-    status: string;
-    town: string;
-    race: string;
-    gender: string;
-    age: number;
-  };
-  setFilters: (f: any) => void;
+  filters: filtersType;
+  setFilters: (f: filtersType) => void;
 };
 
 export const INIT_FILTERS = {
@@ -22,12 +22,12 @@ export const INIT_FILTERS = {
   age: "",
 }
 
-let filterStore = (set) => ({
+const filterStore = (set) => ({
   filters: INIT_FILTERS,
-  setFilters: (f: any) => set(() => ({ filters: { ...f } })),
+  setFilters: (f: filtersType) => set(() => ({ filters: { ...f } })),
 });
 
 // filterStore = persist(filterStore);
-filterStore = devtools(filterStore);
+// filterStore = devtools(filterStore);
 const useFilterStore = create<IFilters>(filterStore);
 export default useFilterStore;

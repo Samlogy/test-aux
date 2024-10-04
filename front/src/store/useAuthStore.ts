@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
 import storage from "../lib/storage";
 
 interface IUser {
@@ -41,7 +40,7 @@ const loginState = (payload: AuthStore) => ({
 
 const logoutState = () => ({ isLogged: false, user: INIT_USER, token: "" });
 
-let authStore = (set: any) => ({
+const authStore = (set) => ({
   isLogged: false,
   accessToken: "",
   refreshToken: "",
@@ -59,10 +58,9 @@ let authStore = (set: any) => ({
   },
 });
 
-authStore = devtools(authStore);
+// authStore = devtools(authStore);
 const useAuthStore = create<UseAuthSore>(authStore);
 
-// Check local storage on initialization
 const storedAuth = localStorage.getItem("auth--chadopt");
 if (storedAuth) {
   const parsedAuth = JSON.parse(storedAuth);

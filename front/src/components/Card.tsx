@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton, Image, Tag } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Image } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { MouseEvent, useMemo } from "react";
 import { GiFemale, GiMale } from "react-icons/gi";

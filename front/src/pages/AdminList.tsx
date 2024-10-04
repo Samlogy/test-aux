@@ -22,18 +22,17 @@ import { ICat } from "../lib/interfaces";
 import useAction from "../store/useActionStore";
 import AdoptionRequestList from "../components/AdoptionRequestList";
 import storage from "../lib/storage";
+import { SelectType } from "../components/CatAddEdit";
 
 
-interface ICatsList {
+export interface ICatsList {
   data: ICat[];
   isLoading: boolean;
 }
 
 export default function AdminList() {
-  const [catsList, setCatsList] = useState<ICatsList>({
-    data: [],
-    isLoading: false,
-  });
+  const [catsList, setCatsList] = useState<ICat[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({
     status: "all",
     race: "",
@@ -71,7 +70,7 @@ export default function AdminList() {
     });
   };
   const onFilter = () => {
-    return catsList.data.filter(
+    return catsList.filter(
       (cat: ICat) =>
         (filters.status === "all" || cat.status === filters.status) &&
         (!filters.race || cat.race.includes(filters.race)) &&
@@ -97,12 +96,13 @@ export default function AdminList() {
     setCat(cat);
   };
   const onLoadCats = async (page = 1) => {
-    setCatsList({ ...catsList, isLoading: true });
+    setIsLoading(true);
     const { data } = await fetechRequest(
       "GET",
       `cat?page=${page}&size=10`
     );
-    setCatsList({ data, isLoading: false });
+    setIsLoading(false);
+    setCatsList(data);
   };
 
   const closeAdoptReqs = () => {
@@ -178,7 +178,7 @@ export default function AdminList() {
     onLoadCats();
   }, []);
 
-  if (catsList.isLoading)
+  if (isLoading)
     return <Spinner color="brown" thickness="4px" speed="0.65s" size="xl" />;
   return (
     <>
@@ -198,7 +198,7 @@ export default function AdminList() {
                 setFilters({ ...filters, status: e.target.value })
               }
             >
-              {CONSTANTS?.status.map((s:any) => {
+              {CONSTANTS?.status.map((s:SelectType) => {
                return <option value={s.value}>{s.label}</option>
               })}
             </select>
@@ -207,8 +207,8 @@ export default function AdminList() {
               onChange={(e) => setFilters({ ...filters, race: e.target.value })}
             >
               <option value="">Race</option>
-              {CONSTANTS?.races.map((g) => {
-               return <option value={g.value}>{g.label}</option>
+              {CONSTANTS?.races.map((r:SelectType) => {
+               return <option value={r.value}>{r.label}</option>
               })}
             </select>
             <select
@@ -218,7 +218,7 @@ export default function AdminList() {
               }
             >
               <option value="">Gender</option>
-              {CONSTANTS?.genders.map((g) => {
+              {CONSTANTS?.genders.map((g:SelectType) => {
                return <option value={g.value}>{g.label}</option>
               })}
             </select>
@@ -227,7 +227,7 @@ export default function AdminList() {
               onChange={(e) => setFilters({ ...filters, town: e.target.value })}
             >
               <option value="">Villes</option>
-              {CONSTANTS?.towns.map((t) => {
+              {CONSTANTS?.towns.map((t:SelectType) => {
                return <option value={t.value}>{t.label}</option>
               })}
             </select>

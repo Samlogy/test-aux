@@ -7,7 +7,7 @@ const token = storage.getStorage("auth--chadopt")?.accessToken;
 const fetechRequest = async (
   method: string,
   route: string,
-  payload?: any,
+  payload?: BodyInit,
   isFormData = false
 ) => {
   try {

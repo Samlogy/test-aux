@@ -41,7 +41,7 @@ export const INIT_CAT = {
   picture: "",
   town: "",
   age: "",
-  popularity: "",
+  popularity: 0,
   isReqAdopt: false,
 };
 

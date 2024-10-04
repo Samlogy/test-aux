@@ -1,4 +1,4 @@
-import { Box, Button, Flex, IconButton } from "@chakra-ui/react";
+import { Box, Flex, IconButton } from "@chakra-ui/react";
 import { RiArrowLeftSLine, RiArrowRightSLine } from "react-icons/ri";
 import View from "./View";
 

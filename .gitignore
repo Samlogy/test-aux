@@ -14,6 +14,7 @@ tasks.txt
 
 back/logs
 back/dist
+todo.txt
 
 front/node_modules
 # Logs

@@ -21,12 +21,12 @@ require('dotenv').config({ path: '../.env' })
 
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'
-const HTTP_PORT = 3001//Number(process.env.HTTP_PORT as string) || ''
+const HTTP_PORT = Number(process.env.HTTP_PORT as string) || 3001
 const HTTPS_PORT = Number(process.env.HTTPS_PORT as string) || ''
-const HOST_DEV = process.env.HOST_DEV as string || "";
-const HOST_PROD = 'localhost' //process.env.HOST_PROD as string || "";
-const COOKIE_EXPIRESIN = parseInt(process.env.COOKIE_EXPIRESIN as string)
-const SESSION_SECRET = process.env.SESSION_SECRET || ""
+const HOST_DEV = process.env.HOST_DEV as string || 'localhost';
+const HOST_PROD = process.env.HOST_PROD as string || 'localhost';
+// const COOKIE_EXPIRESIN = parseInt(process.env.COOKIE_EXPIRESIN as string)
+// const SESSION_SECRET = process.env.SESSION_SECRET || ""
 
 const app: Application = express()
 

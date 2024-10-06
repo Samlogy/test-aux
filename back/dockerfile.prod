@@ -1,21 +1,20 @@
-## PROD
-FROM node:18-alpine AS builder
+FROM node:18-alpine AS build
 WORKDIR /app
 COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile && yarn cache clean
-RUN yarn add -D typescript
+RUN yarn install --production --frozen-lockfile \
+    && yarn add -D typescript \
+    && yarn cache clean
 COPY src/prisma ./prisma/
 COPY . .
-RUN npx prisma generate && yarn build
-RUN yarn remove typescript
+RUN npx prisma generate && yarn build && yarn remove typescript
 
-# Étape 2 : Production (image finale sans devDependencies)
 FROM node:18-alpine
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/.env ./.env
-COPY --from=builder /app/package.json /app/yarn.lock ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/.env ./.env
+COPY --from=build /app/package.json /app/yarn.lock ./
+RUN npm install pm2 -g
 EXPOSE 3001
-CMD ["node", "dist/index.js"] 
+CMD ["pm2-runtime", "dist/index.js"]

@@ -1,6 +1,8 @@
 node_modules
 npm-debug.log
 yarn-error.log
-Dockerfile
+dockerfile.prod
+dockerfile.dev
 .dockerignore
 .git
+dist

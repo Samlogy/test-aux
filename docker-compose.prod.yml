@@ -7,29 +7,30 @@ services:
       dockerfile: dockerfile.prod
       args:
        - VITE_API_END_POINT=http://localhost
+    container_name: chadopt_client
     ports:
       - "5173:5173"
     restart: always
     depends_on:
-      - postgres
       - server_app
-    
 
   server_app:
     build:
       context: ./back
       dockerfile: dockerfile.prod
+    container_name: chadopt_server
     ports:
       - "3001:3001"
     restart: always
     depends_on:
-      - postgres
+      - db_app
     environment:
       - NODE_ENV=dev
 
-  postgres:
+  db_app:
     image: postgres:16-alpine
     restart: always
+    container_name: chadopt_db
     ports:
       - "5433:5433"
     environment:

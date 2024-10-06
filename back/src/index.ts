@@ -39,8 +39,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 export const createHttpsServer = (app: Application) => {
     const options = {
-        key: fs.readFileSync('key.pem'),
-        cert: fs.readFileSync('cert.pem')
+        key: fs.readFileSync('/home/sam/chadopt-app/server.key'),
+        cert: fs.readFileSync('/home/sam/chadopt-app/server.crt')
     };
 
     return https.createServer(options, app).listen(HOST_PROD, () => {

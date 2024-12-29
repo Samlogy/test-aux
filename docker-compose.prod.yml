@@ -26,17 +26,18 @@ services:
       - db_app
     environment:
       - NODE_ENV=dev
+      #  - DATABASE_URL=postgresql://myuser:password@db_app:5432/mydb?schema=public
 
   db_app:
     image: postgres:16-alpine
     restart: always
     container_name: chadopt_db
     ports:
-      - "5433:5433"
+      - "5433:5432"
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data 
 

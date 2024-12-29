@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  title: Constants API Documentation
+  version: 2.0.0
+  description: API documentation for retrieving constants like status, races, genders, and towns
+
+
+paths:
+  /api/v2/consts:
+    get:
+      summary: Retrieve constants
+      description: Returns the constants such as status, races, genders, and towns for the application.
+      responses:
+        '200':
+          description: Successful response with constants data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: array
+                        items:
+                          type: string
+                        example: ['active', 'inactive']
+                      races:
+                        type: array
+                        items:
+                          type: string
+                        example: ['Persian', 'Siamese', 'Bengal']
+                      genders:
+                        type: array
+                        items:
+                          type: string
+                        example: ['male', 'female']
+                      towns:
+                        type: array
+                        items:
+                          type: string
+                        example: ['New York', 'Los Angeles', 'Paris']
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: 'Erreur interne du serveur'

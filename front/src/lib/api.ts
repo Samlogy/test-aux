@@ -1,5 +1,5 @@
 import storage from "../lib/storage";
-const API_END_POINT = import.meta.env.VITE_API_END_POINT;
+const API_END_POINT = import.meta.env.VITE_API_END_POINT || "http://localhost";
 const apiUrl = `${API_END_POINT}:3001/api/v1`; 
 
 const token = storage.getStorage("auth--chadopt")?.accessToken;

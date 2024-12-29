@@ -63,17 +63,20 @@ const AdoptionRequestList = ({ isOpen, onClose }: IAdoptionRequestList) => {
       "GET",
       `cat/adopt/${cat.id}?page=${page}&size=2`
     );
-    const newData = data.map((d:requestType) => {
-      const dateTime = new Date(d.createdAt);
-      const date = dateTime.toLocaleDateString()
-      const time = dateTime.toLocaleTimeString()
-      return {
-        ...d, 
-        picture:
-        "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
-        createdAt: date + " " + time
-      }
-    })
+    let newData = []
+    if (data && data.length > 0) {
+      newData = data.map((d:requestType) => {
+        const dateTime = new Date(d.createdAt);
+        const date = dateTime.toLocaleDateString()
+        const time = dateTime.toLocaleTimeString()
+        return {
+          ...d, 
+          picture:
+          "https://robohash.org/undevelitdolor.png?size=50x50&amp;set=set1",
+          createdAt: date + " " + time
+        }
+      });
+    }
     console.log('newData => ', newData)
     setAdoptionReq({ data: newData, isLoading: false });
   };

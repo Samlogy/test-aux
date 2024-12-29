@@ -45,5 +45,8 @@
         "start": "NODE_ENV=prod pm2 start pm2.config.js",
         "start2": "NODE_ENV=prod node dist/index.js",
         "seed": "ts-node src/prisma/seed.ts"
-    }
+    },
+    "prisma": {
+    "seed": "ts-node src/prisma/seed.ts"
+  }
 }

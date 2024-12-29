@@ -13,6 +13,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'paris',
         status: 'ADOPTABLE',
         gender: 'MALE',
+        popularity: 0
     },
     {
         name: 'Mittens',
@@ -23,6 +24,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'marseille',
         status: 'ADOPTABLE',
         gender: 'FEMALE',
+        popularity: 0
     },
     {
         name: 'Shadow',
@@ -33,6 +35,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'lyon',
         status: 'ADOPTABLE',
         gender: 'MALE',
+        popularity: 0
     },
     {
         name: 'Cupcake',
@@ -43,6 +46,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'nice',
         status: 'ADOPTABLE',
         gender: 'FEMALE',
+        popularity: 0
     },
     {
         name: 'Leo',
@@ -53,6 +57,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'toulouse',
         status: 'ADOPTABLE',
         gender: 'MALE',
+        popularity: 0
     },
     {
         name: 'Luna',
@@ -63,6 +68,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'strasbourg',
         status: 'ADOPTABLE',
         gender: 'FEMALE',
+        popularity: 0
     },
     {
         name: 'Oliver',
@@ -73,6 +79,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'bordeaux',
         status: 'ADOPTABLE',
         gender: 'MALE',
+        popularity: 0
     },
     {
         name: 'Daisy',
@@ -84,6 +91,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'nantes',
         status: 'ADOPTABLE',
         gender: 'FEMALE',
+        popularity: 0
     },
     {
         name: 'Simba',
@@ -94,6 +102,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'montpellier',
         status: 'ADOPTABLE',
         gender: 'MALE',
+        popularity: 0
     },
     {
         name: 'Mocha',
@@ -104,7 +113,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         race: 'siberian',
         town: 'lille',
         status: 'ADOPTABLE',
-        gender: 'FEMALE',
+        gender: 'FEMALE',popularity: 0
     },
 
     {
@@ -116,6 +125,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'toulon',
         status: 'ADOPTABLE',
         gender: 'FEMALE',
+        popularity: 0
     },
     {
         name: 'Teddy',
@@ -127,6 +137,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'le_havre',
         status: 'ADOPTABLE',
         gender: 'MALE',
+        popularity: 0
     },
     {
         name: 'Misty',
@@ -137,6 +148,7 @@ const CATS: Prisma.CatCreateManyInput[] = [
         town: 'grenoble',
         status: 'ADOPTABLE',
         gender: 'FEMALE',
+        popularity: 0
     },
 ]
 
@@ -183,3 +195,5 @@ initDb()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+export default initDb;

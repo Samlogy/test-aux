@@ -6,7 +6,10 @@ RUN yarn install --production --frozen-lockfile \
     && yarn cache clean
 COPY src/prisma ./prisma/
 COPY . .
-RUN npx prisma generate && yarn build && yarn remove typescript
+RUN npx prisma generate \
+    && yarn build \
+    && npx prisma migrate deploy \
+    && yarn remove typescript
 
 FROM node:18-alpine
 WORKDIR /app

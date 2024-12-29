@@ -16,6 +16,7 @@ import corsOptions from './utils/corsOptions'
 import docSwagger from "./utils/doc"
 import checkSignals, { signals } from './utils/gracefullShutdown'
 import logger from './utils/logger'
+import initDb from './prisma/seed'
 
 require('dotenv').config({ path: '../.env' })
 
@@ -65,6 +66,8 @@ export const createHttpsServer = (app: Application) => {
 export const createHttpServer = (app: Application) => {
     return app.listen(HTTP_PORT, () => {
         logger.info(`Server: ${HTTP_PORT} => ${NODE_ENV}`)
+
+        initDb
 
         checkSignals(server, signals)
 
